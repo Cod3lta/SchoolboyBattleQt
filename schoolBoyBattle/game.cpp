@@ -25,7 +25,11 @@ Game::Game(QWidget *parent)
 //    view->setWindowState(Qt::WindowFullScreen);
     //TODO: Remplacer ce truc un peu moche
     view->resize(1920, 1080);
-    view->show();
+
+    //view->setWindowState(Qt::WindowMaximized);
+    view->showFullScreen();
+
+    //view->show();
 }
 
 Game::~Game()
