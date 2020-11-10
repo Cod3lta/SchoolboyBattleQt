@@ -6,14 +6,25 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 
+
+
 class Player : public QMainWindow
 {
-    Q_OBJECT
-
 public:
     Player(QWidget *parent = nullptr);
     ~Player();
+
 private:
     QGraphicsScene *scenePlayer;
+    int player_id;
+    int pos_player_x;
+    int pos_player_y;
+
+    void move(int x, int y);
+    void validate_candies();
+    void takeCandy();
+
+
 };
-#endif // MAINWINDOW_H
+
+#endif // PLAYER_H

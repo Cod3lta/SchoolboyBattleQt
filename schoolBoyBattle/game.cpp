@@ -4,6 +4,10 @@
 #include <QGraphicsScene>
 #include <QApplication>
 
+#include "candy.h"
+
+QGraphicsScene* Game::scene = NULL;
+
 Game::Game(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -12,7 +16,7 @@ Game::Game(QWidget *parent)
     QBrush blueBrush(Qt::blue);
     QPen outlinePen(Qt::black);
     outlinePen.setWidth(2);
-    scene->addEllipse(0, 0, 50, 50, outlinePen, blueBrush);
+    //scene->addEllipse(0, 0, 50, 50, outlinePen, blueBrush);
 
     QGraphicsView *view = new QGraphicsView(scene, this);
 
@@ -30,7 +34,26 @@ Game::Game(QWidget *parent)
     view->showFullScreen();
 
     //view->show();
+
+    Candy();
 }
+
+void Game::addItemInMap(QGraphicsItem* some)
+{
+    scene->addItem(some);
+}
+
+
+void Game::timer()
+{
+
+}
+
+void Game::reset()
+{
+
+}
+
 
 Game::~Game()
 {

@@ -13,7 +13,18 @@ class Game : public QMainWindow
 public:
     Game(QWidget *parent = nullptr);
     ~Game();
+    void addItemInMap(QGraphicsItem* some);
+    static QGraphicsScene *scene;
+    bool start();
+    void exit();
+
+
 private:
-    QGraphicsScene *scene;
+    bool startBool;
+    int tabScore[];
+    void timer();
+    void reset();
+
+
 };
 #endif // MAINWINDOW_H

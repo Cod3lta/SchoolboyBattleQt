@@ -30,6 +30,21 @@ Player::Player(QWidget *parent)
     //view->show();
 }
 
+
+void Player::move(int x, int y)
+{
+
+}
+void Player::validate_candies()
+{
+
+}
+void Player::takeCandy()
+{
+
+}
+
+
 Player::~Player()
 {
 }
