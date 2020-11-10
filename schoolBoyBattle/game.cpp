@@ -5,6 +5,7 @@
 #include <QApplication>
 
 #include "candy.h"
+#include "player.h"
 
 QGraphicsScene* Game::scene = NULL;
 
@@ -36,6 +37,7 @@ Game::Game(QWidget *parent)
     //view->show();
 
     Candy();
+    Player();
 }
 
 void Game::addItemInMap(QGraphicsItem* some)

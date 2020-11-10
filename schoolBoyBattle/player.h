@@ -15,14 +15,20 @@ public:
     ~Player();
 
 private:
-    QGraphicsScene *scenePlayer;
+    //QGraphicsScene *scenePlayer;
     int player_id;
-    int pos_player_x;
-    int pos_player_y;
+    int pos_player1_x;
+    int pos_player1_y;
+    int pos_player2_x;
+    int pos_player2_y;
+    QGraphicsEllipseItem *ellipse;
+    QGraphicsRectItem *rectangle;
 
-    void move(int x, int y);
+    //void move(int x, int y);
     void validate_candies();
     void takeCandy();
+
+    void keyReleaseEvent(QKeyEvent *e);
 
 
 };
