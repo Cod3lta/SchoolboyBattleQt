@@ -40,10 +40,11 @@ Game::Game(QWidget *parent)
     Player();
 }
 
-void Game::addItemInMap(QGraphicsItem* some)
-{
-    scene->addItem(some);
-}
+//// pas utile, vu que la scene est en static mtn... donc accessible
+//void Game::addItemInMap(QGraphicsItem* some)
+//{
+//    scene->addItem(some);
+//}
 
 
 void Game::timer()
