@@ -14,14 +14,16 @@ SOURCES += \
     game.cpp \
     main.cpp \
     menu.cpp \
-    player.cpp
+    player.cpp \
+    view.cpp
 
 HEADERS += \
     candy.h \
     display.h \
     game.h \
     menu.h \
-    player.h
+    player.h \
+    view.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

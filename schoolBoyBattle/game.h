@@ -5,15 +5,16 @@
 #include <QGraphicsItem>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include "player.h"
 
-class Game : public QMainWindow
+class Game : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    Game(QWidget *parent = nullptr);
+    Game(QGraphicsScene *parent = nullptr);
     ~Game();
-    void addItemInMap(QGraphicsItem* some);
+    //void addItemInMap(QGraphicsItem* some);
     static QGraphicsScene *scene;
     bool start();
     void exit();
@@ -21,9 +22,13 @@ public:
 
 private:
     bool startBool;
+    Player *player1;
+    Player *player2;
     int tabScore[];
+
     void timer();
     void reset();
+
 
 
 };

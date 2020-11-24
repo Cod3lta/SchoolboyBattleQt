@@ -9,8 +9,8 @@
 
 QGraphicsScene* Game::scene = NULL;
 
-Game::Game(QWidget *parent)
-    : QMainWindow(parent)
+Game::Game(QGraphicsScene *parent)
+    : QGraphicsScene(parent)
 {
     scene = new QGraphicsScene(this);
 
@@ -19,7 +19,7 @@ Game::Game(QWidget *parent)
     outlinePen.setWidth(2);
     //scene->addEllipse(0, 0, 50, 50, outlinePen, blueBrush);
 
-    QGraphicsView *view = new QGraphicsView(scene, this);
+    //QGraphicsView *view = new QGraphicsView(scene, this);
 
     QPixmap background(":/Resources/img/background/test.png");
     scene->setBackgroundBrush(background.scaled(1920, 1080,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
@@ -29,15 +29,29 @@ Game::Game(QWidget *parent)
 //    view->showFullScreen();
 //    view->setWindowState(Qt::WindowFullScreen);
     //TODO: Remplacer ce truc un peu moche
-    view->resize(1920, 1080);
+    //view->resize(1920, 1080);
 
     //view->setWindowState(Qt::WindowMaximized);
-    view->showFullScreen();
+    //view->showFullScreen();
 
     //view->show();
 
+    // Afficher les bonbons sur le terrain
     Candy();
-    Player();
+
+    // Ajouter les joueurs
+    /*
+    player1 = new Player();
+    player2 = new Player();
+    addItem(player1);
+    addItem(player2);
+    */
+
+    player1 = new Player();
+
+
+
+
 }
 
 //// pas utile, vu que la scene est en static mtn... donc accessible
