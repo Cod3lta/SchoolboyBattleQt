@@ -9,9 +9,10 @@ class Game;
 class View : public QGraphicsView
 {
 public:
-    View(QGraphicsView *parent = nullptr);
+    View(int id, QGraphicsView *parent = nullptr);
 
 private:
+    int id;
     Game *game;
 };
 

@@ -13,23 +13,12 @@ Player::Player(int id, int x, int y, QGraphicsObject *parent)
     : QGraphicsObject(parent),
       id(id)
 {
-    QBrush blueBrush(Qt::blue);
-    QBrush redBrush(Qt::red);
-    QPen outlinePen(Qt::black);
-    outlinePen.setWidth(2);
-
     setPos(x, y);
-    //debugRect = Game::scene->addRect(1600, 0, 100, 100, outlinePen, blueBrush);
-
-    //QGraphicsView *view = new QGraphicsView(Game::scene, this);
-
 }
 
 void Player::keyMove(int playerId, int direction, bool value) {
     if(playerId == id) {
         moves[direction] = value;
-        qDebug() << "Player " << id << " sets direction " << direction << " to " << value;
-
     }
 }
 
@@ -41,16 +30,13 @@ void Player::move() {
     setX(pos().x() + v.x());
     setY(pos().y() + v.y());
     update();
-    qDebug() << "player " << id << " -> x :" << pos().x() << " / y : " << pos().x();
 }
 
-void Player::validate_candies()
-{
+void Player::validate_candies() {
 
 }
 
-void Player::takeCandy()
-{
+void Player::takeCandy() {
 
 }
 
@@ -71,28 +57,18 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
 // Returns outer bounds of item as a rectangle
 // Called by QGraphicsView to determine what regions need to be redrawn
-QRectF Player::boundingRect() const
-{
+QRectF Player::boundingRect() const {
     return QRectF(pos().x(), pos().y(), 100, 100);
 }
 
 // collisions detection
-QPainterPath Player::shape() const
-{
-
-    //QPainterPath ellipsePath;
-    //ellipsePath.moveTo(80.0, 50.0);
-    //ellipsePath.arcTo(20.0, 30.0, 60.0, 40.0, 0.0, 360.0);
-    //return ellipsePath;
-
-
+QPainterPath Player::shape() const {
     QPainterPath path;
     path.addEllipse(boundingRect());
     return path;
 }
 
 
-Player::~Player()
-{
+Player::~Player() {
 
 }

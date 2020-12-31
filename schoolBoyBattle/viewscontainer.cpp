@@ -10,21 +10,20 @@
 #include <QDebug>
 #include <QKeyEvent>
 
-ViewsContainer::ViewsContainer(QWidget *parent)
+ViewsContainer::ViewsContainer(int nbPlayers, QWidget *parent)
     : QMainWindow(parent)
 {
-    game = new Game();
-    mainView = new View();
-    View *viewPlayer2 = new View();
-    mainView->setScene(game);
-    viewPlayer2->setScene(game);
-
+    game = new Game(nbPlayers);
     QBoxLayout *vlayout = new QHBoxLayout(this);
     QWidget *widget = new QWidget();
     widget->setLayout(vlayout);
 
-    vlayout->addWidget(mainView);
-    vlayout->addWidget(viewPlayer2);
+    for(int i = 0; i < nbPlayers; i++) {
+        View *v = new View(i);
+        v->setScene(game);
+        vlayout->addWidget(v);
+        views.append(v);
+    }
 
     setCentralWidget(widget);
 }
@@ -32,13 +31,16 @@ ViewsContainer::ViewsContainer(QWidget *parent)
 void ViewsContainer::keyPressEvent(QKeyEvent *event) {
     if(event->isAutoRepeat()) {
         event->ignore();
+        return;
     }
+    qDebug() << game->items();
     game->keyPress(event);
 }
 
 void ViewsContainer::keyReleaseEvent(QKeyEvent *event) {
     if(event->isAutoRepeat()) {
         event->ignore();
+        return;
     }
     game->keyRelease(event);
 }

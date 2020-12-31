@@ -42,14 +42,14 @@ void KeyInputs::keyRelease(QKeyEvent *event) {
 
 void KeyInputs::setPlayerKeys() {
     // La clé à presser, {l'id du joueur, la direction}
-    playersKeys.insert(Qt::Key_W,       {1, up});
-    playersKeys.insert(Qt::Key_A,       {1, left});
-    playersKeys.insert(Qt::Key_S,       {1, down});
-    playersKeys.insert(Qt::Key_D,       {1, right});
-    playersKeys.insert(Qt::Key_Up,      {2, up});
-    playersKeys.insert(Qt::Key_Left,    {2, left});
-    playersKeys.insert(Qt::Key_Down,    {2, down});
-    playersKeys.insert(Qt::Key_Right,   {2, right});
+    playersKeys.insert(Qt::Key_W,       {0, up});
+    playersKeys.insert(Qt::Key_A,       {0, left});
+    playersKeys.insert(Qt::Key_S,       {0, down});
+    playersKeys.insert(Qt::Key_D,       {0, right});
+    playersKeys.insert(Qt::Key_Up,      {1, up});
+    playersKeys.insert(Qt::Key_Left,    {1, left});
+    playersKeys.insert(Qt::Key_Down,    {1, down});
+    playersKeys.insert(Qt::Key_Right,   {1, right});
 }
 
 // OVERRIDE REQUIRED

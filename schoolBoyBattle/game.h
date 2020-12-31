@@ -15,7 +15,7 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
-    Game(QGraphicsScene *parent = nullptr);
+    Game(int nbPlayers, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
     void keyPress(QKeyEvent *event);
@@ -24,13 +24,12 @@ public:
 private:
     QTimer *timer;
     bool startBool;
-    Player *player1;
-    Player *player2;
+    QList<Player*> players;
     KeyInputs *keyboardInputs;
     int tabScore[];
 
     void reset();
-    void playerMove();
+    void playerMoveTimer();
 
 protected:
 

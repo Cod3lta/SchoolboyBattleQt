@@ -1,10 +1,10 @@
 #include "view.h"
 #include <QDebug>
 
-View::View(QGraphicsView *parent)
-    : QGraphicsView(parent)
+View::View(int id, QGraphicsView *parent)
+    : QGraphicsView(parent),
+      id(id)
 {
-    qDebug() << "view constructor called";
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFocusPolicy(Qt::NoFocus);    // Nécessaire pour ne pas pouvoir scroller
