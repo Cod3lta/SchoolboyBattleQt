@@ -33,7 +33,6 @@ void ViewsContainer::keyPressEvent(QKeyEvent *event) {
         event->ignore();
         return;
     }
-    qDebug() << game->items();
     game->keyPress(event);
 }
 

@@ -8,9 +8,11 @@ class Game;
 
 class View : public QGraphicsView
 {
+    Q_OBJECT
 public:
     View(int id, QGraphicsView *parent = nullptr);
 
+    void moveView(Player *player);
 private:
     int id;
     Game *game;

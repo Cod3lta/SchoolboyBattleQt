@@ -10,6 +10,7 @@
 #include "candy.h"
 #include "player.h"
 #include "keyinputs.h"
+#include "view.h"
 
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
@@ -57,8 +58,9 @@ void Game::keyRelease(QKeyEvent *event) {
 
 void Game::playerMoveTimer() {
     for (int i = 0; i < players.size(); ++i) {
-        players.at(i)->move();
-
+        Player *player = players.at(i);
+        player->move();
+        qobject_cast<View *>(views().at(i))->moveView(player);
     }
 }
 

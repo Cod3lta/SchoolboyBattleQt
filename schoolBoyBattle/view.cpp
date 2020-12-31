@@ -11,3 +11,9 @@ View::View(int id, QGraphicsView *parent)
                                     // la scène avec la souris / les touches
                                     // flechées
 }
+
+void View::moveView(Player *player) {
+    qDebug() << "view " << id << " set coordinates to " << player->x() << ":" << player->y();
+    centerOn(player);
+    update();
+}

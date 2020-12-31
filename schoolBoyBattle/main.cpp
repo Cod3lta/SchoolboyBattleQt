@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-    int nbPlayers = 1;
+    int nbPlayers = 2;
     QApplication a(argc, argv);
     ViewsContainer v(nbPlayers);
     //v.showFullScreen();
