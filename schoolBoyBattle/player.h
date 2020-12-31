@@ -27,6 +27,10 @@ private:
     QGraphicsRectItem *debugRect;
     void validate_candies();
     void takeCandy();
+    QPixmap *animationIdle;
+    QPixmap *animationRun;
+    QTimer *timerAnimationIdle;
+    QTimer *timerAnimationRun;
     enum Teams : int {red = 0, black = 1};
 
 public slots:
