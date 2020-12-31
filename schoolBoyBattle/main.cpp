@@ -1,12 +1,12 @@
-#include "view.h"
+#include "viewscontainer.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    View v;
-    v.showFullScreen();
+    ViewsContainer v;
+    //v.showFullScreen();
     v.show();
     return a.exec();
 }

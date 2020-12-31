@@ -8,61 +8,29 @@
 
 
 
-class Player : public QGraphicsItem
+class Player : public QGraphicsObject
 {
 public:
-    Player(QGraphicsItem *parent = nullptr);
+    Player(int id, int x, int y, QGraphicsObject *parent = nullptr);
     ~Player();
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    //virtual
-    //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) = 0;
-    //QRectF boundingRect() const = 0;
-    //QPainterPath shape() const = 0;
-
-public:
-    QRectF boundingRect() const
-    {
-        qreal penWidth = 1;
-        return QRectF(-10 - penWidth / 2, -10 - penWidth / 2,
-                      20 + penWidth, 20 + penWidth);
-    }
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget)
-    {
-        painter->drawRoundedRect(-10, -10, 20, 20, 5, 5);
-    }
-
-    QPainterPath shape() const
-    {
-        //QPainterPath ellipsePath;
-        //ellipsePath.moveTo(80.0, 50.0);
-        //ellipsePath.arcTo(20.0, 30.0, 60.0, 40.0, 0.0, 360.0);
-        //return ellipsePath;
-
-        QPainterPath path;
-        path.addEllipse(boundingRect());
-        return path;
-    }
-
+    void move();
 
 private:
-    //QGraphicsScene *scenePlayer;
-    int player_id;
-    int pos_player1_x;
-    int pos_player1_y;
-    int pos_player2_x;
-    int pos_player2_y;
-    QGraphicsEllipseItem *ellipse;
-    QGraphicsRectItem *rectangle;
+    int id;
+    bool moves[4] = {false, false, false, false};
+    enum PlayerMovesEnum : int {up = 0, right = 1, down = 2, left = 3};
 
-    //void move(int x, int y);
+    QGraphicsRectItem *debugRect;
     void validate_candies();
     void takeCandy();
+    enum Teams : int {red = 0, black = 1};
 
-protected:
-    void keyReleaseEvent(QKeyEvent *e);
-
+public slots:
+    void keyMove(int playerId, int direction, bool value);
 
 };
 

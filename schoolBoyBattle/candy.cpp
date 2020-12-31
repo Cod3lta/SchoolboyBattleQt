@@ -23,6 +23,6 @@ void Candy::randomItems()
     {
         pos_x = rand()%(max_x-min + 1) + min;
         pos_y = rand()%(max_y-min + 1) + min;
-        Game::scene->addEllipse(pos_x, pos_y, 20, 20, outlinePen, yellowBrush);
+        //Game::scene->addEllipse(pos_x, pos_y, 20, 20, outlinePen, yellowBrush);
     }
 }

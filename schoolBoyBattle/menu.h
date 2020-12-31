@@ -13,6 +13,7 @@ public:
 
 private:
     void parameters();
+
 };
 
 #endif // MENU_H

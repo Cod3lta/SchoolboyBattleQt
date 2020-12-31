@@ -5,82 +5,43 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QRectF>
+#include <QDebug>
+#include <QVector2D>
 #include "game.h"
 
-Player::Player(QGraphicsItem *parent)
-    : QGraphicsItem(parent)
+Player::Player(int id, int x, int y, QGraphicsObject *parent)
+    : QGraphicsObject(parent),
+      id(id)
 {
-    //scenePlayer = new QGraphicsScene(this);
-
     QBrush blueBrush(Qt::blue);
     QBrush redBrush(Qt::red);
     QPen outlinePen(Qt::black);
     outlinePen.setWidth(2);
 
-    rectangle = Game::scene->addRect(1600, 0, 100, 100, outlinePen, blueBrush);
-    ellipse = Game::scene->addEllipse(0, 800, 100, 100, outlinePen, redBrush);
+    setPos(x, y);
+    //debugRect = Game::scene->addRect(1600, 0, 100, 100, outlinePen, blueBrush);
 
     //QGraphicsView *view = new QGraphicsView(Game::scene, this);
 
-    //QPixmap background(":/Resources/img/background/test.png");
-    //Game::scene->setBackgroundBrush(background.scaled(1920, 1080,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
-
-    //view->resize(1920, 1080);
-
-    //view->showFullScreen();
-
-    //this->player_id = id_player;
-
-    //view->show();
 }
 
+void Player::keyMove(int playerId, int direction, bool value) {
+    if(playerId == id) {
+        moves[direction] = value;
+        qDebug() << "Player " << id << " sets direction " << direction << " to " << value;
 
-void Player::keyReleaseEvent(QKeyEvent *e)
-{
-    // Player1
-        if(e->key() == Qt::Key_W) // haut
-        {
-            pos_player1_y = pos_player1_y-10;
-            rectangle->setY(pos_player1_y);
-        }
-        if(e->key() == Qt::Key_S) // bas
-        {
-            pos_player1_y=pos_player1_y+10;
-            rectangle->setY(pos_player1_y);
-        }
-        if(e->key() == Qt::Key_A) // gauche
-        {
-            pos_player1_x = pos_player1_x-10;
-            rectangle->setX(pos_player1_x);
-        }
-        if(e->key() == Qt::Key_D) // droite
-        {
-            pos_player1_x = pos_player1_x+10;
-            rectangle->setX(pos_player1_x);
-        }
+    }
+}
 
-
-    // Player2
-        if(e->key() == Qt::Key_Up) // haut
-        {
-            pos_player2_y = pos_player2_y-10;
-            ellipse->setY(pos_player2_y);
-        }
-        if(e->key() == Qt::Key_Down) // bas
-        {
-            pos_player2_y = pos_player2_y+10;
-            ellipse->setY(pos_player2_y);
-        }
-        if(e->key() == Qt::Key_Left) // gauche
-        {
-            pos_player2_x = pos_player2_x-10;
-            ellipse->setX(pos_player2_x);
-        }
-        if(e->key() == Qt::Key_Right) // droite
-        {
-            pos_player2_x = pos_player2_x+10;
-            ellipse->setX(pos_player2_x);
-        }
+void Player::move() {
+    QVector2D v;
+    v.setX(int(moves[right]) - int(moves[left]));
+    v.setY(int(moves[down]) - int(moves[up]));
+    v.normalize();
+    setX(pos().x() + v.x());
+    setY(pos().y() + v.y());
+    update();
+    qDebug() << "player " << id << " -> x :" << pos().x() << " / y : " << pos().x();
 }
 
 void Player::validate_candies()
@@ -94,19 +55,25 @@ void Player::takeCandy()
 }
 
 
+
 // OVERRIDE REQUIRED
-/*
+
 // Paints contents of item in local coordinates
-void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    painter->drawRoundedRect(-10, -10, 20, 20, 5, 5);
+void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    painter->setPen(QPen(Qt::black));
+    painter->setBrush(QBrush(Qt::red));
+    painter->drawRect(pos().x(), pos().y(), 50, 50);
+    painter->drawText(pos().x()+10, pos().y()+10, QString::number(id));
+    // Lignes pour le compilateur
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
 }
 
 // Returns outer bounds of item as a rectangle
 // Called by QGraphicsView to determine what regions need to be redrawn
 QRectF Player::boundingRect() const
 {
-    return QRectF(0, 0, 100, 100);
+    return QRectF(pos().x(), pos().y(), 100, 100);
 }
 
 // collisions detection
@@ -123,12 +90,9 @@ QPainterPath Player::shape() const
     path.addEllipse(boundingRect());
     return path;
 }
-*/
+
 
 Player::~Player()
 {
 
 }
-
-// Afficher une image en background
-// Comprendre (se documenter) sur les scènes + vues pour le splitscreen

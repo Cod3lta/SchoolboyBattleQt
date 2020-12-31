@@ -5,7 +5,10 @@
 #include <QGraphicsItem>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QSet>
+#include <QTimer>
 #include "player.h"
+#include "keyinputs.h"
 
 class Game : public QGraphicsScene
 {
@@ -13,23 +16,23 @@ class Game : public QGraphicsScene
 
 public:
     Game(QGraphicsScene *parent = nullptr);
-    ~Game();
-    //void addItemInMap(QGraphicsItem* some);
-    static QGraphicsScene *scene;
     bool start();
     void exit();
-
+    void keyPress(QKeyEvent *event);
+    void keyRelease(QKeyEvent *event);
 
 private:
+    QTimer *timer;
     bool startBool;
     Player *player1;
     Player *player2;
+    KeyInputs *keyboardInputs;
     int tabScore[];
 
-    void timer();
     void reset();
+    void playerMove();
 
-
+protected:
 
 };
 #endif // MAINWINDOW_H

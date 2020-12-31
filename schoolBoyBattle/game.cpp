@@ -3,78 +3,66 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QApplication>
+#include <QDebug>
+#include <QKeyEvent>
+#include <QSet>
 
 #include "candy.h"
 #include "player.h"
-
-QGraphicsScene* Game::scene = NULL;
+#include "keyinputs.h"
 
 Game::Game(QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
-    scene = new QGraphicsScene(this);
 
-    QBrush blueBrush(Qt::blue);
-    QPen outlinePen(Qt::black);
-    outlinePen.setWidth(2);
-    //scene->addEllipse(0, 0, 50, 50, outlinePen, blueBrush);
+//    QBrush blueBrush(Qt::blue);
+//    QPen outlinePen(Qt::black);
+//    outlinePen.setWidth(2);
+//    scene->addEllipse(0, 0, 50, 50, outlinePen, blueBrush);
 
-    //QGraphicsView *view = new QGraphicsView(scene, this);
+    QPixmap background(":/Resources/img/background/terrain1.png");
+    setBackgroundBrush(background);
+    setSceneRect(background.rect());
+    //setSceneRect(0, 0, 100, 100);
 
-    QPixmap background(":/Resources/img/background/test.png");
-    scene->setBackgroundBrush(background.scaled(1920, 1080,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
-
-//    scene->setSceneRect(scene->itemsBoundingRect());
-//    view->setSceneRect(view->sceneRect());
-//    view->showFullScreen();
-//    view->setWindowState(Qt::WindowFullScreen);
-    //TODO: Remplacer ce truc un peu moche
-    //view->resize(1920, 1080);
-
-    //view->setWindowState(Qt::WindowMaximized);
-    //view->showFullScreen();
-
-    //view->show();
+    timer = new QTimer(this);
+    timer->setInterval(15);
+    connect(timer, &QTimer::timeout, this, &Game::playerMove);
+    timer->start();
 
     // Afficher les bonbons sur le terrain
     Candy();
 
-    // Ajouter les joueurs
-    /*
-    player1 = new Player();
-    player2 = new Player();
+    //player1 = new Player(1, sceneRect().width()/2 + 50, sceneRect().height()/2);
+    //player2 = new Player(2, sceneRect().width()/2 - 50, sceneRect().height()/2);
+    player1 = new Player(1, 550, 500);
+    player2 = new Player(2, 450, 500);
+    keyboardInputs = new KeyInputs();
+
+    // Connecter les signaux de keyboardInputs aux slots des joueurs pour le clavier
+    connect(keyboardInputs, &KeyInputs::playerKeyToggle, player1, &Player::keyMove);
+    connect(keyboardInputs, &KeyInputs::playerKeyToggle, player2, &Player::keyMove);
+
     addItem(player1);
     addItem(player2);
-    */
-
-    player1 = new Player();
-
-
-
-
+    addItem(keyboardInputs);
 }
 
-//// pas utile, vu que la scene est en static mtn... donc accessible
-//void Game::addItemInMap(QGraphicsItem* some)
-//{
-//    scene->addItem(some);
-//}
+void Game::keyPress(QKeyEvent *event) {
+    keyboardInputs->keyPress(event);
+}
+
+void Game::keyRelease(QKeyEvent *event) {
+    keyboardInputs->keyRelease(event);
+}
 
 
-void Game::timer()
-{
-
+void Game::playerMove() {
+    player1->move();
+    player2->move();
 }
 
 void Game::reset()
 {
 
 }
-
-
-Game::~Game()
-{
-}
-
-// Afficher une image en background
-// Comprendre (se documenter) sur les scènes + vues pour le splitscreen
