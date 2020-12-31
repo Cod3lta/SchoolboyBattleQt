@@ -15,7 +15,7 @@
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
-    QPixmap background(":/Resources/img/background/terrain1.png");
+    QPixmap background(":/Resources/background/terrain.png");
     setBackgroundBrush(background);
     setSceneRect(background.rect());
     //setSceneRect(0, 0, 100, 100);
