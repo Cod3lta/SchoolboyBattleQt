@@ -11,7 +11,7 @@
 class Player : public QGraphicsObject
 {
 public:
-    Player(int id, int x, int y, QGraphicsObject *parent = nullptr);
+    Player(int id, int team, QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -20,18 +20,24 @@ public:
     void move();
 
 private:
-    int id;
-    bool moves[4] = {false, false, false, false};
+    enum Teams : int {red = 0, black = 1};
+    enum Gender : int {girl = 0, boy = 1};
     enum PlayerMovesEnum : int {up = 0, right = 1, down = 2, left = 3};
 
+    int id;
+    Teams team;
+    Gender gender;
+    bool moves[4] = {false, false, false, false};
+
+    QHash<Teams, QList<int>> teamsSpawnpoint;
     QGraphicsRectItem *debugRect;
-    void validate_candies();
-    void takeCandy();
     QPixmap *animationIdle;
     QPixmap *animationRun;
     QTimer *timerAnimationIdle;
     QTimer *timerAnimationRun;
-    enum Teams : int {red = 0, black = 1};
+
+    void validate_candies();
+    void takeCandy();
 
 public slots:
     void keyMove(int playerId, int direction, bool value);

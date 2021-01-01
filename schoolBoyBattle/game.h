@@ -23,9 +23,10 @@ public:
 
 private:
     QTimer *timer;
-    bool startBool;
     QList<Player*> players;
     KeyInputs *keyboardInputs;
+
+    bool startBool;
     int tabScore[];
 
     void reset();

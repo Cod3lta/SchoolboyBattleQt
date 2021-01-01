@@ -28,9 +28,10 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     // Afficher les bonbons sur le terrain
     Candy();
 
+
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, 500, 500));
+        players.append(new Player(i, i%2));
     }
 
     keyboardInputs = new KeyInputs();

@@ -9,11 +9,19 @@
 #include <QVector2D>
 #include "game.h"
 
-Player::Player(int id, int x, int y, QGraphicsObject *parent)
+Player::Player(int id, int team, QGraphicsObject *parent)
     : QGraphicsObject(parent),
       id(id)
 {
-    setPos(x, y);
+    // Spawn point des équipes
+    teamsSpawnpoint.insert(red, {500, 500});
+    teamsSpawnpoint.insert(black, {1000, 500});
+
+    this->team = static_cast<Teams>(team);
+    gender = rand()%2 == 0 ? girl : boy;
+    setPos(teamsSpawnpoint[this->team].at(0), teamsSpawnpoint[this->team].at(1));
+    //animationIdle->load(":/Resources/player/idle.png");
+
 }
 
 void Player::keyMove(int playerId, int direction, bool value) {
@@ -46,8 +54,16 @@ void Player::takeCandy() {
 
 // Paints contents of item in local coordinates
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    switch(gender) {
+    case boy:
+        painter->setBrush(QBrush(Qt::red));
+        break;
+    case girl:
+        painter->setBrush(QBrush(Qt::yellow));
+        break;
+    }
+
     painter->setPen(QPen(Qt::black));
-    painter->setBrush(QBrush(Qt::red));
     painter->drawRect(pos().x(), pos().y(), 50, 50);
     painter->drawText(pos().x()+10, pos().y()+10, QString::number(id));
     // Lignes pour le compilateur
