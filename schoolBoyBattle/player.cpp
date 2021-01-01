@@ -12,6 +12,7 @@
 // Les textures sont étirées pour entrer dans le rectangle du joueur
 #define PLAYER_WIDTH 100
 #define PLAYER_HEIGHT 130
+#define HITBOX_DEBUG false
 
 
 Player::Player(int id, int team, QGraphicsObject *parent)
@@ -22,6 +23,7 @@ Player::Player(int id, int team, QGraphicsObject *parent)
     teamsSpawnpoint.insert(red, {500, 500});
     teamsSpawnpoint.insert(black, {1000, 500});
 
+
     this->team = static_cast<Team>(team);
     gender = rand()%2 == 0 ? girl : boy;
     setPos(teamsSpawnpoint[this->team].at(0), teamsSpawnpoint[this->team].at(1));
@@ -30,23 +32,33 @@ Player::Player(int id, int team, QGraphicsObject *parent)
     // Doit être après l'initialisation de ces variables !
     loadAnimations();
     setAnimation(idle);
-    hitbox = QRectF(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
 void Player::keyMove(int playerId, int direction, bool value) {
     if(playerId == id) {
         moves[direction] = value;
     }
+
+    // Changer l'animation si nécessaire
+    Animation newAnimationType = getAnimationType();
+    if(currentAnimation != newAnimationType) {
+        // Si l'animation qu'on doit afficher n'est pas la même que l'actuelle
+        setAnimation(newAnimationType);
+    }
+
+    // Changer la direction du joueur si nécessaire
+    facing = getFacing();
+    update();
 }
 
 void Player::move() {
     QVector2D v;
-    v.setX(int(moves[right]) - int(moves[left]));
-    v.setY(int(moves[down]) - int(moves[up]));
+    v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
+    v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
-    setX(pos().x() + v.x());
-    setY(pos().y() + v.y());
-    update();
+    setX(x() + v.x());
+    setY(y() + v.y());
+    movingVector = v;
 }
 
 void Player::validate_candies() {
@@ -70,6 +82,7 @@ Player::AnimationsStruct* Player::setupAnimation(int framerate, int nbFrame, QSt
     AnimationsStruct* aStruct = new AnimationsStruct;
     aStruct->framerate = framerate;
     aStruct->nbFrame = nbFrame;
+    aStruct->frameIndex = 0;
     aStruct->image = getAnimationByTeamAndGender(name);
     aStruct->timer = new QTimer();
     aStruct->timer->setInterval(aStruct->framerate);
@@ -80,11 +93,13 @@ Player::AnimationsStruct* Player::setupAnimation(int framerate, int nbFrame, QSt
 
 void Player::setAnimation(Animation a) {
     // Arrêter le timer de l'animation qui se termine
-    //animations.value(currentAnimation)->timer->stop();
+    if(animations.contains(currentAnimation)) {
+        animations.value(currentAnimation)->timer->stop();
+    }
     // Changer l'animation
     currentAnimation = a;
     // Démarer le timer de la nouvelle animation
-    //animations.value(a)->timer->start();
+    animations.value(a)->timer->start();
 }
 
 QPixmap* Player::getAnimationByTeamAndGender(QString name) {
@@ -106,32 +121,66 @@ QPixmap* Player::getAnimationByTeamAndGender(QString name) {
 }
 
 void Player::animationNextFrame() {
+    AnimationsStruct *a = animations.value(currentAnimation);
+    a->frameIndex++;
+    if(a->frameIndex >= a->nbFrame) {
+        a->frameIndex = 0;
+    }
+    update();
+}
 
+Player::Animation Player::getAnimationType() {
+    if((!moves[moveUp] && !moves[moveRight] && !moves[moveDown] && !moves[moveLeft]) ||
+            (moves[moveUp] && moves[moveDown]) || (moves[moveRight] && moves[moveLeft])) {
+        return idle;
+    }
+    return run;
+}
+
+Player::Facing Player::getFacing() {
+    if(moves[moveLeft] && !moves[moveRight]) {
+        return facingLeft;
+    }else if(!moves[moveLeft] && moves[moveRight]) {
+        return facingRight;
+    }
+    return facing;
 }
 
 // OVERRIDE REQUIRED
 
 // Paints contents of item in local coordinates
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    switch(gender) {
-    case boy:
-        painter->setBrush(QBrush(Qt::red));
-        break;
-    case girl:
-        painter->setBrush(QBrush(Qt::yellow));
-        break;
+
+
+    if(HITBOX_DEBUG) {
+        // Debug rect
+        painter->setPen(QPen(Qt::black));
+        painter->setBrush(QBrush(Qt::white));
+        painter->drawRect(boundingRect());
+        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
     }
-    //QPixmap *imageToDraw = animations.value(currentAnimation)->image;
-    //QRectF sourceRect = QRectF(pos().x(), pos().y(), imageToDraw->width(), imageToDraw->height());
-    //QRectF targetRect = QRectF();
 
-    //painter->drawPixmap(pos().x(), pos().y(), imageToDraw->width(), imageToDraw->height(), imageToDraw);
-    //painter->drawPixmap(pos().x(), pos().y(), imageToDraw);
 
-    // Debug rect
-    painter->setPen(QPen(Qt::black));
-    painter->drawRect(hitbox.x()+pos().x(), hitbox.y()+pos().y(), hitbox.width(), hitbox.height());
-    painter->drawText(pos().x()+10, pos().y()+10, QString::number(id));
+    AnimationsStruct *animToDraw = animations.value(currentAnimation);
+    QPixmap *imageToDraw = animToDraw->image;
+    if(facing == facingLeft) {
+        QTransform trans;
+        trans.translate(boundingRect().width(), 0).scale(-1, 1);
+        setTransform(trans);
+
+    }else if (facing == facingRight) {
+        setTransform(QTransform(1, 0, 0, 1, 1, 1));
+    }else{
+        resetTransform();
+    }
+
+    qDebug() << transformOriginPoint();
+
+    QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->nbFrame * animToDraw->frameIndex, 0,
+                               imageToDraw->width() / animToDraw->nbFrame, imageToDraw->height());
+    QRectF targetRect = boundingRect();
+    painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
+
     // Lignes pour le compilateur
     Q_UNUSED(option)
     Q_UNUSED(widget)
@@ -139,14 +188,15 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
 // Returns outer bounds of item as a rectangle
 // Called by QGraphicsView to determine what regions need to be redrawn
+// the rect stay at 0:0 !!
 QRectF Player::boundingRect() const {
-    return QRectF(hitbox.x()+pos().x(), hitbox.y()+pos().y(), hitbox.width(), hitbox.height());
+    return QRectF(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
 // collisions detection
 QPainterPath Player::shape() const {
     QPainterPath path;
-    path.addRect(hitbox.x()+pos().x(), hitbox.y()+pos().y(), hitbox.width(), hitbox.height());
+    path.addRect(boundingRect());
     return path;
 }
 

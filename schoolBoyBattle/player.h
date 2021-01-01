@@ -5,6 +5,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QVector2D>
 
 
 
@@ -23,14 +24,16 @@ private:
     enum Team : int {red = 0, black = 1};
     enum Gender : int {girl = 0, boy = 1};
     enum Animation : int {idle = 0, run = 1};
-    enum PlayerMovesEnum : int {up = 0, right = 1, down = 2, left = 3};
+    enum Facing : int {facingLeft = 0, facingRight = 1};
+    enum PlayerMoves : int {moveUp = 0, moveRight = 1, moveDown = 2, moveLeft = 3};
 
     Team team;
     Gender gender;
     int id;
     bool moves[4] = {false, false, false, false};
     Animation currentAnimation;
-    QRectF hitbox;
+    Facing facing;
+    QVector2D movingVector;
 
     QHash<Team, QList<int>> teamsSpawnpoint;
     QGraphicsRectItem *debugRect;
@@ -39,6 +42,7 @@ private:
         QTimer *timer;
         int framerate;
         int nbFrame;
+        int frameIndex;
         // Pour avoir la taille d'une frame
         // -> image.width() / nbFrame;
     } AnimationsStruct;
@@ -51,6 +55,9 @@ private:
     void setAnimation(Animation a);
     QPixmap *getAnimationByTeamAndGender(QString name);
     AnimationsStruct *setupAnimation(int framerate, int nbFrame, QString filename);
+    Player::Animation getAnimationType();
+    Player::Facing getFacing();
+
 public slots:
     void keyMove(int playerId, int direction, bool value);
 

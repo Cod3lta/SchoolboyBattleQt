@@ -21,7 +21,7 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     //setSceneRect(0, 0, 100, 100);
 
     timer = new QTimer(this);
-    timer->setInterval(5);
+    timer->setInterval(2);
     connect(timer, &QTimer::timeout, this, &Game::playerMoveTimer);
     timer->start();
 
@@ -46,6 +46,7 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
         addItem(players.at(i));
     }
     addItem(keyboardInputs);
+    addRect(0, 0, 200, 200, QPen(Qt::red));
 }
 
 void Game::keyPress(QKeyEvent *event) {
