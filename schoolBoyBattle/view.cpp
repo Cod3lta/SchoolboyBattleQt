@@ -13,7 +13,6 @@ View::View(int id, QGraphicsView *parent)
 }
 
 void View::moveView(Player *player) {
-    qDebug() << "view " << id << " set coordinates to " << player->x() << ":" << player->y();
     centerOn(player);
     update();
 }

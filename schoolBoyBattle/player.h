@@ -20,25 +20,37 @@ public:
     void move();
 
 private:
-    enum Teams : int {red = 0, black = 1};
+    enum Team : int {red = 0, black = 1};
     enum Gender : int {girl = 0, boy = 1};
+    enum Animation : int {idle = 0, run = 1};
     enum PlayerMovesEnum : int {up = 0, right = 1, down = 2, left = 3};
 
-    int id;
-    Teams team;
+    Team team;
     Gender gender;
+    int id;
     bool moves[4] = {false, false, false, false};
+    Animation currentAnimation;
+    QRectF hitbox;
 
-    QHash<Teams, QList<int>> teamsSpawnpoint;
+    QHash<Team, QList<int>> teamsSpawnpoint;
     QGraphicsRectItem *debugRect;
-    QPixmap *animationIdle;
-    QPixmap *animationRun;
-    QTimer *timerAnimationIdle;
-    QTimer *timerAnimationRun;
+    typedef struct Animations_s {
+        QPixmap *image;
+        QTimer *timer;
+        int framerate;
+        int nbFrame;
+        // Pour avoir la taille d'une frame
+        // -> image.width() / nbFrame;
+    } AnimationsStruct;
+    QHash<Animation, AnimationsStruct*> animations;
 
     void validate_candies();
     void takeCandy();
-
+    void loadAnimations();
+    void animationNextFrame();
+    void setAnimation(Animation a);
+    QPixmap *getAnimationByTeamAndGender(QString name);
+    AnimationsStruct *setupAnimation(int framerate, int nbFrame, QString filename);
 public slots:
     void keyMove(int playerId, int direction, bool value);
 
