@@ -14,11 +14,15 @@ Tile::Tile(Type type, int x, int y, int layer, QGraphicsObject *parent)
     setPos(x, y);
 }
 
-void Tile::loadTilesData() {
+QHash<Tile::Type, Tile::TileDataStruct*> Tile::loadTilesData() {
+    QHash<Tile::Type, TileDataStruct*> tilesData;
     tilesData.insert(mur, setupTileData(true, "mur.png"));
     tilesData.insert(sol, setupTileData(false, "sol.png"));
     tilesData.insert(facade, setupTileData(true, "facade.png"));
+    return tilesData;
 }
+
+QHash<Tile::Type, Tile::TileDataStruct*> Tile::tilesData = Tile::loadTilesData();
 
 Tile::TileDataStruct* Tile::setupTileData(bool collision, QString filename) {
     TileDataStruct *t = new TileDataStruct();

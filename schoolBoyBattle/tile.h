@@ -18,7 +18,7 @@ public:
         bool collision;
     }TileDataStruct;
     static QHash<Type, TileDataStruct*> tilesData;
-    static void loadTilesData();
+    static QHash<Type, TileDataStruct*> loadTilesData();
     static TileDataStruct* setupTileData(bool collision, QString filename);
 
 
