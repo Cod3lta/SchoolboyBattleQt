@@ -1,13 +1,19 @@
 #include "view.h"
 #include <QDebug>
 
-View::View(QGraphicsView *parent)
-    : QGraphicsView(parent)
+View::View(int id, QGraphicsView *parent)
+    : QGraphicsView(parent),
+      id(id)
 {
-    qDebug() << "view constructor called";
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFocusPolicy(Qt::NoFocus);    // Nécessaire pour ne pas pouvoir scroller
                                     // la scène avec la souris / les touches
                                     // flechées
+}
+
+void View::moveView(Player *player) {
+    qDebug() << "view " << id << " set coordinates to " << player->x() << ":" << player->y();
+    centerOn(player);
+    update();
 }
