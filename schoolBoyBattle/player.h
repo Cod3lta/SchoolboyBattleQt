@@ -9,6 +9,7 @@
 
 
 
+
 class Player : public QGraphicsObject
 {
 public:
@@ -18,7 +19,7 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    void move();
+    void move(int delta);
 
 private:
     enum Team : int {red = 0, black = 1};

@@ -12,7 +12,9 @@
 // Les textures sont étirées pour entrer dans le rectangle du joueur
 #define PLAYER_WIDTH 100
 #define PLAYER_HEIGHT 130
+#define PLAYER_SPEED 5
 #define HITBOX_DEBUG false
+
 
 
 Player::Player(int id, int team, QGraphicsObject *parent)
@@ -51,14 +53,15 @@ void Player::keyMove(int playerId, int direction, bool value) {
     update();
 }
 
-void Player::move() {
+void Player::move(int delta) {
     QVector2D v;
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
     v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
+    double deltaMinified=delta/10e6;
+    v*=deltaMinified*PLAYER_SPEED;
     setX(x() + v.x());
     setY(y() + v.y());
-    movingVector = v;
 }
 
 void Player::validate_candies() {
@@ -174,7 +177,6 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         resetTransform();
     }
 
-    qDebug() << transformOriginPoint();
 
     QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->nbFrame * animToDraw->frameIndex, 0,
                                imageToDraw->width() / animToDraw->nbFrame, imageToDraw->height());

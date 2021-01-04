@@ -11,6 +11,7 @@
 #include "player.h"
 #include "keyinputs.h"
 #include "view.h"
+#define REFRESH_DELAY 1/60*1000
 
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
@@ -20,10 +21,12 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     setSceneRect(background.rect());
     //setSceneRect(0, 0, 100, 100);
 
+    timerDelta = new QElapsedTimer();
     timer = new QTimer(this);
-    timer->setInterval(2);
+    timer->setInterval(REFRESH_DELAY);
     connect(timer, &QTimer::timeout, this, &Game::playerMoveTimer);
     timer->start();
+    timerDelta->start();
 
     // Afficher les bonbons sur le terrain
     Candy();
@@ -59,9 +62,11 @@ void Game::keyRelease(QKeyEvent *event) {
 
 
 void Game::playerMoveTimer() {
+    int delta=timerDelta->nsecsElapsed();
+    timerDelta->restart();
     for (int i = 0; i < players.size(); ++i) {
         Player *player = players.at(i);
-        player->move();
+        player->move(delta);
         qobject_cast<View *>(views().at(i))->moveView(player);
     }
 }

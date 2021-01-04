@@ -9,6 +9,7 @@
 #include <QTimer>
 #include "player.h"
 #include "keyinputs.h"
+#include <QElapsedTimer>
 
 class Game : public QGraphicsScene
 {
@@ -23,6 +24,7 @@ public:
 
 private:
     QTimer *timer;
+    QElapsedTimer *timerDelta;
     QList<Player*> players;
     KeyInputs *keyboardInputs;
 
