@@ -1,19 +1,23 @@
 #ifndef CANDY_H
 #define CANDY_H
-#include <QGraphicsEllipseItem>
+#include <QGraphicsItem>
+#include <QPixmap>
 
-class Candy
+class Candy : public QGraphicsItem
 {
 public:
-    Candy();
+    Candy(QGraphicsItem *parent = nullptr);
 
 private:
     const static int nbCandies = 100;
-    int pos_candy_x;
-    int pos_candy_y;
-    QGraphicsEllipseItem *candy;
+    enum Type :int {bleu = 0, rouge = 1, vert = 2, jaune = 3, orange = 4, rose = 5};
+    /*typedef struct CandyDatas_s {
+        QPixmap* image;
+    } CandyDatasStruct;*/
+    static QHash<Type, QPixmap*> CandiesDatas;
 
-    void randomItems();
+    QTimer *newCandy;
+
 };
 
 #endif // CANDY_H
