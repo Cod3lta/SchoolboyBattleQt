@@ -74,7 +74,7 @@ void Player::loadAnimations() {
     // :/Resources/player/NAME/gender-team-NAME.png --> Exemples :
     // :/Resources/player/run/girl-red-run.png
     // :/Resources/player/idle/boy-black-idle.png
-    animations.insert(idle, setupAnimation(250, 4, QString("idle")));
+    animations.insert(idle, setupAnimation(150, 6, QString("idle")));
     animations.insert(run, setupAnimation(50, 10, QString("run")));
 }
 
