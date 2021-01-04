@@ -34,7 +34,6 @@ private:
     bool moves[4] = {false, false, false, false};
     Animation currentAnimation;
     Facing facing;
-    QVector2D movingVector;
 
     QHash<Team, QList<int>> teamsSpawnpoint;
     QGraphicsRectItem *debugRect;

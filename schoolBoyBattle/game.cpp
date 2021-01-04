@@ -21,12 +21,12 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     setSceneRect(background.rect());
     //setSceneRect(0, 0, 100, 100);
 
-    timerDelta = new QElapsedTimer();
-    timer = new QTimer(this);
-    timer->setInterval(REFRESH_DELAY);
-    connect(timer, &QTimer::timeout, this, &Game::playerMoveTimer);
-    timer->start();
-    timerDelta->start();
+    playerRefreshDelta = new QElapsedTimer();
+    playerRefresh = new QTimer(this);
+    playerRefresh->setInterval(REFRESH_DELAY);
+    connect(playerRefresh, &QTimer::timeout, this, &Game::playerMoveTimer);
+    playerRefresh->start();
+    playerRefreshDelta->start();
 
     // Afficher les bonbons sur le terrain
     Candy();
@@ -62,8 +62,8 @@ void Game::keyRelease(QKeyEvent *event) {
 
 
 void Game::playerMoveTimer() {
-    int delta=timerDelta->nsecsElapsed();
-    timerDelta->restart();
+    int delta=playerRefreshDelta->nsecsElapsed();
+    playerRefreshDelta->restart();
     for (int i = 0; i < players.size(); ++i) {
         Player *player = players.at(i);
         player->move(delta);

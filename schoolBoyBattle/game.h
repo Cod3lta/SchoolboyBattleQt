@@ -23,8 +23,8 @@ public:
     void keyRelease(QKeyEvent *event);
 
 private:
-    QTimer *timer;
-    QElapsedTimer *timerDelta;
+    QTimer *playerRefresh;
+    QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
     KeyInputs *keyboardInputs;
 
