@@ -9,6 +9,5 @@
         <file>Resources/player/run/boy-red-run.png</file>
         <file>Resources/player/run/girl-black-run.png</file>
         <file>Resources/player/run/girl-red-run.png</file>
-        <file>Resources/background/terrain1.tmx</file>
     </qresource>
 </RCC>

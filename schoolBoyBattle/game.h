@@ -31,7 +31,6 @@ private:
     bool startBool;
     int tabScore[];
 
-
     void reset();
     void playerMoveTimer();
 

@@ -2,27 +2,17 @@
 #define MENU_H
 
 #include <QWidget>
-#include <QPushButton>
-#include <QLabel>
 
 class Menu : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Menu(QWidget *parent = 0);
-    void afficherMenuPrincipal();
-
-public slots:
-    void aide();
+    explicit Menu(QWidget *parent = nullptr);
+    void start();
+    void exit();
 
 private:
-    QPushButton *btnNouvellePartie;
-    QPushButton *btnAide;
-    QPushButton *btnQuitter;
-    QLabel *lblText;
-    QLabel *lblCopyright;
     void parameters();
-
 
 };
 

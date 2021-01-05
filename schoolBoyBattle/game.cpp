@@ -16,24 +16,10 @@
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
-
-    //menu
-    //menuJeu = new Menu();
-    //menuJeu->afficherMenuPrincipal();
-
-
-    //scene du niveau
-
-    //    QPixmap background(":/Resources/background/terrain.png");
-    //    setBackgroundBrush(background);
-    //    setSceneRect(background.rect());
-    //    //setSceneRect(0, 0, 100, 100);
-
-    Tile *tile = new Tile(Tile::Type::sol, 0, 0, 0);
-    QFile *filename = new QFile("terrain1.tmx");
-    tile->prepareScene(filename);
-    //Tile tile(":/Resources/background/terrain1.tmx");
-
+    QPixmap background(":/Resources/background/terrain.png");
+    setBackgroundBrush(background);
+    setSceneRect(background.rect());
+    //setSceneRect(0, 0, 100, 100);
 
     playerRefreshDelta = new QElapsedTimer();
     playerRefresh = new QTimer(this);
