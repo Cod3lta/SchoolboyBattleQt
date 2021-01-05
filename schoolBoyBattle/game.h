@@ -9,28 +9,30 @@
 #include <QTimer>
 #include "player.h"
 #include "keyinputs.h"
+#include <QElapsedTimer>
 
 class Game : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    Game(QGraphicsScene *parent = nullptr);
+    Game(int nbPlayers, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
     void keyPress(QKeyEvent *event);
     void keyRelease(QKeyEvent *event);
 
 private:
-    QTimer *timer;
-    bool startBool;
-    Player *player1;
-    Player *player2;
+    QTimer *playerRefresh;
+    QElapsedTimer *playerRefreshDelta;
+    QList<Player*> players;
     KeyInputs *keyboardInputs;
+
+    bool startBool;
     int tabScore[];
 
     void reset();
-    void playerMove();
+    void playerMoveTimer();
 
 protected:
 

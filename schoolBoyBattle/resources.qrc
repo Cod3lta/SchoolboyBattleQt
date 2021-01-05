@@ -1,6 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file>Resources/img/background/test.png</file>
-        <file>Resources/img/background/terrain1.png</file>
+        <file>Resources/background/terrain.png</file>
+        <file>Resources/player/idle/boy-black-idle.png</file>
+        <file>Resources/player/idle/boy-red-idle.png</file>
+        <file>Resources/player/idle/girl-black-idle.png</file>
+        <file>Resources/player/idle/girl-red-idle.png</file>
+        <file>Resources/player/run/boy-black-run.png</file>
+        <file>Resources/player/run/boy-red-run.png</file>
+        <file>Resources/player/run/girl-black-run.png</file>
+        <file>Resources/player/run/girl-red-run.png</file>
     </qresource>
 </RCC>
