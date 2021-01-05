@@ -16,9 +16,7 @@ SOURCES += \
     keyinputs.cpp \
     main.cpp \
     menu.cpp \
-    niveau.cpp \
     player.cpp \
-    scene.cpp \
     tile.cpp \
     view.cpp \
     viewscontainer.cpp
@@ -30,9 +28,7 @@ HEADERS += \
     game.h \
     keyinputs.h \
     menu.h \
-    niveau.h \
     player.h \
-    scene.h \
     tile.h \
     view.h \
     viewscontainer.h

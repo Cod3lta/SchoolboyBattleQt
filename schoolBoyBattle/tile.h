@@ -6,6 +6,8 @@
 #define TILE_H
 
 #include <QGraphicsItem>
+#include <QString>
+#include <QFile>
 
 class Tile : public QGraphicsItem
 {
@@ -28,15 +30,25 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
+    bool prepareScene(QFile *filename);
+
+
+
 private:
-    QString *filename;   //
-    bool *collision;     //
+    QString *filename;
+    bool *collision;
     int layer;
-    QPixmap *img;        //
+    QPixmap *img;
     Type type;
+
+    QList<Tile *> tabMur;
+    QList<Tile *> tabFacade;
 
     QPixmap *getTextureByType();
     void setupTiles();
+    void placeTexture(QVector < QVector <int> > &tab);
+
+
 };
 
 #endif // TILE_H

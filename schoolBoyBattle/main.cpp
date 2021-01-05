@@ -1,19 +1,23 @@
 #include "viewscontainer.h"
-#include "niveau.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    int nbPlayers = 2;
+    //QGuiApplication a(argc, argv);
     QApplication a(argc, argv);
-    //ViewsContainer v(nbPlayers);
-    //v.showFullScreen();
-    //v.show();
+    int nbPlayers = 2;
 
-    Niveau newNiveau("Niveau.tmx");
-    newNiveau.show();
+    ViewsContainer v(nbPlayers);
+    v.show();
+
+    //v.showFullScreen();
+
+
+//    Niveau newNiveau("terrain1.tmx");
+//    newNiveau.show();
 
 
     return a.exec();
+
 }

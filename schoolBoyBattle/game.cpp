@@ -11,14 +11,30 @@
 #include "player.h"
 #include "keyinputs.h"
 #include "view.h"
+#include "menu.h"
+#include "tile.h"
 
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
-    QPixmap background(":/Resources/background/terrain.png");
-    setBackgroundBrush(background);
-    setSceneRect(background.rect());
-    //setSceneRect(0, 0, 100, 100);
+
+    //menu
+    //menuJeu = new Menu();
+    //menuJeu->afficherMenuPrincipal();
+
+
+    //scene du niveau
+
+    //    QPixmap background(":/Resources/background/terrain.png");
+    //    setBackgroundBrush(background);
+    //    setSceneRect(background.rect());
+    //    //setSceneRect(0, 0, 100, 100);
+
+    Tile *tile = new Tile(Tile::Type::sol, 0, 0, 0);
+    QFile *filename = new QFile("terrain1.tmx");
+    tile->prepareScene(filename);
+    //Tile tile(":/Resources/background/terrain1.tmx");
+
 
     timer = new QTimer(this);
     timer->setInterval(5);
