@@ -11,11 +11,14 @@ CONFIG += c++11
 SOURCES += \
     candy.cpp \
     display.cpp \
+    domparser.cpp \
     game.cpp \
     keyinputs.cpp \
     main.cpp \
     menu.cpp \
+    niveau.cpp \
     player.cpp \
+    scene.cpp \
     tile.cpp \
     view.cpp \
     viewscontainer.cpp
@@ -23,10 +26,13 @@ SOURCES += \
 HEADERS += \
     candy.h \
     display.h \
+    domparser.h \
     game.h \
     keyinputs.h \
     menu.h \
+    niveau.h \
     player.h \
+    scene.h \
     tile.h \
     view.h \
     viewscontainer.h
@@ -38,3 +44,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resources.qrc
+
+QT += xml
