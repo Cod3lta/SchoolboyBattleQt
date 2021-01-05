@@ -83,12 +83,11 @@ void Player::loadAnimations() {
 
 Player::AnimationsStruct* Player::setupAnimation(int framerate, int nbFrame, QString name) {
     AnimationsStruct* aStruct = new AnimationsStruct;
-    aStruct->framerate = framerate;
     aStruct->nbFrame = nbFrame;
     aStruct->frameIndex = 0;
     aStruct->image = getAnimationByTeamAndGender(name);
     aStruct->timer = new QTimer();
-    aStruct->timer->setInterval(aStruct->framerate);
+    aStruct->timer->setInterval(framerate);
     aStruct->timer->stop();
     connect(aStruct->timer, &QTimer::timeout, this, &Player::animationNextFrame);
     return aStruct;

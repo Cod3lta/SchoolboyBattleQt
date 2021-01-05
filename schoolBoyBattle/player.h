@@ -40,7 +40,6 @@ private:
     typedef struct Animations_s {
         QPixmap *image;
         QTimer *timer;
-        int framerate;
         int nbFrame;
         int frameIndex;
         // Pour avoir la taille d'une frame
