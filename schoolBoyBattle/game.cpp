@@ -11,6 +11,8 @@
 #include "player.h"
 #include "keyinputs.h"
 #include "view.h"
+#include "tile.h"
+
 #define REFRESH_DELAY 1/60*1000
 
 Game::Game(int nbPlayers, QGraphicsScene *parent)
