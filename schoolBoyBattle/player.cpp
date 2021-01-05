@@ -10,8 +10,8 @@
 #include "game.h"
 
 // Les textures sont étirées pour entrer dans le rectangle du joueur
-#define PLAYER_WIDTH 100
-#define PLAYER_HEIGHT 130
+#define PLAYER_WIDTH 120
+#define PLAYER_HEIGHT 150
 #define PLAYER_SPEED 5
 #define HITBOX_DEBUG false
 
