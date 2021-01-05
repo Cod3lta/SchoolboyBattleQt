@@ -13,11 +13,5 @@ int main(int argc, char *argv[])
 
     //v.showFullScreen();
 
-
-//    Niveau newNiveau("terrain1.tmx");
-//    newNiveau.show();
-
-
     return a.exec();
-
 }
