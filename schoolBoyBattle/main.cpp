@@ -4,7 +4,8 @@
 
 int main(int argc, char *argv[])
 {
-    //QGuiApplication a(argc, argv);
+    srand(time(NULL));
+    int nbPlayers = 2;
     QApplication a(argc, argv);
     int nbPlayers = 2;
 

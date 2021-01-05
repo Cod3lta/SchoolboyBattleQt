@@ -9,7 +9,7 @@
 #include <QTimer>
 #include "player.h"
 #include "keyinputs.h"
-#include "menu.h"
+#include <QElapsedTimer>
 
 class Game : public QGraphicsScene
 {
@@ -23,11 +23,12 @@ public:
     void keyRelease(QKeyEvent *event);
 
 private:
-    QTimer *timer;
-    bool startBool;
+    QTimer *playerRefresh;
+    QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
     KeyInputs *keyboardInputs;
-    Menu *menuJeu;
+
+    bool startBool;
     int tabScore[];
 
 

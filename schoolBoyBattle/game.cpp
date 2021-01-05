@@ -11,8 +11,7 @@
 #include "player.h"
 #include "keyinputs.h"
 #include "view.h"
-#include "menu.h"
-#include "tile.h"
+#define REFRESH_DELAY 1/60*1000
 
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
@@ -36,17 +35,20 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     //Tile tile(":/Resources/background/terrain1.tmx");
 
 
-    timer = new QTimer(this);
-    timer->setInterval(5);
-    connect(timer, &QTimer::timeout, this, &Game::playerMoveTimer);
-    timer->start();
+    playerRefreshDelta = new QElapsedTimer();
+    playerRefresh = new QTimer(this);
+    playerRefresh->setInterval(REFRESH_DELAY);
+    connect(playerRefresh, &QTimer::timeout, this, &Game::playerMoveTimer);
+    playerRefresh->start();
+    playerRefreshDelta->start();
 
     // Afficher les bonbons sur le terrain
     Candy();
 
+
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, 500, 500));
+        players.append(new Player(i, i%2));
     }
 
     keyboardInputs = new KeyInputs();
@@ -61,6 +63,7 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
         addItem(players.at(i));
     }
     addItem(keyboardInputs);
+    addRect(0, 0, 200, 200, QPen(Qt::red));
 }
 
 void Game::keyPress(QKeyEvent *event) {
@@ -73,9 +76,11 @@ void Game::keyRelease(QKeyEvent *event) {
 
 
 void Game::playerMoveTimer() {
+    int delta=playerRefreshDelta->nsecsElapsed();
+    playerRefreshDelta->restart();
     for (int i = 0; i < players.size(); ++i) {
         Player *player = players.at(i);
-        player->move();
+        player->move(delta);
         qobject_cast<View *>(views().at(i))->moveView(player);
     }
 }
