@@ -30,8 +30,8 @@ Game::Game(QGraphicsScene *parent)
     connect(timer, &QTimer::timeout, this, &Game::playerMove);
     timer->start();
 
-    // Afficher les bonbons sur le terrain
-    Candy();
+    // TODO : Afficher les bonbons sur le terrain
+
 
     //player1 = new Player(1, sceneRect().width()/2 + 50, sceneRect().height()/2);
     //player2 = new Player(2, sceneRect().width()/2 - 50, sceneRect().height()/2);
