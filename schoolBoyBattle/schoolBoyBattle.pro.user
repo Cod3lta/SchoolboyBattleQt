@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.13.0, 2020-12-30T22:58:07. -->
+<!-- Written by QtCreator 4.13.2, 2021-01-04T15:03:09. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
-  <value type="QByteArray">{087cd201-fd91-49d9-887f-180aaac9a5d7}</value>
+  <value type="QByteArray">{682e2895-2b05-4c46-b22d-98a932e493dc}</value>
  </data>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -96,8 +96,8 @@
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
     <value type="bool">true</value>
     <value type="int" key="EnableQmlDebugging">0</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\DEV\s3_windows\p2\schoolboybattle\build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Debug</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory.shadowDir">C:/DEV/s3_windows/p2/schoolboybattle/build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\Kevin\Desktop\He-arc\2) Tuesday\P2\schoolboybattle\build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory.shadowDir">C:/Users/Kevin/Desktop/He-arc/2) Tuesday/P2/schoolboybattle/build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -148,8 +148,8 @@
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.1">
     <value type="bool">true</value>
     <value type="int" key="EnableQmlDebugging">2</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\DEV\s3_windows\p2\schoolboybattle\build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Release</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory.shadowDir">C:/DEV/s3_windows/p2/schoolboybattle/build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\Kevin\Desktop\He-arc\2) Tuesday\P2\schoolboybattle\build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory.shadowDir">C:/Users/Kevin/Desktop/He-arc/2) Tuesday/P2/schoolboybattle/build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -200,8 +200,8 @@
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.2">
     <value type="bool">true</value>
     <value type="int" key="EnableQmlDebugging">0</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\DEV\s3_windows\p2\schoolboybattle\build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Profile</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory.shadowDir">C:/DEV/s3_windows/p2/schoolboybattle/build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Profile</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\Users\Kevin\Desktop\He-arc\2) Tuesday\P2\schoolboybattle\build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Profile</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory.shadowDir">C:/Users/Kevin/Desktop/He-arc/2) Tuesday/P2/schoolboybattle/build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Profile</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
@@ -325,8 +325,8 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:C:/DEV/s3_windows/p2/schoolboybattle/schoolBoyBattle/schoolBoyBattle.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/DEV/s3_windows/p2/schoolboybattle/schoolBoyBattle/schoolBoyBattle.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:C:/Users/Kevin/Desktop/He-arc/2) Tuesday/P2/schoolboybattle/schoolBoyBattle/schoolBoyBattle.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/Kevin/Desktop/He-arc/2) Tuesday/P2/schoolboybattle/schoolBoyBattle/schoolBoyBattle.pro</value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>
@@ -337,7 +337,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory"></value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/DEV/s3_windows/p2/schoolboybattle/build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Debug</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/Kevin/Desktop/He-arc/2) Tuesday/P2/schoolboybattle/build-schoolBoyBattle-Desktop_Qt_5_15_1_MinGW_32_bit-Debug</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>
