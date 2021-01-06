@@ -19,45 +19,39 @@ class DataLoader
 public:
     DataLoader();
 
-    typedef struct Animations_s {
+    typedef struct PlayerAnimations_s {
         QPixmap *image;
-        //QTimer *timer;
         int nbFrame;
-        //int frameIndex;
-    } AnimationsStruct;
+    } PlayerAnimationsStruct;
+
+    typedef struct CandyAnimations_s {
+        QPixmap *image;
+        int nbFrame;
+        int nbPoints;
+    } CandyAnimationsStruct;
 
     // PLAYER ----------------------------------------------------------------------------
 
 
 private:
+    void loadPlayerAnimations();
+    DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, QString fileName);
 
 public:
-    QHash<int, DataLoader::AnimationsStruct*> playerAnimations;
-    QHash<int, AnimationsStruct*> *getPlayerAnimations();
-    void loadPlayerAnimations();
-    DataLoader::AnimationsStruct *setupPlayerAnimation(int nbFrame, QString fileName);
+    QHash<int, DataLoader::PlayerAnimationsStruct*> playerAnimations;
     static int getPlayerAnimationId(int gender, int team, int animation);
 
     // CANDY -----------------------------------------------------------------------------
-    /*
-public:
+
+private:
+
     void loadCandyAnimations();
-    typedef struct CandyAnimationDatas_s {
-        QTimer *timer;
-        QPixmap* image;
-        int nbFrame;
-        int frameIndex;
-        int nbPoints;
-    } CandyAnimationsStruct;
-    enum CandiesType { peanut = 0, mandarin = 1};
+    DataLoader::CandyAnimationsStruct *setupCandyAnimations(int nbFrame, int nbPoints, QString filename);
 
-private:
+public:
+    QHash<int, CandyAnimationsStruct*> candiesAnimations;
+    static int getCandyAnimationId(int type);
 
-    QHash<CandiesType, CandyAnimationsStruct*> candiesAnimations;
-
-private:
-    CandyAnimationsStruct *setupCandyAnimations(int framerate, int nbFrame, int nbPoints, QString filename);
-    */
 
 
     // TILE ------------------------------------------------------------------------------

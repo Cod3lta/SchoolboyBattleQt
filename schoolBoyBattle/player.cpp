@@ -20,7 +20,7 @@
 Player::Player(
         int id,
         int team,
-        QHash<int, DataLoader::AnimationsStruct*> *sharedAnimationsDatas,
+        QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       id(id)
@@ -40,12 +40,12 @@ Player::Player(
     setAnimation(idle);
 }
 
-void Player::loadAnimations(QHash<int, DataLoader::AnimationsStruct*> *sharedAnimationsDatas) {
+void Player::loadAnimations(QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas) {
     animations.insert(idle, setupAnimation(150, sharedAnimationsDatas->value(DataLoader::getPlayerAnimationId(gender, team, idle))));
     animations.insert(run, setupAnimation(50, sharedAnimationsDatas->value(DataLoader::getPlayerAnimationId(gender, team, run))));
 }
 
-Player::AnimationsLocalDatasStruct* Player::setupAnimation(int framerate, DataLoader::AnimationsStruct* sharedDatas) {
+Player::AnimationsLocalDatasStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {
     AnimationsLocalDatasStruct* aStruct = new AnimationsLocalDatasStruct;
     aStruct->frameIndex = 0;
     aStruct->timer = new QTimer();

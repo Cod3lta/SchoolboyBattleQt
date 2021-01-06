@@ -18,7 +18,7 @@ public:
     Player(
             int id,
             int team,
-            QHash<int, DataLoader::AnimationsStruct*> *sharedAnimationsDatas,
+            QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas,
             QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
@@ -36,7 +36,7 @@ private:
     typedef struct Animations_s {
         QTimer *timer;
         int frameIndex;
-        DataLoader::AnimationsStruct *sharedDatas;
+        DataLoader::PlayerAnimationsStruct *sharedDatas;
     } AnimationsLocalDatasStruct;
     QHash<Animations, AnimationsLocalDatasStruct*> animations;
 
@@ -56,8 +56,8 @@ private:
     QPixmap *getAnimationByTeamAndGender(QString name);
     Animations getAnimationType();
     Player::Facing getFacing();
-    void loadAnimations(QHash<int, DataLoader::AnimationsStruct *> *sharedAnimationsRessources);
-    Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::AnimationsStruct* sharedDatas);
+    void loadAnimations(QHash<int, DataLoader::PlayerAnimationsStruct *> *sharedAnimationsRessources);
+    Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
 
 public slots:
     void keyMove(int playerId, int direction, bool value);
