@@ -9,5 +9,7 @@
         <file>Resources/player/run/boy-red-run.png</file>
         <file>Resources/player/run/girl-black-run.png</file>
         <file>Resources/player/run/girl-red-run.png</file>
+        <file>Resources/candy/mandarin.png</file>
+        <file>Resources/candy/peanut.png</file>
     </qresource>
 </RCC>

@@ -2,28 +2,31 @@
 #define CANDY_H
 #include <QGraphicsItem>
 #include <QPixmap>
+#include "dataloader.h"
 
-class Candy : public QGraphicsItem
+class Candy : public QGraphicsItem, public DataLoader
 {
 public:
     Candy(int type, QGraphicsItem *parent = nullptr);
+    ~Candy();
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    enum Type :int {bleu = 0, rouge = 1, vert = 2, jaune = 3, orange = 4, rose = 5};
-    typedef struct CandyDatas_s {
+    typedef struct CandyPlacements_s {
+        int x;
+        int y;
+        bool taken;
+        //Candy *candy;
         QTimer *timer;
-        QPixmap* image;
-        int nbFrames;
-        int frameIndex;
-        int nbPoints;
-    } CandyDatasStruct;
-    static QHash<Type, CandyDatasStruct*> candiesDatas;
-    static QHash<Type, CandyDatasStruct*> loadCandyDatas();
-    static Candy::CandyDatasStruct *setupCandyData(int framerate, int nbFrames, int nbPoints, QString filename);
+    } CandyPlacementsStruct;
 
 private:
-    Type type;
+    int id;
+    CandiesType type;
     int points;             // Nombre de points que vaut ce bonbon
 
 };
+
 
 #endif // CANDY_H

@@ -9,6 +9,8 @@
 #include <QTimer>
 #include "player.h"
 #include "keyinputs.h"
+#include "candy.h"
+#include "dataloader.h"
 #include <QElapsedTimer>
 
 class Game : public QGraphicsScene
@@ -16,6 +18,7 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
+    DataLoader *dataLoader;
     Game(int nbPlayers, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
@@ -26,6 +29,7 @@ private:
     QTimer *playerRefresh;
     QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
+    QList<Candy*> candies;
     KeyInputs *keyboardInputs;
 
     bool startBool;

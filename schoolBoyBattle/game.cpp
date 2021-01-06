@@ -11,16 +11,22 @@
 #include "player.h"
 #include "keyinputs.h"
 #include "view.h"
+#include "dataloader.h"
 #define REFRESH_DELAY 1/60*1000
 
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
+    //DataLoader
+    dataLoader = new DataLoader();
+    dataLoader->loadCandyAnimations();
+
     QPixmap background(":/Resources/background/terrain.png");
     setBackgroundBrush(background);
     setSceneRect(background.rect());
     //setSceneRect(0, 0, 100, 100);
 
+    // Refresh du déplacement des joueurs
     playerRefreshDelta = new QElapsedTimer();
     playerRefresh = new QTimer(this);
     playerRefresh->setInterval(REFRESH_DELAY);
@@ -71,7 +77,6 @@ void Game::playerMoveTimer() {
     }
 }
 
-void Game::reset()
-{
+void Game::reset() {
 
 }
