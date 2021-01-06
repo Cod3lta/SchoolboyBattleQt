@@ -17,7 +17,11 @@
 
 
 
-Player::Player(int id, int team, QGraphicsObject *parent)
+Player::Player(
+        int id,
+        int team,
+        QHash<int, DataLoader::AnimationsStruct*> *sharedAnimationsDatas,
+        QGraphicsObject *parent)
     : QGraphicsObject(parent),
       id(id)
 {
@@ -32,8 +36,24 @@ Player::Player(int id, int team, QGraphicsObject *parent)
 
     // L'animation dépends de gender et team :
     // Doit être après l'initialisation de ces variables !
-    loadAnimations();
+    loadAnimations(sharedAnimationsDatas);
     setAnimation(idle);
+}
+
+void Player::loadAnimations(QHash<int, DataLoader::AnimationsStruct*> *sharedAnimationsDatas) {
+    animations.insert(idle, setupAnimation(150, sharedAnimationsDatas->value(DataLoader::getPlayerAnimationId(gender, team, idle))));
+    animations.insert(run, setupAnimation(50, sharedAnimationsDatas->value(DataLoader::getPlayerAnimationId(gender, team, run))));
+}
+
+Player::AnimationsLocalDatasStruct* Player::setupAnimation(int framerate, DataLoader::AnimationsStruct* sharedDatas) {
+    AnimationsLocalDatasStruct* aStruct = new AnimationsLocalDatasStruct;
+    aStruct->frameIndex = 0;
+    aStruct->timer = new QTimer();
+    aStruct->timer->setInterval(framerate);
+    aStruct->timer->stop();
+    connect(aStruct->timer, &QTimer::timeout, this, &Player::animationNextFrame);
+    aStruct->sharedDatas = sharedDatas;
+    return aStruct;
 }
 
 void Player::keyMove(int playerId, int direction, bool value) {
@@ -42,7 +62,7 @@ void Player::keyMove(int playerId, int direction, bool value) {
     }
 
     // Changer l'animation si nécessaire
-    Animation newAnimationType = getAnimationType();
+    Animations newAnimationType = getAnimationType();
     if(currentAnimation != newAnimationType) {
         // Si l'animation qu'on doit afficher n'est pas la même que l'actuelle
         setAnimation(newAnimationType);
@@ -72,28 +92,7 @@ void Player::takeCandy() {
 
 }
 
-void Player::loadAnimations() {
-    // L'animation doit se trouver dans les ressources sous le chemin
-    // :/Resources/player/NAME/gender-team-NAME.png --> Exemples :
-    // :/Resources/player/run/girl-red-run.png
-    // :/Resources/player/idle/boy-black-idle.png
-    animations.insert(idle, setupAnimation(150, 6, QString("idle")));
-    animations.insert(run, setupAnimation(50, 10, QString("run")));
-}
-
-Player::AnimationsStruct* Player::setupAnimation(int framerate, int nbFrame, QString name) {
-    AnimationsStruct* aStruct = new AnimationsStruct;
-    aStruct->nbFrame = nbFrame;
-    aStruct->frameIndex = 0;
-    aStruct->image = getAnimationByTeamAndGender(name);
-    aStruct->timer = new QTimer();
-    aStruct->timer->setInterval(framerate);
-    aStruct->timer->stop();
-    connect(aStruct->timer, &QTimer::timeout, this, &Player::animationNextFrame);
-    return aStruct;
-}
-
-void Player::setAnimation(Animation a) {
+void Player::setAnimation(Animations a) {
     // Arrêter le timer de l'animation qui se termine
     if(animations.contains(currentAnimation)) {
         animations.value(currentAnimation)->timer->stop();
@@ -104,34 +103,16 @@ void Player::setAnimation(Animation a) {
     animations.value(a)->timer->start();
 }
 
-QPixmap* Player::getAnimationByTeamAndGender(QString name) {
-    QPixmap *p = new QPixmap();
-    if(team == red) {
-        if(gender == boy) {
-            p->load(":/Resources/player/" + name + "/boy-red-" + name + ".png");
-        }else if(gender == girl) {
-            p->load(":/Resources/player/" + name + "/girl-red-" + name + ".png");
-        }
-    }else if(team == black) {
-        if(gender == boy) {
-            p->load(":/Resources/player/" + name + "/boy-black-" + name + ".png");
-        }else if(gender == girl) {
-            p->load(":/Resources/player/" + name + "/girl-black-" + name + ".png");
-        }
-    }
-    return p;
-}
-
 void Player::animationNextFrame() {
-    AnimationsStruct *a = animations.value(currentAnimation);
+    AnimationsLocalDatasStruct *a = animations.value(currentAnimation);
     a->frameIndex++;
-    if(a->frameIndex >= a->nbFrame) {
+    if(a->frameIndex >= a->sharedDatas->nbFrame) {
         a->frameIndex = 0;
     }
     update();
 }
 
-Player::Animation Player::getAnimationType() {
+Player::Animations Player::getAnimationType() {
     if((!moves[moveUp] && !moves[moveRight] && !moves[moveDown] && !moves[moveLeft]) ||
             (moves[moveUp] && moves[moveDown]) || (moves[moveRight] && moves[moveLeft])) {
         return idle;
@@ -163,8 +144,8 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     }
 
 
-    AnimationsStruct *animToDraw = animations.value(currentAnimation);
-    QPixmap *imageToDraw = animToDraw->image;
+    AnimationsLocalDatasStruct *animToDraw = animations.value(currentAnimation);
+    QPixmap *imageToDraw = animToDraw->sharedDatas->image;
     if(facing == facingLeft) {
         QTransform trans;
         trans.translate(boundingRect().width(), 0).scale(-1, 1);
@@ -177,8 +158,8 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     }
 
 
-    QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->nbFrame * animToDraw->frameIndex, 0,
-                               imageToDraw->width() / animToDraw->nbFrame, imageToDraw->height());
+    QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->sharedDatas->nbFrame * animToDraw->frameIndex, 0,
+                               imageToDraw->width() / animToDraw->sharedDatas->nbFrame, imageToDraw->height());
     QRectF targetRect = boundingRect();
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
 

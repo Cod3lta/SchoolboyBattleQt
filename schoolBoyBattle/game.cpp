@@ -16,6 +16,10 @@
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
+
+    // Chargement des données
+    dataLoader = new DataLoader();
+
     QPixmap background(":/Resources/background/terrain.png");
     setBackgroundBrush(background);
     setSceneRect(background.rect());
@@ -34,7 +38,7 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
 
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, i%2));
+        players.append(new Player(i, i%2, &dataLoader->playerAnimations));
     }
 
     keyboardInputs = new KeyInputs();

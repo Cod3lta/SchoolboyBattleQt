@@ -9,6 +9,7 @@
 #include <QTimer>
 #include "player.h"
 #include "keyinputs.h"
+#include "dataloader.h"
 #include <QElapsedTimer>
 
 class Game : public QGraphicsScene
@@ -28,8 +29,11 @@ private:
     QList<Player*> players;
     KeyInputs *keyboardInputs;
 
+    DataLoader *dataLoader;
+
     bool startBool;
     int tabScore[];
+
 
     void reset();
     void playerMoveTimer();
