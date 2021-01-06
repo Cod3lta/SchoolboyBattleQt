@@ -7,12 +7,13 @@
 class Candy : public QGraphicsItem, public DataLoader
 {
 public:
-    Candy(int type, QGraphicsItem *parent = nullptr);
+    Candy(int type, QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas, QGraphicsItem *parent = nullptr);
     ~Candy();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
+    enum Type {peanut = 0, mandarin = 1};
     typedef struct CandyPlacements_s {
         int x;
         int y;
@@ -22,10 +23,16 @@ public:
     } CandyPlacementsStruct;
 
 private:
+    typedef struct Animations_s {
+        QTimer *timer;
+        int frameIndex;
+        DataLoader::CandyAnimationsStruct *sharedDatas;
+    } AnimationsLocalDatasStruct;
+    QHash<Type, AnimationsLocalDatasStruct*> animations;
+    void loadAnimations(QHash<int, DataLoader::CandyAnimationsStruct *> *sharedAnimationsDatas);
+    Candy::AnimationsLocalDatasStruct *setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas);
     int id;
-    CandiesType type;
-    int points;             // Nombre de points que vaut ce bonbon
-
+    Type type;
 };
 
 

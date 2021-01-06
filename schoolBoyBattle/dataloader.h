@@ -30,7 +30,7 @@ public:
         int nbPoints;
     } CandyAnimationsStruct;
 
-    // PLAYER ----------------------------------------------------------------------------
+    // PLAYER ANIMATIONS -----------------------------------------------------------------
 
 
 private:
@@ -41,7 +41,7 @@ public:
     QHash<int, DataLoader::PlayerAnimationsStruct*> playerAnimations;
     static int getPlayerAnimationId(int gender, int team, int animation);
 
-    // CANDY -----------------------------------------------------------------------------
+    // CANDY ANIMATIONS ------------------------------------------------------------------
 
 private:
 

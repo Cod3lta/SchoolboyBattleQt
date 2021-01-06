@@ -6,43 +6,39 @@
 
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 
 
-Candy::Candy(int type, QGraphicsItem *parent)
+Candy::Candy(
+        int type,
+        QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas,
+        QGraphicsItem *parent)
     : QGraphicsItem(parent)
 {
     this->type = static_cast<Type>(type);
-
+    loadAnimations(sharedAnimationsDatas);
+    setPos(750, 500);
 }
 
 // Setup des animations des candies ---------------------------------------------------------
 
-/*QHash<Candy::Type, Candy::CandyAnimationsStruct*> Candy::loadCandyAnimationsDatas() {
-    QHash<Candy::Type, Candy::CandyAnimationsStruct*> candiesData;
-    candiesData.insert(peanut, setupCandyAnimationData(-1, 1, 1, "peanut"));
-    candiesData.insert(mandarin, setupCandyAnimationData(-1, 1, 5, "mandarin"));
-    return candiesData;
+void Candy::loadAnimations(QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas) {
+    animations.insert(peanut, setupCandyAnimationData(-1, sharedAnimationsDatas->value(DataLoader::getCandyAnimationId(type))));
+    animations.insert(mandarin, setupCandyAnimationData(-1, sharedAnimationsDatas->value(DataLoader::getCandyAnimationId(type))));
 }
 
-Candy::CandyAnimationsStruct* Candy::setupCandyAnimationData(int framerate, int nbFrame, int nbPoints, QString filename) {
-    CandyAnimationsStruct *c = new CandyAnimationsStruct();
+Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas) {
+    AnimationsLocalDatasStruct *c = new AnimationsLocalDatasStruct();
     c->frameIndex = 0;
-    c->nbPoints = nbPoints;
-    c->image = new QPixmap(":/Resources/candy/" + filename + ".png");
-    c->nbFrame = nbFrame;
+    c->sharedDatas = sharedDatas;
     // Si on donne un -1 pour le framerate, il n'y a pas d'animation
     if(framerate >= 0) {
         c->timer = new QTimer();
         c->timer->setInterval(framerate);
         c->timer->start();
     }
-    qDebug() << "load animation " << filename << " for candies";
     return c;
 }
-
-//QHash<Candy::Type, Candy::CandyAnimationsStruct*> Candy::candiesAnimationsDatas =
-*/
 
 // Setup des placements des candies ---------------------------------------------------------
 
@@ -61,11 +57,11 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
     }
 
-    CandyAnimationsStruct *candyToDraw = candiesAnimations.value(type);
-    QPixmap *imageToDraw = candyToDraw->image;
+    AnimationsLocalDatasStruct *candyToDraw = animations.value(type);
+    QPixmap *imageToDraw = candyToDraw->sharedDatas->image;
 
-    QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->nbFrame * candyToDraw->frameIndex, 0,
-                               imageToDraw->width() / candyToDraw->nbFrame, imageToDraw->height());
+    QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->sharedDatas->nbFrame * candyToDraw->frameIndex, 0,
+                               imageToDraw->width() / candyToDraw->sharedDatas->nbFrame, imageToDraw->height());
     QRectF targetRect = boundingRect();
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
 

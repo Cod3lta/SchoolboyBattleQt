@@ -35,12 +35,13 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     playerRefreshDelta->start();
 
     // TODO : Afficher les bonbons sur le terrain
-
+    candies.append(new Candy(1, &dataLoader->candiesAnimations));
 
 
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
         players.append(new Player(i, i%2, &dataLoader->playerAnimations));
+        addItem(players.at(i));
     }
 
     keyboardInputs = new KeyInputs();
@@ -50,10 +51,6 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
         connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(i), &Player::keyMove);
     }
 
-    // Ajouter les items sur la scène
-    for (int i = 0; i < players.size(); ++i) {
-        addItem(players.at(i));
-    }
     addItem(keyboardInputs);
     addRect(0, 0, 200, 200, QPen(Qt::red));
 }

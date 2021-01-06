@@ -4,6 +4,7 @@
 DataLoader::DataLoader()
 {
     loadPlayerAnimations();
+    loadCandyAnimations();
 }
 
 // PLAYER -----------------------------------------------------------------------------------

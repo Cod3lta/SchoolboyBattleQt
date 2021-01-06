@@ -7,6 +7,8 @@
 #include <QGraphicsScene>
 #include <QSet>
 #include <QTimer>
+#include "candy.h"
+#include "dataloader.h"
 #include "player.h"
 #include "keyinputs.h"
 #include "dataloader.h"
@@ -17,7 +19,6 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
-    DataLoader *dataLoader;
     Game(int nbPlayers, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
