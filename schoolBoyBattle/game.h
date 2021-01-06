@@ -17,6 +17,7 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
+    DataLoader *dataLoader;
     Game(int nbPlayers, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
@@ -27,6 +28,7 @@ private:
     QTimer *playerRefresh;
     QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
+    QList<Candy*> candies;
     KeyInputs *keyboardInputs;
 
     DataLoader *dataLoader;

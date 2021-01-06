@@ -1,19 +1,32 @@
 #ifndef CANDY_H
 #define CANDY_H
-#include <QGraphicsEllipseItem>
+#include <QGraphicsItem>
+#include <QPixmap>
+#include "dataloader.h"
 
-class Candy
+class Candy : public QGraphicsItem, public DataLoader
 {
 public:
-    Candy();
+    Candy(int type, QGraphicsItem *parent = nullptr);
+    ~Candy();
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+    typedef struct CandyPlacements_s {
+        int x;
+        int y;
+        bool taken;
+        //Candy *candy;
+        QTimer *timer;
+    } CandyPlacementsStruct;
 
 private:
-    const static int nbCandies = 100;
-    int pos_candy_x;
-    int pos_candy_y;
-    QGraphicsEllipseItem *candy;
+    int id;
+    CandiesType type;
+    int points;             // Nombre de points que vaut ce bonbon
 
-    void randomItems();
 };
+
 
 #endif // CANDY_H
