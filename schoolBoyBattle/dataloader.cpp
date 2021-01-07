@@ -43,8 +43,8 @@ int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
 // CANDY ------------------------------------------------------------------------------------
 
 void DataLoader::loadCandyAnimations() {
-    candiesAnimations.insert(0, setupCandyAnimations(1, 1, ":/Resources/candy/peanut.png"));
-    candiesAnimations.insert(1, setupCandyAnimations(1, 5, ":/Resources/candy/mandarin.png"));
+    candiesAnimations.insert(0, setupCandyAnimations(1, 1, ":/Resources/candy/peanut-small.png"));
+    candiesAnimations.insert(1, setupCandyAnimations(1, 5, ":/Resources/candy/mandarin-small.png"));
 }
 
 DataLoader::CandyAnimationsStruct * DataLoader::setupCandyAnimations(int nbFrame, int nbPoints, QString filename) {

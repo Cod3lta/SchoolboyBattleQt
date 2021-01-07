@@ -9,7 +9,9 @@
         <file>Resources/player/run/boy-red-run.png</file>
         <file>Resources/player/run/girl-black-run.png</file>
         <file>Resources/player/run/girl-red-run.png</file>
-        <file>Resources/candy/mandarin.png</file>
-        <file>Resources/candy/peanut.png</file>
+        <file>Resources/candy/mandarin-big.png</file>
+        <file>Resources/candy/mandarin-small.png</file>
+        <file>Resources/candy/peanut-big.png</file>
+        <file>Resources/candy/peanut-small.png</file>
     </qresource>
 </RCC>
