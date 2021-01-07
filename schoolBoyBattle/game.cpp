@@ -13,30 +13,25 @@
 #include "view.h"
 #include "tile.h"
 
+#include "dataloader.h"
 #define REFRESH_DELAY 1/60*1000
+#define PLAYER_WIDTH 120
+#define PLAYER_HEIGHT 150
+#define PLAYER_SPEED 8
 
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
 
-    //menu
-    //menuJeu = new Menu();
-    //menuJeu->afficherMenuPrincipal();
+    // Chargement des données
+    dataLoader = new DataLoader();
 
+    QPixmap background(":/Resources/background/terrain.png");
+    setBackgroundBrush(background);
+    setSceneRect(background.rect());
+    //setSceneRect(0, 0, 100, 100);
 
-    //scene du niveau
-
-    //    QPixmap background(":/Resources/background/terrain.png");
-    //    setBackgroundBrush(background);
-    //    setSceneRect(background.rect());
-    //    //setSceneRect(0, 0, 100, 100);
-
-    Tile *tile = new Tile(Tile::Type::sol, 0, 0, 0);
-    QFile *filename = new QFile("terrain1.tmx");
-    tile->prepareScene(filename);
-    //Tile tile(":/Resources/background/terrain1.tmx");
-
-
+    // Refresh du déplacement des joueurs
     playerRefreshDelta = new QElapsedTimer();
     playerRefresh = new QTimer(this);
     playerRefresh->setInterval(REFRESH_DELAY);
@@ -44,13 +39,17 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     playerRefresh->start();
     playerRefreshDelta->start();
 
-    // Afficher les bonbons sur le terrain
-    Candy();
+    // TODO : Afficher les bonbons sur le terrain
+    for(int i = 0; i < 1; i++) {
+        candies.append(new Candy(1, &dataLoader->candiesAnimations));
+        addItem(candies.at(i));
+    }
 
 
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, i%2));
+        players.append(new Player(i, i%2, &dataLoader->playerAnimations, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+        addItem(players.at(i));
     }
 
     keyboardInputs = new KeyInputs();
@@ -60,10 +59,6 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
         connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(i), &Player::keyMove);
     }
 
-    // Ajouter les items sur la scène
-    for (int i = 0; i < players.size(); ++i) {
-        addItem(players.at(i));
-    }
     addItem(keyboardInputs);
     addRect(0, 0, 200, 200, QPen(Qt::red));
 }
@@ -82,12 +77,11 @@ void Game::playerMoveTimer() {
     playerRefreshDelta->restart();
     for (int i = 0; i < players.size(); ++i) {
         Player *player = players.at(i);
-        player->move(delta);
-        qobject_cast<View *>(views().at(i))->moveView(player);
+        player->refresh(delta);
+        qobject_cast<View *>(views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 }
 
-void Game::reset()
-{
+void Game::reset() {
 
 }

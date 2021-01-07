@@ -9,9 +9,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     ViewsContainer v(nbPlayers);
-    v.show();
-
     //v.showFullScreen();
-
+    v.show();
     return a.exec();
 }

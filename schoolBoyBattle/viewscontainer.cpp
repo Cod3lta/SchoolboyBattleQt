@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <QKeyEvent>
 
-ViewsContainer::ViewsContainer(int nbPlayers, QWidget *parent)
+ViewsContainer::ViewsContainer(int nbPlayers, QMainWindow *parent)
     : QMainWindow(parent)
 {
     game = new Game(nbPlayers);
