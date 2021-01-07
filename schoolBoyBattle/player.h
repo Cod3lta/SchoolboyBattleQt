@@ -1,6 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "dataloader.h"
+
 #include <QMainWindow>
 #include <QGraphicsItem>
 #include <QGraphicsView>
@@ -13,7 +15,12 @@
 class Player : public QGraphicsObject
 {
 public:
-    Player(int id, int team, int playerWidth, int playerHeight, int playerSpeed, QGraphicsObject *parent = nullptr);
+    Player(
+            int id,
+            int team,
+            QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas,
+             int playerWidth, int playerHeight, int playerSpeed, 
+            QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -24,12 +31,21 @@ public:
 private:
     enum Team : int {red = 0, black = 1};
     enum Gender : int {girl = 0, boy = 1};
-    enum Animation : int {idle = 0, run = 1};
     enum Facing : int {facingLeft = 0, facingRight = 1};
     enum PlayerMoves : int {moveUp = 0, moveRight = 1, moveDown = 2, moveLeft = 3};
+    enum Animations : int {idle = 0, run = 1};
+
+    typedef struct Animations_s {
+        QTimer *timer;
+        int frameIndex;
+        DataLoader::PlayerAnimationsStruct *sharedDatas;
+    } AnimationsLocalDatasStruct;
+    QHash<Animations, AnimationsLocalDatasStruct*> animations;
 
     Team team;
     Gender gender;
+    Animations currentAnimation;
+    Facing facing;
     int id;
     bool moves[4] = {false, false, false, false};
     Animation currentAnimation;
@@ -39,27 +55,17 @@ private:
     const int playerSpeed;
 
     QHash<Team, QList<int>> teamsSpawnpoint;
-    QGraphicsRectItem *debugRect;
-    typedef struct Animations_s {
-        QPixmap *image;
-        QTimer *timer;
-        int nbFrame;
-        int frameIndex;
-        // Pour avoir la taille d'une frame
-        // -> image.width() / nbFrame;
-    } AnimationsStruct;
-    QHash<Animation, AnimationsStruct*> animations;
 
     void validate_candies();
     void takeCandy();
-    void loadAnimations();
     void animationNextFrame();
-    void setAnimation(Animation a);
+    void setAnimation(Animations a);
     QPixmap *getAnimationByTeamAndGender(QString name);
-    AnimationsStruct *setupAnimation(int framerate, int nbFrame, QString filename);
-    Player::Animation getAnimationType();
+    Animations getAnimationType();
     Player::Facing getFacing();
     void setZIndex();
+    void loadAnimations(QHash<int, DataLoader::PlayerAnimationsStruct *> *sharedAnimationsRessources);
+    Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
 
 public slots:
     void keyMove(int playerId, int direction, bool value);
