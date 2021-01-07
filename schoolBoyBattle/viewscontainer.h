@@ -9,7 +9,7 @@ class ViewsContainer : public QMainWindow
 {
     Q_OBJECT
 public:
-    ViewsContainer(int nbPlayers, QWidget *parent = nullptr);
+    ViewsContainer(int nbPlayers, QMainWindow *parent = nullptr);
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
 

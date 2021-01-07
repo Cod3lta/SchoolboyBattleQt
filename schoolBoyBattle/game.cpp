@@ -35,7 +35,10 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     playerRefreshDelta->start();
 
     // TODO : Afficher les bonbons sur le terrain
-    candies.append(new Candy(1, &dataLoader->candiesAnimations));
+    for(int i = 0; i < 1; i++) {
+        candies.append(new Candy(1, &dataLoader->candiesAnimations));
+        addItem(candies.at(i));
+    }
 
 
     // Joueurs

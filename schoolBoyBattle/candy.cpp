@@ -4,9 +4,9 @@
 #include <QDebug>
 #include "game.h"
 
-#define CANDY_WIDTH 130
-#define CANDY_HEIGHT 130
-#define HITBOX_DEBUG true
+#define CANDY_WIDTH 75
+#define CANDY_HEIGHT 75
+#define HITBOX_DEBUG false
 
 
 Candy::Candy(
@@ -32,10 +32,10 @@ Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate,
     c->frameIndex = 0;
     c->sharedDatas = sharedDatas;
     // Si on donne un -1 pour le framerate, il n'y a pas d'animation
+    c->timer = new QTimer();
     if(framerate >= 0) {
-        c->timer = new QTimer();
         c->timer->setInterval(framerate);
-        c->timer->start();
+        c->timer->stop();
     }
     return c;
 }
