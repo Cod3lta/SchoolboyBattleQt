@@ -11,10 +11,11 @@ class View : public QGraphicsView
     Q_OBJECT
 public:
     View(int id, QGraphicsView *parent = nullptr);
-
-    void moveView(Player *player);
+    void moveView(Player *player, int playerWidth, int playerHeight);
 private:
     int id;
+    float x;
+    float y;
     Game *game;
 };
 

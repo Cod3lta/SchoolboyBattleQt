@@ -16,7 +16,6 @@ public:
 private:
     QList<QGraphicsView*> views;
     Game *game;
-    View *mainView;
 signals:
 
 };

@@ -7,8 +7,11 @@
 #include <QGraphicsScene>
 #include <QSet>
 #include <QTimer>
+#include "candy.h"
+#include "dataloader.h"
 #include "player.h"
 #include "keyinputs.h"
+#include "dataloader.h"
 #include <QElapsedTimer>
 
 class Game : public QGraphicsScene
@@ -26,10 +29,14 @@ private:
     QTimer *playerRefresh;
     QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
+    QList<Candy*> candies;
     KeyInputs *keyboardInputs;
+
+    DataLoader *dataLoader;
 
     bool startBool;
     int tabScore[];
+
 
     void reset();
     void playerMoveTimer();

@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     candy.cpp \
+    dataloader.cpp \
     display.cpp \
     game.cpp \
     keyinputs.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 
 HEADERS += \
     candy.h \
+    dataloader.h \
     display.h \
     game.h \
     keyinputs.h \
