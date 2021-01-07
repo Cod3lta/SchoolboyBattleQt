@@ -13,18 +13,18 @@ Candy::Candy(
         int type,
         QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas,
         QGraphicsItem *parent)
-    : QGraphicsItem(parent)
+    : QGraphicsItem(parent),
+      type(static_cast<Type>(type))
 {
-    this->type = static_cast<Type>(type);
     loadAnimations(sharedAnimationsDatas);
+    setAnimation(idle);
     setPos(750, 500);
 }
 
 // Setup des animations des candies ---------------------------------------------------------
 
 void Candy::loadAnimations(QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas) {
-    animations.insert(peanut, setupCandyAnimationData(-1, sharedAnimationsDatas->value(DataLoader::getCandyAnimationId(type))));
-    animations.insert(mandarin, setupCandyAnimationData(-1, sharedAnimationsDatas->value(DataLoader::getCandyAnimationId(type))));
+    animations.insert(idle, setupCandyAnimationData(-1, sharedAnimationsDatas->value(DataLoader::getCandyAnimationId(type))));
 }
 
 Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas) {
@@ -43,6 +43,27 @@ Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate,
 // Setup des placements des candies ---------------------------------------------------------
 
 
+// autres trucs de la classe ----------------------------------------------------------------
+
+void Candy::animationNextFrame() {
+    AnimationsLocalDatasStruct *a = animations.value(animationJeTestDautresTrucs);
+    a->frameIndex++;
+    if(a->frameIndex >= a->sharedDatas->nbFrame) {
+        a->frameIndex = 0;
+    }
+    update();
+}
+
+void Candy::setAnimation(AnimationsJeTestDesTrucs a) {
+    // Arrêter le timer de l'animation qui se termine
+    if(animations.contains(animationJeTestDautresTrucs)) {
+        animations.value(animationJeTestDautresTrucs)->timer->stop();
+    }
+    // Changer l'animation
+    animationJeTestDautresTrucs = a;
+    // Démarer le timer de la nouvelle animation
+    animations.value(a)->timer->start();
+}
 
 // OVERRIDE REQUIRED ------------------------------------------------------------------------
 
@@ -57,7 +78,7 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
     }
 
-    AnimationsLocalDatasStruct *candyToDraw = animations.value(type);
+    AnimationsLocalDatasStruct *candyToDraw = animations.value(animationJeTestDautresTrucs);
     QPixmap *imageToDraw = candyToDraw->sharedDatas->image;
 
     QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->sharedDatas->nbFrame * candyToDraw->frameIndex, 0,

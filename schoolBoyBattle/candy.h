@@ -4,7 +4,7 @@
 #include <QPixmap>
 #include "dataloader.h"
 
-class Candy : public QGraphicsItem, public DataLoader
+class Candy : public QGraphicsItem
 {
 public:
     Candy(int type, QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas, QGraphicsItem *parent = nullptr);
@@ -14,6 +14,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
     enum Type {peanut = 0, mandarin = 1};
+    enum AnimationsJeTestDesTrucs {idle = 0};
     typedef struct CandyPlacements_s {
         int x;
         int y;
@@ -28,11 +29,16 @@ private:
         int frameIndex;
         DataLoader::CandyAnimationsStruct *sharedDatas;
     } AnimationsLocalDatasStruct;
-    QHash<Type, AnimationsLocalDatasStruct*> animations;
+
+    QHash<AnimationsJeTestDesTrucs, AnimationsLocalDatasStruct*> animations;
     void loadAnimations(QHash<int, DataLoader::CandyAnimationsStruct *> *sharedAnimationsDatas);
     Candy::AnimationsLocalDatasStruct *setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas);
     int id;
     Type type;
+    AnimationsJeTestDesTrucs animationJeTestDautresTrucs;
+    void setType(Type t);
+    void animationNextFrame();
+    void setAnimation(AnimationsJeTestDesTrucs a);
 };
 
 
