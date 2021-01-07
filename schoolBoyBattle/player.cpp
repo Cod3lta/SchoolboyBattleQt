@@ -10,16 +10,16 @@
 #include "game.h"
 
 // Les textures sont étirées pour entrer dans le rectangle du joueur
-#define PLAYER_WIDTH 120
-#define PLAYER_HEIGHT 150
-#define PLAYER_SPEED 8
 #define HITBOX_DEBUG false
 
 
 
-Player::Player(int id, int team, QGraphicsObject *parent)
+Player::Player(int id, int team, int playerWidth, int playerHeight, int playerSpeed, QGraphicsObject *parent)
     : QGraphicsObject(parent),
-      id(id)
+      id(id),
+      playerWidth(playerWidth),
+      playerHeight(playerHeight),
+      playerSpeed(playerSpeed)
 {
     // Spawn point des équipes
     teamsSpawnpoint.insert(red, {500, 500});
@@ -70,7 +70,7 @@ void Player::move(int delta) {
     v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
     double deltaMinified=delta/10e6;
-    v*=deltaMinified*PLAYER_SPEED;
+    v*=deltaMinified * playerSpeed;
     setX(x() + v.x());
     setY(y() + v.y());
 }
@@ -199,7 +199,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 // Called by QGraphicsView to determine what regions need to be redrawn
 // the rect stay at 0:0 !!
 QRectF Player::boundingRect() const {
-    return QRectF(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
+    return QRectF(0, 0, playerWidth, playerHeight);
 }
 
 // collisions detection

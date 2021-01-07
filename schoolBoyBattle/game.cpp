@@ -11,7 +11,11 @@
 #include "player.h"
 #include "keyinputs.h"
 #include "view.h"
+
 #define REFRESH_DELAY 1/60*1000
+#define PLAYER_WIDTH 120
+#define PLAYER_HEIGHT 150
+#define PLAYER_SPEED 8
 
 Game::Game(int nbPlayers, QGraphicsScene *parent)
     : QGraphicsScene(parent)
@@ -34,7 +38,7 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
 
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, i%2));
+        players.append(new Player(i, i%2, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
     }
 
     keyboardInputs = new KeyInputs();
@@ -67,7 +71,7 @@ void Game::playerMoveTimer() {
     for (int i = 0; i < players.size(); ++i) {
         Player *player = players.at(i);
         player->refresh(delta);
-        qobject_cast<View *>(views().at(i))->moveView(player);
+        qobject_cast<View *>(views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 }
 

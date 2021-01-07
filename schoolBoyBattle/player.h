@@ -13,7 +13,7 @@
 class Player : public QGraphicsObject
 {
 public:
-    Player(int id, int team, QGraphicsObject *parent = nullptr);
+    Player(int id, int team, int playerWidth, int playerHeight, int playerSpeed, QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -34,6 +34,9 @@ private:
     bool moves[4] = {false, false, false, false};
     Animation currentAnimation;
     Facing facing;
+    const int playerWidth;
+    const int playerHeight;
+    const int playerSpeed;
 
     QHash<Team, QList<int>> teamsSpawnpoint;
     QGraphicsRectItem *debugRect;
