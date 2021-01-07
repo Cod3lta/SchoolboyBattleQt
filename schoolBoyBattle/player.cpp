@@ -34,6 +34,7 @@ Player::Player(int id, int team, int playerWidth, int playerHeight, int playerSp
     // Doit être après l'initialisation de ces variables !
     loadAnimations();
     setAnimation(idle);
+    setZIndex();
 }
 
 void Player::keyMove(int playerId, int direction, bool value) {
@@ -141,7 +142,8 @@ void Player::animationNextFrame() {
 Player::Animation Player::getAnimationType() {
     if((!moves[moveUp] && !moves[moveRight] && !moves[moveDown] && !moves[moveLeft]) ||
             (moves[moveUp] && moves[moveDown] && !moves[moveLeft] && !moves[moveRight]) ||
-            (moves[moveRight] && moves[moveLeft] && !moves[moveUp] && !moves[moveDown])) {
+            (moves[moveRight] && moves[moveLeft] && !moves[moveUp] && !moves[moveDown]) ||
+            (moves[moveRight] && moves[moveLeft] && moves[moveUp] && moves[moveDown])){
         return idle;
     }
     return run;
