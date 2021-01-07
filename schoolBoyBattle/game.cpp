@@ -66,7 +66,7 @@ void Game::playerMoveTimer() {
     playerRefreshDelta->restart();
     for (int i = 0; i < players.size(); ++i) {
         Player *player = players.at(i);
-        player->move(delta);
+        player->refresh(delta);
         qobject_cast<View *>(views().at(i))->moveView(player);
     }
 }

@@ -18,8 +18,8 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-
     void move(int delta);
+    void refresh(int delta);
 
 private:
     enum Team : int {red = 0, black = 1};
@@ -56,6 +56,7 @@ private:
     AnimationsStruct *setupAnimation(int framerate, int nbFrame, QString filename);
     Player::Animation getAnimationType();
     Player::Facing getFacing();
+    void setZIndex();
 
 public slots:
     void keyMove(int playerId, int direction, bool value);

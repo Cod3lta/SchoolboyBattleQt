@@ -12,7 +12,7 @@
 // Les textures sont étirées pour entrer dans le rectangle du joueur
 #define PLAYER_WIDTH 120
 #define PLAYER_HEIGHT 150
-#define PLAYER_SPEED 5
+#define PLAYER_SPEED 8
 #define HITBOX_DEBUG false
 
 
@@ -53,6 +53,17 @@ void Player::keyMove(int playerId, int direction, bool value) {
     update();
 }
 
+void Player::refresh(int delta) {
+    move(delta);
+    if(getAnimationType() == run) {
+        setZIndex();
+    }
+}
+
+void Player::setZIndex() {
+    setZValue(y());
+}
+
 void Player::move(int delta) {
     QVector2D v;
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
@@ -73,10 +84,6 @@ void Player::takeCandy() {
 }
 
 void Player::loadAnimations() {
-    // L'animation doit se trouver dans les ressources sous le chemin
-    // :/Resources/player/NAME/gender-team-NAME.png --> Exemples :
-    // :/Resources/player/run/girl-red-run.png
-    // :/Resources/player/idle/boy-black-idle.png
     animations.insert(idle, setupAnimation(150, 6, QString("idle")));
     animations.insert(run, setupAnimation(50, 10, QString("run")));
 }
@@ -133,7 +140,8 @@ void Player::animationNextFrame() {
 
 Player::Animation Player::getAnimationType() {
     if((!moves[moveUp] && !moves[moveRight] && !moves[moveDown] && !moves[moveLeft]) ||
-            (moves[moveUp] && moves[moveDown]) || (moves[moveRight] && moves[moveLeft])) {
+            (moves[moveUp] && moves[moveDown] && !moves[moveLeft] && !moves[moveRight]) ||
+            (moves[moveRight] && moves[moveLeft] && !moves[moveUp] && !moves[moveDown])) {
         return idle;
     }
     return run;
