@@ -39,6 +39,7 @@ private:
     void setType(Type t);
     void animationNextFrame();
     void setAnimation(AnimationsJeTestDesTrucs a);
+    void setZIndex();
 };
 
 

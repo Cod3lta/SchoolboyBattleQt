@@ -58,6 +58,7 @@ private:
     Player::Facing getFacing();
     void loadAnimations(QHash<int, DataLoader::PlayerAnimationsStruct *> *sharedAnimationsRessources);
     Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
+    void setZIndex();
 
 public slots:
     void keyMove(int playerId, int direction, bool value);

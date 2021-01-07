@@ -19,6 +19,7 @@ Candy::Candy(
     loadAnimations(sharedAnimationsDatas);
     setAnimation(idle);
     setPos(750, 500);
+    setZIndex();
 }
 
 // Setup des animations des candies ---------------------------------------------------------
@@ -64,6 +65,11 @@ void Candy::setAnimation(AnimationsJeTestDesTrucs a) {
     // Démarer le timer de la nouvelle animation
     animations.value(a)->timer->start();
 }
+
+void Candy::setZIndex() {
+    setZValue(y());
+}
+
 
 // OVERRIDE REQUIRED ------------------------------------------------------------------------
 
