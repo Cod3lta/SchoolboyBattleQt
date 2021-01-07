@@ -105,23 +105,6 @@ void Player::takeCandy() {
 
 }
 
-void Player::loadAnimations() {
-    animations.insert(idle, setupAnimation(150, 6, QString("idle")));
-    animations.insert(run, setupAnimation(50, 10, QString("run")));
-}
-
-Player::AnimationsStruct* Player::setupAnimation(int framerate, int nbFrame, QString name) {
-    AnimationsStruct* aStruct = new AnimationsStruct;
-    aStruct->nbFrame = nbFrame;
-    aStruct->frameIndex = 0;
-    aStruct->image = getAnimationByTeamAndGender(name);
-    aStruct->timer = new QTimer();
-    aStruct->timer->setInterval(framerate);
-    aStruct->timer->stop();
-    connect(aStruct->timer, &QTimer::timeout, this, &Player::animationNextFrame);
-    return aStruct;
-}
-
 void Player::setAnimation(Animations a) {
     // Arrêter le timer de l'animation qui se termine
     if(animations.contains(currentAnimation)) {

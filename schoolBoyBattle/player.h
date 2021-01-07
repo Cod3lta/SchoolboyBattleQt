@@ -48,8 +48,6 @@ private:
     Facing facing;
     int id;
     bool moves[4] = {false, false, false, false};
-    Animation currentAnimation;
-    Facing facing;
     const int playerWidth;
     const int playerHeight;
     const int playerSpeed;
