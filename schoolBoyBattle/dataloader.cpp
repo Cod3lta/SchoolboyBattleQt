@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QtXml>
 #include <QFile>
+#include <QHash>
 #include <QDomDocument>
 
 DataLoader::DataLoader(QString terrainFileName)
@@ -178,5 +179,7 @@ void DataLoader::getLayerSize(int *layerWidth, int *layerHeight, int size, int f
 // TILE RESSOURCES --------------------------------------------------------------------------
 
 void DataLoader::loadTilesRessources() {
-
+    tileRessources.insert(1, new QPixmap(":/Resources/world/wall.png"));
+    tileRessources.insert(2, new QPixmap(":/Resources/world/face.png"));
+    tileRessources.insert(3, new QPixmap(":/Resources/world/planks.png"));
 }
