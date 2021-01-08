@@ -18,5 +18,8 @@
         <file>Resources/world/face.png</file>
         <file>Resources/world/planks.png</file>
         <file>Resources/world/wall.png</file>
+        <file>Resources/world/config/collision.png</file>
+        <file>Resources/world/config/scene-rect-bottom-right.png</file>
+        <file>Resources/world/config/scene-rect-top-left.png</file>
     </qresource>
 </RCC>

@@ -26,9 +26,10 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     // Chargement des données
     dataLoader = new DataLoader(terrainFileName);
 
-    QPixmap background(":/Resources/background/terrain.png");
-    setBackgroundBrush(background);
-    setSceneRect(background.rect());
+    //QPixmap background(":/Resources/background/terrain.png");
+    //setBackgroundBrush(background);
+    setCustomSceneRect();
+    //setSceneRect(background.rect());
     //setSceneRect(0, 0, 100, 100);
 
     // Refresh du déplacement des joueurs
@@ -73,19 +74,29 @@ void Game::keyRelease(QKeyEvent *event) {
     keyboardInputs->keyRelease(event);
 }
 
+void Game::setCustomSceneRect() {
+
+}
+
 void Game::placeTiles() {
-    QList<DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;
-    for(int i = 0; i < layers.size(); i++) {
-        for(int j = 0; j < layers.at(i)->tiles.at(0).size(); j++) {
-            for(int k = 0; k < layers.at(i)->tiles.size(); k++) {
-                int type = layers.at(i)->tiles.at(j).at(k);
+    QMap<QString, DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;
+    QMapIterator<QString, DataLoader::TileLayerStruct*> layersIterator(layers);
+    while (layersIterator.hasNext()) {
+        layersIterator.next();
+        QList<Tile*> tilesList;
+        DataLoader::TileLayerStruct* value = layersIterator.value();
+        QString key = layersIterator.key();
+        for(int j = 0; j < value->tiles.size(); j++) {
+            for(int k = 0; k < value->tiles.at(j).size(); k++) {
+                int type = value->tiles.at(j).at(k);
                 if(type != 0) {
-                    Tile *tile = new Tile(k, j, i, type, dataLoader);
-                    tiles.append(tile);
+                    Tile *tile = new Tile(k, j, value->topLeftX, value->topLeftY, key, type, dataLoader);
+                    tilesList.append(tile);
                     addItem(tile);
                 }
             }
         }
+        tiles.insert(key, tilesList);
     }
 }
 

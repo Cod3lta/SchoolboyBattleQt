@@ -5,15 +5,15 @@
 
 #define TILE_SIZE 130
 
-Tile::Tile(int indexX, int indexY, int layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
+Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
     :QGraphicsItem(parent),
-      indexX(indexX),
-      indexY(indexY),
       type(type),
       layer(layer)
 {
     image = dataLoader->getTileRessource(type);
-    setPos(indexX * TILE_SIZE, indexY * TILE_SIZE);
+    int x = sceneTopLeftX * TILE_SIZE + indexX * TILE_SIZE;
+    int y = sceneTopLeftY * TILE_SIZE + indexY * TILE_SIZE;
+    setPos(x, y);
 }
 
 
@@ -27,8 +27,10 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     //painter->drawRect(boundingRect());
     //painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
 
-    QRectF sourceRect(0, 0, image->width(), image->height());
-    painter->drawPixmap(boundingRect(), *image, sourceRect);
+    if(!(layer == "collision" || layer == "config")) {
+        QRectF sourceRect(0, 0, image->width(), image->height());
+        painter->drawPixmap(boundingRect(), *image, sourceRect);
+    }
 
     // Lignes pour le compilateur
     Q_UNUSED(option)

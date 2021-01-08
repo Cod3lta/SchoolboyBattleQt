@@ -13,6 +13,7 @@
 #ifndef DATALOADER_H
 #define DATALOADER_H
 
+#include <QMap>
 #include <QTimer>
 #include <QPixmap>
 #include <QDomDocument>
@@ -67,12 +68,12 @@ public:
         int topLeftX;
         int topLeftY;
     } TileLayerStruct;
-    QList<TileLayerStruct*> tileLayers;
+    QMap<QString, TileLayerStruct*> tileLayers;
 
 private:
     void loadTiles();
     QList<QList<int>> buildLayer(QDomNodeList chunks);
-    void getLayerSize(int *layerWidth, int *layerHeight, int size, int firstChunkY, QDomNodeList chunks);
+    void getLayerSize(int *layerWidth, int *layerHeight, int size, QDomNodeList chunks);
 
     // TILES RESSOURCES ------------------------------------------------------------------
 

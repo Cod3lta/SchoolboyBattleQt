@@ -31,7 +31,7 @@ private:
     QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
     QList<Candy*> candies;
-    QList<Tile*> tiles;
+    QHash<QString, QList<Tile*>> tiles;
     KeyInputs *keyboardInputs;
 
     DataLoader *dataLoader;
@@ -39,6 +39,7 @@ private:
     bool startBool;
     int tabScore[];
 
+    void setCustomSceneRect();
     void placeTiles();
     void reset();
     void playerMoveTimer();

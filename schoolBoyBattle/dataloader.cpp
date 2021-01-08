@@ -90,7 +90,6 @@ void DataLoader::loadTiles() {
     for(int i = 0; i < layers.count(); i++) {
         QDomElement layer = layers.at(i).toElement();
         // Chaque layer
-        qDebug() << layer.attribute("name");
 
         TileLayerStruct *tileLayer = new TileLayerStruct();
 
@@ -100,11 +99,10 @@ void DataLoader::loadTiles() {
 
         tileLayer->height = tileLayer->tiles.size();
         tileLayer->width = tileLayer->tiles.at(0).size();
-        QDomElement firstChunk = layers.at(i).firstChild().firstChildElement();
+        QDomElement firstChunk = layers.at(i).firstChild().firstChild().toElement();
         tileLayer->topLeftX = firstChunk.attributes().namedItem("x").nodeValue().toInt();
         tileLayer->topLeftY = firstChunk.attributes().namedItem("y").nodeValue().toInt();
-
-        tileLayers.append(tileLayer);
+        tileLayers.insert(layer.attribute("name"), tileLayer);
     }
 }
 
@@ -119,7 +117,7 @@ QList<QList<int>> DataLoader::buildLayer(QDomNodeList chunks) {
     int layerHeight = 0;
 
     // Déterminer la taille de la layer
-    getLayerSize(&layerWidth, &layerHeight, size, firstChunkY, chunks);
+    getLayerSize(&layerWidth, &layerHeight, size, chunks);
 
     // Initialiser la liste
     for(int i = 0; i < layerHeight; i++) {
@@ -133,7 +131,7 @@ QList<QList<int>> DataLoader::buildLayer(QDomNodeList chunks) {
     for(int i = 0; i < chunks.length(); i++) {
         QDomElement chunk = chunks.at(i).toElement();
         if(chunk.attribute("width") != chunk.attribute("height"))
-            qFatal("Un chunk n'est pas carré");
+            qFatal("chunk pas carré");
 
         QList<QString> stringList = chunk.text().replace("\n", "").replace("\r", "").split(",");
         QList<int> intList;
@@ -157,24 +155,28 @@ QList<QList<int>> DataLoader::buildLayer(QDomNodeList chunks) {
  * Mets dans les variables layerWidth et layerHeight la taille de la layer
  * (nombre de tiles en x et nombre de tiles en y)
  */
-void DataLoader::getLayerSize(int *layerWidth, int *layerHeight, int size, int firstChunkY, QDomNodeList chunks) {
+void DataLoader::getLayerSize(int *layerWidth, int *layerHeight, int size, QDomNodeList chunks) {
     if(chunks.length() == 1) {
         *layerWidth = size;
         *layerHeight = size;
         return;
     }
 
-    int currentY = firstChunkY;
-    for(int i = 0; i < chunks.length(); i++) {
-        QDomElement chunk = chunks.at(i).toElement();
-        if(currentY < chunk.attribute("y").toInt()) {
-            *layerWidth = i*size;
-            break;
-        }
-        currentY = chunk.attribute("y").toInt();
-    }
-    *layerHeight = chunks.length() / (*layerWidth/size) * size;
 
+    int minX = chunks.at(0).toElement().attribute("x").toInt();
+    int maxX = minX;
+    int minY = chunks.at(0).toElement().attribute("y").toInt();
+    int maxY = minY;
+    for(int i = 0; i < chunks.size(); i++) {
+        int newX = chunks.at(i).toElement().attribute("x").toInt();
+        int newY = chunks.at(i).toElement().attribute("y").toInt();
+        minX = minX < newX ? minX : newX;
+        maxX = maxX > newX ? maxX : newX;
+        minY = minY < newY ? minY : newY;
+        maxY = maxY > newY ? maxY : newY;
+    }
+    *layerWidth = maxX - minX + size;
+    *layerHeight = maxY - minY + size;
 }
 
 // TILE RESSOURCES --------------------------------------------------------------------------
@@ -195,12 +197,10 @@ QHash<int, QString> DataLoader::loadTilesIds() {
     QDomNodeList tilesets = terrainXMLDoc.elementsByTagName("tileset");
     for(int i = 0; i < tilesets.count(); i++) {
         QDomElement tileset = tilesets.at(i).toElement();
-        qDebug() << tileset.attribute("name");
         int tilesetId = tileset.attribute("firstgid").toInt();
         QDomNodeList tiles = tileset.childNodes();
         for(int j = 0; j < tiles.size(); j++) {
             QDomElement tile = tiles.at(j).toElement();
-            qDebug() << tile.tagName();
             if(tile.tagName() == "tile") {
                 int tileId = tile.attribute("id").toInt();
                 QString tileFile = tile.firstChild().toElement().attribute("source");
