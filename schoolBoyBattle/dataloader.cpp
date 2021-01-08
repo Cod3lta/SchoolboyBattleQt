@@ -1,10 +1,15 @@
 #include "dataloader.h"
 #include <QDebug>
+#include <QtXml>
+#include <QFile>
+#include <QDomDocument>
 
-DataLoader::DataLoader()
+DataLoader::DataLoader(QString terrainFileName)
 {
     loadPlayerAnimations();
     loadCandyAnimations();
+    loadTiles(terrainFileName);
+    loadTilesRessources();
 }
 
 // PLAYER -----------------------------------------------------------------------------------
@@ -64,3 +69,115 @@ int DataLoader::getCandyAnimationId(int type) {
 }
 
 // TILE -------------------------------------------------------------------------------------
+
+// https://lucidar.me/fr/dev-c-cpp/reading-xml-files-with-qt/
+void DataLoader::loadTiles(QString terrainFileName) {
+    // Mettre le contenu du fichier dans xmlBOM
+    QDomDocument xmlBOM;
+
+    QFile file(terrainFileName);
+    if(!file.open(QIODevice::ReadOnly)) {
+        qFatal("Erreur de lecture du fichier");
+        return;
+    }
+    xmlBOM.setContent(&file);
+    file.close();
+
+    // Lire le fichier XML et créer les ressources nécessaires
+    QDomNodeList layers = xmlBOM.elementsByTagName("layer");
+    qDebug() << "test";
+    for(int i = 0; i < layers.count(); i++) {
+        QDomElement layer = layers.at(i).toElement();
+        // Chaque layer
+        qDebug() << layer.attribute("name");
+
+        TileLayerStruct *tileLayer = new TileLayerStruct();
+
+        // Prendre chaque chunk de la layer
+        QDomNodeList chunks = layer.firstChild().childNodes();
+        tileLayer->tiles = buildLayer(chunks);
+
+        tileLayer->height = tileLayer->tiles.size();
+        tileLayer->width = tileLayer->tiles.at(0).size();
+        QDomElement firstChunk = layers.at(i).firstChild().firstChildElement();
+        tileLayer->topLeftX = firstChunk.attributes().namedItem("x").nodeValue().toInt();
+        tileLayer->topLeftY = firstChunk.attributes().namedItem("y").nodeValue().toInt();
+
+        tileLayers.insert(i, tileLayer);
+    }
+}
+
+QList<QList<int>> DataLoader::buildLayer(QDomNodeList chunks) {
+
+    QList<QList<int>> dimLevel;
+
+    int firstChunkX = chunks.at(0).toElement().attribute("x").toInt();
+    int firstChunkY = chunks.at(0).toElement().attribute("y").toInt();
+    int size = chunks.at(0).toElement().attribute("width").toInt();
+    int layerWidth = 0;
+    int layerHeight = 0;
+
+    // Déterminer la taille de la layer
+    getLayerSize(&layerWidth, &layerHeight, size, firstChunkY, chunks);
+
+    // Initialiser la liste
+    for(int i = 0; i < layerHeight; i++) {
+        QList<int> subList;
+        for(int j = 0; j < layerWidth; j++) {
+            subList.append(0);
+        }
+        dimLevel.append(subList);
+    }
+
+    for(int i = 0; i < chunks.length(); i++) {
+        QDomElement chunk = chunks.at(i).toElement();
+        if(chunk.attribute("width") != chunk.attribute("height"))
+            qFatal("Un chunk n'est pas carré");
+
+        QList<QString> stringList = chunk.text().replace("\n", "").replace("\r", "").split(",");
+        QList<int> intList;
+        for(int i = 0; i < stringList.length(); i++) {
+            intList.append(stringList.at(i).toInt());
+        }
+        for(int j = 0; j < size; j++) {
+            for(int k = 0; k < size; k++) {
+                int insertYList = chunk.attribute("y").toInt() + j - firstChunkY;
+                int insertXList = chunk.attribute("x").toInt() + k - firstChunkX;
+                QList<int> subList = dimLevel.value(insertYList);
+                subList.replace(insertXList, intList.at(j*size + k));
+                dimLevel.replace(insertYList, subList);
+            }
+        }
+    }
+    return dimLevel;
+}
+
+/*
+ * Mets dans les variables layerWidth et layerHeight la taille de la layer
+ * (nombre de tiles en x et nombre de tiles en y)
+ */
+void DataLoader::getLayerSize(int *layerWidth, int *layerHeight, int size, int firstChunkY, QDomNodeList chunks) {
+    if(chunks.length() == 1) {
+        *layerWidth = size;
+        *layerHeight = size;
+        return;
+    }
+
+    int currentY = firstChunkY;
+    for(int i = 0; i < chunks.length(); i++) {
+        QDomElement chunk = chunks.at(i).toElement();
+        if(currentY < chunk.attribute("y").toInt()) {
+            *layerWidth = i*size;
+            break;
+        }
+        currentY = chunk.attribute("y").toInt();
+    }
+    *layerHeight = chunks.length() / (*layerWidth/size) * size;
+
+}
+
+// TILE RESSOURCES --------------------------------------------------------------------------
+
+void DataLoader::loadTilesRessources() {
+
+}

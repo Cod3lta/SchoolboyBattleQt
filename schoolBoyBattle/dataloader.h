@@ -15,56 +15,69 @@
 
 #include <QTimer>
 #include <QPixmap>
+#include <QDomDocument>
 
 class DataLoader
 {
 public:
-    DataLoader();
+    DataLoader(QString terrainFileName);
 
+
+
+    // PLAYER ANIMATIONS -----------------------------------------------------------------
+
+public:
     typedef struct PlayerAnimations_s {
         QPixmap *image;
         int nbFrame;
     } PlayerAnimationsStruct;
-
-    typedef struct CandyAnimations_s {
-        QPixmap *image;
-        int nbFrame;
-        int nbPoints;
-    } CandyAnimationsStruct;
-
-    // PLAYER ANIMATIONS -----------------------------------------------------------------
-
+    QHash<int, DataLoader::PlayerAnimationsStruct*> playerAnimations;
+    static int getPlayerAnimationId(int gender, int team, int animation);
 
 private:
     void loadPlayerAnimations();
     DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, QString fileName);
 
-public:
-    QHash<int, DataLoader::PlayerAnimationsStruct*> playerAnimations;
-    static int getPlayerAnimationId(int gender, int team, int animation);
-
     // CANDY ANIMATIONS ------------------------------------------------------------------
 
-private:
-
-    void loadCandyAnimations();
-    DataLoader::CandyAnimationsStruct *setupCandyAnimations(int nbFrame, int nbPoints, QString filename);
 
 public:
+    typedef struct CandyAnimations_s {
+        QPixmap *image;
+        int nbFrame;
+        int nbPoints;
+    } CandyAnimationsStruct;
     QHash<int, CandyAnimationsStruct*> candiesAnimations;
     static int getCandyAnimationId(int type);
 
-
+private:
+    void loadCandyAnimations();
+    DataLoader::CandyAnimationsStruct *setupCandyAnimations(int nbFrame, int nbPoints, QString filename);
 
     // TILES -----------------------------------------------------------------------------
 
-private:
-    int width;
-    int height;
-    QHash<int, QList<int>> tiles;
+public:
+    typedef struct TileLayer_s {
+        QList<QList<int>> tiles;
+        int width;
+        int height;
+        int topLeftX;
+        int topLeftY;
+    } TileLayerStruct;
 
+private:
+    QHash<int, TileLayerStruct*> tileLayers;
+    void loadTiles(QString terrainFileName);
+    QList<QList<int>> buildLayer(QDomNodeList chunks);
+    void getLayerSize(int *layerWidth, int *layerHeight, int size, int firstChunkY, QDomNodeList chunks);
 
     // TILES RESSOURCES ------------------------------------------------------------------
+
+public:
+
+
+private:
+    void loadTilesRessources();
 
 };
 

@@ -4,7 +4,7 @@
 #include <QPixmap>
 #include "dataloader.h"
 
-class Candy : public QGraphicsItem, public DataLoader
+class Candy : public QGraphicsItem
 {
 public:
     Candy(int type, QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas, QGraphicsItem *parent = nullptr);
