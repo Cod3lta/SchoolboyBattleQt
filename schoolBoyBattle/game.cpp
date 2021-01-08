@@ -80,7 +80,7 @@ void Game::placeTiles() {
             for(int k = 0; k < layers.at(i)->tiles.size(); k++) {
                 int type = layers.at(i)->tiles.at(j).at(k);
                 if(type != 0) {
-                    Tile *tile = new Tile(k, j, i, type);
+                    Tile *tile = new Tile(k, j, i, type, dataLoader);
                     tiles.append(tile);
                     addItem(tile);
                 }

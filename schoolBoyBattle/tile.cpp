@@ -1,16 +1,18 @@
+#include "dataloader.h"
 #include "tile.h"
 #include <QGraphicsItem>
 #include <QPainter>
 
 #define TILE_SIZE 130
 
-Tile::Tile(int indexX, int indexY, int layer, int type, QGraphicsItem* parent)
+Tile::Tile(int indexX, int indexY, int layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
     :QGraphicsItem(parent),
       indexX(indexX),
       indexY(indexY),
       type(type),
       layer(layer)
 {
+    image = dataLoader->getTileRessource(type);
     setPos(indexX * TILE_SIZE, indexY * TILE_SIZE);
 }
 
@@ -22,11 +24,11 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
     painter->setPen(QPen(Qt::black));
     painter->setBrush(QBrush(Qt::white));
-    painter->drawRect(boundingRect());
-    painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
+    //painter->drawRect(boundingRect());
+    //painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
 
-    /*QRectF sourceRect(0, 0, image->width(), image->height());
-    painter->drawPixmap(boundingRect(), *image, sourceRect);*/
+    QRectF sourceRect(0, 0, image->width(), image->height());
+    painter->drawPixmap(boundingRect(), *image, sourceRect);
 
     // Lignes pour le compilateur
     Q_UNUSED(option)

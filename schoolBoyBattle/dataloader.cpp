@@ -9,8 +9,19 @@ DataLoader::DataLoader(QString terrainFileName)
 {
     loadPlayerAnimations();
     loadCandyAnimations();
-    loadTiles(terrainFileName);
+    terrainXMLDoc = getFileContent(terrainFileName);
+    loadTiles();
     loadTilesRessources();
+}
+
+QDomDocument DataLoader::getFileContent(QString fileName) {
+    QDomDocument xmlBOM;
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly))
+        qFatal("Erreur de lecture du fichier");
+    xmlBOM.setContent(&file);
+    file.close();
+    return xmlBOM;
 }
 
 // PLAYER -----------------------------------------------------------------------------------
@@ -72,20 +83,10 @@ int DataLoader::getCandyAnimationId(int type) {
 // TILE -------------------------------------------------------------------------------------
 
 // https://lucidar.me/fr/dev-c-cpp/reading-xml-files-with-qt/
-void DataLoader::loadTiles(QString terrainFileName) {
-    // Mettre le contenu du fichier dans xmlBOM
-    QDomDocument xmlBOM;
-
-    QFile file(terrainFileName);
-    if(!file.open(QIODevice::ReadOnly)) {
-        qFatal("Erreur de lecture du fichier");
-        return;
-    }
-    xmlBOM.setContent(&file);
-    file.close();
+void DataLoader::loadTiles() {
 
     // Lire le fichier XML et créer les ressources nécessaires
-    QDomNodeList layers = xmlBOM.elementsByTagName("layer");
+    QDomNodeList layers = terrainXMLDoc.elementsByTagName("layer");
     for(int i = 0; i < layers.count(); i++) {
         QDomElement layer = layers.at(i).toElement();
         // Chaque layer
@@ -179,7 +180,37 @@ void DataLoader::getLayerSize(int *layerWidth, int *layerHeight, int size, int f
 // TILE RESSOURCES --------------------------------------------------------------------------
 
 void DataLoader::loadTilesRessources() {
-    tileRessources.insert(1, new QPixmap(":/Resources/world/wall.png"));
-    tileRessources.insert(2, new QPixmap(":/Resources/world/face.png"));
-    tileRessources.insert(3, new QPixmap(":/Resources/world/planks.png"));
+    QHash<int, QString> tilesIds = loadTilesIds();
+    QHashIterator<int, QString> tilesIdsIterator(tilesIds);
+    while (tilesIdsIterator.hasNext()) {
+        tilesIdsIterator.next();
+        tileRessources.insert(
+                    tilesIdsIterator.key(),
+                    new QPixmap(":/Resources/world/" + tilesIdsIterator.value()));
+    }
+}
+
+QHash<int, QString> DataLoader::loadTilesIds() {
+    QHash<int, QString> tilesIds;
+    QDomNodeList tilesets = terrainXMLDoc.elementsByTagName("tileset");
+    for(int i = 0; i < tilesets.count(); i++) {
+        QDomElement tileset = tilesets.at(i).toElement();
+        qDebug() << tileset.attribute("name");
+        int tilesetId = tileset.attribute("firstgid").toInt();
+        QDomNodeList tiles = tileset.childNodes();
+        for(int j = 0; j < tiles.size(); j++) {
+            QDomElement tile = tiles.at(j).toElement();
+            qDebug() << tile.tagName();
+            if(tile.tagName() == "tile") {
+                int tileId = tile.attribute("id").toInt();
+                QString tileFile = tile.firstChild().toElement().attribute("source");
+                tilesIds.insert(tilesetId + tileId, tileFile);
+            }
+        }
+    }
+    return tilesIds;
+}
+
+QPixmap* DataLoader::getTileRessource(int type) {
+    return tileRessources.value(type);
 }

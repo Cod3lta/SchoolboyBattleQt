@@ -1,6 +1,8 @@
 #ifndef TILE_H
 #define TILE_H
 
+#include "dataloader.h"
+
 #include <QGraphicsItem>
 
 
@@ -8,7 +10,7 @@ class Tile : public QGraphicsItem
 {
 
 public:
-    Tile(int x, int y, int layer, int type, QGraphicsItem* parent = nullptr);
+    Tile(int x, int y, int layer, int type, DataLoader *dataLoader, QGraphicsItem* parent = nullptr);
     ~Tile();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -19,6 +21,7 @@ private:
     int indexY;
     int type;
     int layer;
+    DataLoader *dataLoader;
     QPixmap* image;
 };
 

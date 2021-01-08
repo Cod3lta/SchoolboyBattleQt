@@ -22,6 +22,8 @@ class DataLoader
 public:
     DataLoader(QString terrainFileName);
 
+private:
+    QDomDocument getFileContent(QString fileName);
 
 
     // PLAYER ANIMATIONS -----------------------------------------------------------------
@@ -35,6 +37,7 @@ public:
     static int getPlayerAnimationId(int gender, int team, int animation);
 
 private:
+    QDomDocument terrainXMLDoc;
     void loadPlayerAnimations();
     DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, QString fileName);
 
@@ -67,7 +70,7 @@ public:
     QList<TileLayerStruct*> tileLayers;
 
 private:
-    void loadTiles(QString terrainFileName);
+    void loadTiles();
     QList<QList<int>> buildLayer(QDomNodeList chunks);
     void getLayerSize(int *layerWidth, int *layerHeight, int size, int firstChunkY, QDomNodeList chunks);
 
@@ -75,11 +78,12 @@ private:
 
 public:
     QHash<int, QPixmap*> tileRessources;
-    static QPixmap* getTileRessource(int id);
+    QPixmap* getTileRessource(int id);
 
 
 private:
     void loadTilesRessources();
+    QHash<int, QString> loadTilesIds();
 
 };
 
