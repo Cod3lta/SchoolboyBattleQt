@@ -85,7 +85,6 @@ void DataLoader::loadTiles(QString terrainFileName) {
 
     // Lire le fichier XML et créer les ressources nécessaires
     QDomNodeList layers = xmlBOM.elementsByTagName("layer");
-    qDebug() << "test";
     for(int i = 0; i < layers.count(); i++) {
         QDomElement layer = layers.at(i).toElement();
         // Chaque layer
