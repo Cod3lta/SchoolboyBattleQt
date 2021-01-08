@@ -11,6 +11,10 @@
         <file>Resources/player/run/girl-red-run.png</file>
         <file>Resources/candy/mandarin.png</file>
         <file>Resources/candy/peanut.png</file>
-        <file>Resources/world/terrain.tmx</file>
+        <file>Resources/world/debugTerrain.tmx</file>
+        <file>Resources/world/clock.png</file>
+        <file>Resources/world/face.png</file>
+        <file>Resources/world/planks.png</file>
+        <file>Resources/world/wall.png</file>
     </qresource>
 </RCC>

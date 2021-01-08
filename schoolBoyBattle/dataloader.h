@@ -64,9 +64,9 @@ public:
         int topLeftX;
         int topLeftY;
     } TileLayerStruct;
+    QHash<int, TileLayerStruct*> tileLayers;
 
 private:
-    QHash<int, TileLayerStruct*> tileLayers;
     void loadTiles(QString terrainFileName);
     QList<QList<int>> buildLayer(QDomNodeList chunks);
     void getLayerSize(int *layerWidth, int *layerHeight, int size, int firstChunkY, QDomNodeList chunks);
@@ -74,6 +74,8 @@ private:
     // TILES RESSOURCES ------------------------------------------------------------------
 
 public:
+    QHash<int, QPixmap*> tileRessources;
+    static QPixmap* getTileRessource(int id);
 
 
 private:
