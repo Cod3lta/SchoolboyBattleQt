@@ -103,7 +103,7 @@ void DataLoader::loadTiles(QString terrainFileName) {
         tileLayer->topLeftX = firstChunk.attributes().namedItem("x").nodeValue().toInt();
         tileLayer->topLeftY = firstChunk.attributes().namedItem("y").nodeValue().toInt();
 
-        tileLayers.insert(i, tileLayer);
+        tileLayers.append(tileLayer);
     }
 }
 

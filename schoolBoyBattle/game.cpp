@@ -39,6 +39,8 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     playerRefresh->start();
     playerRefreshDelta->start();
 
+    placeTiles();
+
     // TODO : Afficher les bonbons sur le terrain
     for(int i = 0; i < 1; i++) {
         candies.append(new Candy(1, &dataLoader->candiesAnimations));
@@ -71,6 +73,21 @@ void Game::keyRelease(QKeyEvent *event) {
     keyboardInputs->keyRelease(event);
 }
 
+void Game::placeTiles() {
+    QList<DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;
+    for(int i = 0; i < layers.size(); i++) {
+        for(int j = 0; j < layers.at(i)->tiles.at(0).size(); j++) {
+            for(int k = 0; k < layers.at(i)->tiles.size(); k++) {
+                int type = layers.at(i)->tiles.at(j).at(k);
+                if(type != 0) {
+                    Tile *tile = new Tile(k, j, i, type);
+                    tiles.append(tile);
+                    addItem(tile);
+                }
+            }
+        }
+    }
+}
 
 void Game::playerMoveTimer() {
     int delta=playerRefreshDelta->nsecsElapsed();

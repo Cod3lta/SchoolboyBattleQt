@@ -12,6 +12,7 @@
 #include "player.h"
 #include "keyinputs.h"
 #include "dataloader.h"
+#include "tile.h"
 #include <QElapsedTimer>
 
 class Game : public QGraphicsScene
@@ -30,6 +31,7 @@ private:
     QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
     QList<Candy*> candies;
+    QList<Tile*> tiles;
     KeyInputs *keyboardInputs;
 
     DataLoader *dataLoader;
@@ -37,10 +39,9 @@ private:
     bool startBool;
     int tabScore[];
 
-
+    void placeTiles();
     void reset();
     void playerMoveTimer();
-
 protected:
 
 };

@@ -64,7 +64,7 @@ public:
         int topLeftX;
         int topLeftY;
     } TileLayerStruct;
-    QHash<int, TileLayerStruct*> tileLayers;
+    QList<TileLayerStruct*> tileLayers;
 
 private:
     void loadTiles(QString terrainFileName);
