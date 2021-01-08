@@ -83,7 +83,7 @@ void Player::refresh(int delta) {
 }
 
 void Player::setZIndex() {
-    setZValue(y());
+    setZValue(y() + playerHeight);
 }
 
 void Player::move(int delta) {
