@@ -19,12 +19,12 @@
 #define PLAYER_HEIGHT 150
 #define PLAYER_SPEED 8
 
-Game::Game(int nbPlayers, QGraphicsScene *parent)
+Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
 
     // Chargement des données
-    dataLoader = new DataLoader();
+    dataLoader = new DataLoader(terrainFileName);
 
     QPixmap background(":/Resources/background/terrain.png");
     setBackgroundBrush(background);

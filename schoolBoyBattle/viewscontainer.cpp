@@ -13,7 +13,8 @@
 ViewsContainer::ViewsContainer(int nbPlayers, QMainWindow *parent)
     : QMainWindow(parent)
 {
-    game = new Game(nbPlayers);
+    QString terrainFileName = ":/Resources/world/terrain.tmx";
+    game = new Game(nbPlayers, terrainFileName);
     QBoxLayout *vlayout = new QHBoxLayout(this);
     QWidget *widget = new QWidget();
     widget->setLayout(vlayout);

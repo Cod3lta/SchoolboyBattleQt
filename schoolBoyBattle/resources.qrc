@@ -13,5 +13,6 @@
         <file>Resources/candy/mandarin-small.png</file>
         <file>Resources/candy/peanut-big.png</file>
         <file>Resources/candy/peanut-small.png</file>
+        <file>Resources/world/terrain.tmx</file>
     </qresource>
 </RCC>

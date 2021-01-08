@@ -19,7 +19,7 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
-    Game(int nbPlayers, QGraphicsScene *parent = nullptr);
+    Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
     void keyPress(QKeyEvent *event);
