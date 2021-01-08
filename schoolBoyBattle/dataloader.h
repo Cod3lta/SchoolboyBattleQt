@@ -6,6 +6,8 @@
  * (tous les players partagent la même sheet d'animation -> la ressource image
  * se trouve ici / tous les joueurs n'affichent pas la même animation en même
  * temps --> la variable frameIndex se trouve dans la classe Player)
+ *
+ * Un seul objet DataLoader est créé dans le programme.
  */
 
 #ifndef DATALOADER_H
@@ -54,8 +56,15 @@ public:
 
 
 
-    // TILE ------------------------------------------------------------------------------
+    // TILES -----------------------------------------------------------------------------
 
+private:
+    int width;
+    int height;
+    QHash<int, QList<int>> tiles;
+
+
+    // TILES RESSOURCES ------------------------------------------------------------------
 
 };
 

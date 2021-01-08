@@ -62,3 +62,5 @@ int DataLoader::getCandyAnimationId(int type) {
     if(type == 1) return 1;
     return -1;
 }
+
+// TILE -------------------------------------------------------------------------------------
