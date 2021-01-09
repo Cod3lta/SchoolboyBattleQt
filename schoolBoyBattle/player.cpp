@@ -47,7 +47,7 @@ Player::Player(
 
 void Player::loadAnimations() {
     animations.insert(idle, setupAnimation(150, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
-    animations.insert(run, setupAnimation(45, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
+    animations.insert(run, setupAnimation(50, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
 }
 
 Player::AnimationsLocalDatasStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {
@@ -229,9 +229,10 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     if(HITBOX_DEBUG) {
         // Debug rect
         painter->setPen(QPen(Qt::black));
-        painter->setBrush(QBrush(Qt::white));
         painter->drawRect(boundingRect());
         painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
+        painter->setPen(QPen(Qt::red));
+        painter->drawPath(shape());
     }
 
 
@@ -268,8 +269,13 @@ QRectF Player::boundingRect() const {
 
 // collisions detection
 QPainterPath Player::shape() const {
+    double widthRatio = 0.6;
     QPainterPath path;
-    path.addRect(boundingRect());
+    path.addRect(QRectF(
+                     boundingRect().x() + (1 - widthRatio) * boundingRect().width() / 2,
+                     boundingRect().y() + boundingRect().height(),
+                     boundingRect().width() * widthRatio,
+                     0));
     return path;
 }
 
