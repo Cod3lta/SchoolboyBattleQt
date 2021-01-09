@@ -17,6 +17,7 @@ SOURCES += \
     main.cpp \
     menu.cpp \
     player.cpp \
+    tile.cpp \
     view.cpp \
     viewscontainer.cpp
 
@@ -28,6 +29,7 @@ HEADERS += \
     keyinputs.h \
     menu.h \
     player.h \
+    tile.h \
     view.h \
     viewscontainer.h
 
@@ -38,3 +40,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resources.qrc
+
+QT += xml

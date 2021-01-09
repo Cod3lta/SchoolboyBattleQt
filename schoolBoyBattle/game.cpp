@@ -11,23 +11,24 @@
 #include "player.h"
 #include "keyinputs.h"
 #include "view.h"
+#include "tile.h"
+
 #include "dataloader.h"
 #define REFRESH_DELAY 1/60*1000
 #define PLAYER_WIDTH 120
 #define PLAYER_HEIGHT 150
 #define PLAYER_SPEED 8
 
-Game::Game(int nbPlayers, QGraphicsScene *parent)
+Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
 
     // Chargement des données
-    dataLoader = new DataLoader();
+    dataLoader = new DataLoader(terrainFileName);
 
-    QPixmap background(":/Resources/background/terrain.png");
-    setBackgroundBrush(background);
-    setSceneRect(background.rect());
-    //setSceneRect(0, 0, 100, 100);
+    //QPixmap background(":/Resources/background/terrain.png");
+    //setBackgroundBrush(background);
+    //setSceneRect(background.rect());
 
     // Refresh du déplacement des joueurs
     playerRefreshDelta = new QElapsedTimer();
@@ -36,6 +37,9 @@ Game::Game(int nbPlayers, QGraphicsScene *parent)
     connect(playerRefresh, &QTimer::timeout, this, &Game::playerMoveTimer);
     playerRefresh->start();
     playerRefreshDelta->start();
+
+    placeTiles();
+    setCustomSceneRect();
 
     // TODO : Afficher les bonbons sur le terrain
     for(int i = 0; i < 1; i++) {
@@ -69,6 +73,45 @@ void Game::keyRelease(QKeyEvent *event) {
     keyboardInputs->keyRelease(event);
 }
 
+void Game::setCustomSceneRect() {
+    QRectF customSceneRect;
+    for(int i = 0; i < tiles.value("4-config").size(); i++) {
+        if(dataLoader->getTileRessource(tiles["4-config"].at(i)->type)->name == "config/scene-rect-top-left.png") {
+            customSceneRect.setX(tiles["4-config"].at(i)->x());
+            customSceneRect.setY(tiles["4-config"].at(i)->y());
+            continue;
+        }
+
+        if(dataLoader->getTileRessource(tiles["4-config"].at(i)->type)->name == "config/scene-rect-bottom-right.png") {
+            customSceneRect.setWidth(tiles["4-config"].at(i)->x() - customSceneRect.x());
+            customSceneRect.setHeight(tiles["4-config"].at(i)->y() - customSceneRect.y());
+            break;
+        }
+    }
+    setSceneRect(customSceneRect);
+}
+
+void Game::placeTiles() {
+    QMap<QString, DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;
+    QMapIterator<QString, DataLoader::TileLayerStruct*> layersIterator(layers);
+    while (layersIterator.hasNext()) {
+        layersIterator.next();
+        QList<Tile*> tilesList;
+        DataLoader::TileLayerStruct* value = layersIterator.value();
+        QString key = layersIterator.key();
+        for(int j = 0; j < value->tiles.size(); j++) {
+            for(int k = 0; k < value->tiles.at(j).size(); k++) {
+                int type = value->tiles.at(j).at(k);
+                if(type != 0) {
+                    Tile *tile = new Tile(k, j, value->topLeftX, value->topLeftY, key, type, dataLoader);
+                    tilesList.append(tile);
+                    addItem(tile);
+                }
+            }
+        }
+        tiles.insert(key, tilesList);
+    }
+}
 
 void Game::playerMoveTimer() {
     int delta=playerRefreshDelta->nsecsElapsed();

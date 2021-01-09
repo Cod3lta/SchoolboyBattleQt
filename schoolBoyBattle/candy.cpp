@@ -6,7 +6,7 @@
 
 #define CANDY_WIDTH 75
 #define CANDY_HEIGHT 75
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 
 
 Candy::Candy(
