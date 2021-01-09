@@ -10,10 +10,11 @@
 #include <QDebug>
 #include <QKeyEvent>
 
-ViewsContainer::ViewsContainer(int nbPlayers, QWidget *parent)
+ViewsContainer::ViewsContainer(int nbPlayers, QMainWindow *parent)
     : QMainWindow(parent)
 {
-    game = new Game(nbPlayers);
+    QString terrainFileName = ":/Resources/world/debugTerrain.tmx";
+    game = new Game(nbPlayers, terrainFileName);
     QBoxLayout *vlayout = new QHBoxLayout(this);
     QWidget *widget = new QWidget();
     widget->setLayout(vlayout);
