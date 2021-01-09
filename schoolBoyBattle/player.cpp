@@ -47,7 +47,7 @@ Player::Player(
 
 void Player::loadAnimations() {
     animations.insert(idle, setupAnimation(150, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
-    animations.insert(run, setupAnimation(50, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
+    animations.insert(run, setupAnimation(45, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
 }
 
 Player::AnimationsLocalDatasStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {
