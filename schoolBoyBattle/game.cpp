@@ -75,13 +75,13 @@ void Game::keyRelease(QKeyEvent *event) {
 void Game::setCustomSceneRect() {
     QRectF customSceneRect;
     for(int i = 0; i < tiles.value("5-config").size(); i++) {
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "config/scene-rect-top-left.png") {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "world/config/scene-rect-top-left.png") {
             customSceneRect.setX(tiles["5-config"].at(i)->x());
             customSceneRect.setY(tiles["5-config"].at(i)->y());
             continue;
         }
 
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "config/scene-rect-bottom-right.png") {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "world/config/scene-rect-bottom-right.png") {
             customSceneRect.setWidth(tiles["5-config"].at(i)->x() - customSceneRect.x());
             customSceneRect.setHeight(tiles["5-config"].at(i)->y() - customSceneRect.y());
             break;
