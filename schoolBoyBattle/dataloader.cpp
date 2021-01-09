@@ -98,7 +98,8 @@ void DataLoader::loadTiles() {
         tileLayer->tiles = buildLayer(chunks);
 
         tileLayer->height = tileLayer->tiles.size();
-        tileLayer->width = tileLayer->tiles.at(0).size();
+        if(tileLayer->height != 0)
+            tileLayer->width = tileLayer->tiles.at(0).size();
         QDomElement firstChunk = layers.at(i).firstChild().firstChild().toElement();
         tileLayer->topLeftX = firstChunk.attributes().namedItem("x").nodeValue().toInt();
         tileLayer->topLeftY = firstChunk.attributes().namedItem("y").nodeValue().toInt();
@@ -186,7 +187,7 @@ void DataLoader::loadTilesRessources() {
     while (tilesIdsIterator.hasNext()) {
         tilesIdsIterator.next();
         TileRessourceStruct *tileRessource = new TileRessourceStruct();
-        tileRessource->image = new QPixmap(":/Resources/world/" + tilesIdsIterator.value());
+        tileRessource->image = new QPixmap(":/Resources/" + tilesIdsIterator.value());
         tileRessource->name = tilesIdsIterator.value();
         tileRessources.insert(tilesIdsIterator.key(), tileRessource);
     }
