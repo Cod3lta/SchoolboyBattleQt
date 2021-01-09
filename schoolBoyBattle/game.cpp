@@ -50,7 +50,7 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
 
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, i%2, &dataLoader->playerAnimations, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+        players.append(new Player(i, i%2, dataLoader, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
         addItem(players.at(i));
     }
 

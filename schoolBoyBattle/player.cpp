@@ -17,10 +17,11 @@
 Player::Player(
         int id,
         int team,
-        QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas,
+        DataLoader *dataLoader,
         int playerWidth, int playerHeight, int playerSpeed, 
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
+      dataLoader(dataLoader),
       id(id),
       playerWidth(playerWidth),
       playerHeight(playerHeight),
@@ -37,14 +38,14 @@ Player::Player(
 
     // L'animation dépends de gender et team :
     // Doit être après l'initialisation de ces variables !
-    loadAnimations(sharedAnimationsDatas);
+    loadAnimations();
     setAnimation(idle);
     setZIndex();
 }
 
-void Player::loadAnimations(QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas) {
-    animations.insert(idle, setupAnimation(150, sharedAnimationsDatas->value(DataLoader::getPlayerAnimationId(gender, team, idle))));
-    animations.insert(run, setupAnimation(50, sharedAnimationsDatas->value(DataLoader::getPlayerAnimationId(gender, team, run))));
+void Player::loadAnimations() {
+    animations.insert(idle, setupAnimation(150, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
+    animations.insert(run, setupAnimation(50, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
 }
 
 Player::AnimationsLocalDatasStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {

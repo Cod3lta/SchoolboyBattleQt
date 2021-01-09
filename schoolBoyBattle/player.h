@@ -18,8 +18,8 @@ public:
     Player(
             int id,
             int team,
-            QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas,
-             int playerWidth, int playerHeight, int playerSpeed, 
+            DataLoader *dataLoader,
+            int playerWidth, int playerHeight, int playerSpeed,
             QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
@@ -31,8 +31,8 @@ public:
 private:
     enum Team : int {red = 0, black = 1};
     enum Gender : int {girl = 0, boy = 1};
-    enum Facing : int {facingLeft = 0, facingRight = 1};
-    enum PlayerMoves : int {moveUp = 0, moveRight = 1, moveDown = 2, moveLeft = 3};
+    enum Facing {facingLeft, facingRight};
+    enum PlayerMoves {moveUp, moveRight, moveDown, moveLeft};
     enum Animations : int {idle = 0, run = 1};
 
     typedef struct Animations_s {
@@ -46,6 +46,7 @@ private:
     Gender gender;
     Animations currentAnimation;
     Facing facing;
+    DataLoader *dataLoader;
     int id;
     bool moves[4] = {false, false, false, false};
     const int playerWidth;
@@ -62,7 +63,7 @@ private:
     Animations getAnimationType();
     Player::Facing getFacing();
     void setZIndex();
-    void loadAnimations(QHash<int, DataLoader::PlayerAnimationsStruct *> *sharedAnimationsRessources);
+    void loadAnimations();
     Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
 
 public slots:
