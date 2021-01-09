@@ -57,7 +57,10 @@ private:
     QHash<Team, QList<int>> teamsSpawnpoint;
     QList<Tile*> *collisionTiles;
 
-    void move(int delta, bool inverted = false);
+    void move(QVector2D vector, bool inverted = false);
+    bool collide(QVector2D movingVector);
+    QVector2D calculateMovingVector(int delta);
+    QVector2D calculateAnswerVector(QVector2D movingVector);
     void validate_candies();
     void takeCandy();
     void animationNextFrame();
@@ -67,8 +70,8 @@ private:
     Player::Facing getFacing();
     void setZIndex();
     void loadAnimations();
-    bool collide(int delta);
     Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
+
 
 public slots:
     void keyMove(int playerId, int direction, bool value);

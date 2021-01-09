@@ -79,43 +79,95 @@ void Player::keyMove(int playerId, int direction, bool value) {
 }
 
 void Player::refresh(int delta) {
-    if(!collide(delta))
-        move(delta);
+    /*
+     * déterminer le vecteur mouvement
+     * s'il y a une collision
+     *      vecteur de mouvement = déterminer le vecteur de réponse
+     * déplacer le joueur en fonction du vecteur de mouvement
+     */
+    QVector2D movingVector = calculateMovingVector(delta);
+    if(collide(movingVector)) {
+        movingVector = calculateAnswerVector(movingVector);
+    }
+    move(movingVector);
     if(getAnimationType() == run) {
         setZIndex();
     }
 }
 
-bool Player::collide(int delta) {
-    move(delta);
+// COLLISIONS ET DEPLACEMENTS ----------------------------------------------------------
 
+/*
+ * déplacer le joueur dans la direction du vecteur mouvement
+ * tester s'il y a une collision
+ * remettre le joueur dans sa position initiale
+ */
+bool Player::collide(QVector2D movingVector) {
+
+    move(movingVector);
+    bool returnValue = false;
+
+    // Les items en contacte avec le joueur
     QList<QGraphicsItem*> itemsColliding = collidingItems();
-    if(itemsColliding.size() > 0) {
-        for(int i = 0; i < itemsColliding.size(); i++) {
-            QGraphicsItem *item = itemsColliding.at(i);
 
+    // Les tiles sur la couche collision autour du joueur
+    QList<Tile*> collisionTilesNearby = static_cast<Game*>(scene())->collisionTilesNearby(x(), y());
+
+    // Si on entre en contacte avec une tile et s'il
+    // y a une tile collision près du joueur
+    if(itemsColliding.size() > 0 && collisionTilesNearby.size() > 0) {
+        for(int i = 0; i < itemsColliding.size(); i++) {
+            QGraphicsItem *collidingItem = itemsColliding.at(i);
+
+            for(int j = 0; j < collisionTilesNearby.size(); j++) {
+                Tile *tileNearby = collisionTilesNearby.at(j);
+
+                if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
+                    returnValue = true;
+                    break;
+                }
+            }
         }
     }
+    move(movingVector, true);
+    return returnValue;
 
-    move(delta, true);
-    return false;
 }
 
-void Player::setZIndex() {
-    setZValue(y() + playerHeight);
-}
-
-void Player::move(int delta, bool inverted) {
+QVector2D Player::calculateMovingVector(int delta) {
     QVector2D v;
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
     v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
+    double deltaMinified = delta / 10e6;
+    v *= deltaMinified * playerSpeed;
+    return v;
+}
+
+QVector2D Player::calculateAnswerVector(QVector2D movingVector) {
+    bool collideX = collide(QVector2D(movingVector.x(), 0));
+    bool collideY = collide(QVector2D(movingVector.y(), 0));
+
+    QVector2D normalVector(
+                movingVector.x() * collideX * -1,
+                movingVector.y() * collideY * -1);
+
+    QVector2D answerVector = movingVector + normalVector;
+
+    return answerVector;
+}
+
+void Player::move(QVector2D vector, bool inverted) {
     if(inverted)
-        v = -v;
-    double deltaMinified=delta/10e6;
-    v*=deltaMinified * playerSpeed;
-    setX(x() + v.x());
-    setY(y() + v.y());
+        vector = -vector;
+    setX(x() + vector.x());
+    setY(y() + vector.y());
+}
+
+// -------------------------------------------------------------------------------------
+
+void Player::setZIndex() {
+    setZValue(y() + playerHeight);
 }
 
 void Player::validate_candies() {

@@ -113,6 +113,19 @@ void Game::placeTiles() {
     }
 }
 
+QList<Tile*> Game::collisionTilesNearby(int x, int y) {
+    QList<Tile*> tilesNearby;
+    for(int i = 0; i < tiles["3-collision"].size(); i++) {
+        Tile *tile = tiles["3-collision"].at(i);
+        // TODO : remplacer le 130 par la constante de taille des tiles
+        if(tile->x() > x - 2 * 130 && tile->x() < x + 2 * 130 &&
+                tile->y() > y - 2 * 130 && tile->y() < y + 2 * 130) {
+            tilesNearby.append(tile);
+        }
+    }
+    return tilesNearby;
+}
+
 void Game::playerMoveTimer() {
     int delta=playerRefreshDelta->nsecsElapsed();
     playerRefreshDelta->restart();
