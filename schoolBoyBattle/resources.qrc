@@ -13,7 +13,6 @@
         <file>Resources/candy/mandarin-small.png</file>
         <file>Resources/candy/peanut-big.png</file>
         <file>Resources/candy/peanut-small.png</file>
-        <file>Resources/world/debugTerrain.tmx</file>
         <file>Resources/world/config/collision.png</file>
         <file>Resources/world/config/scene-rect-bottom-right.png</file>
         <file>Resources/world/config/scene-rect-top-left.png</file>
@@ -43,5 +42,6 @@
         <file>Resources/world/deco/desk-student-south.png</file>
         <file>Resources/world/deco/shelf-bottom.png</file>
         <file>Resources/world/deco/shelf-top.png</file>
+        <file>Resources/debugTerrain.tmx</file>
     </qresource>
 </RCC>

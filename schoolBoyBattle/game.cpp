@@ -50,7 +50,7 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
 
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, i%2, dataLoader, &tiles["3-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+        players.append(new Player(i, i%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
         addItem(players.at(i));
     }
 
@@ -74,16 +74,16 @@ void Game::keyRelease(QKeyEvent *event) {
 
 void Game::setCustomSceneRect() {
     QRectF customSceneRect;
-    for(int i = 0; i < tiles.value("4-config").size(); i++) {
-        if(dataLoader->getTileRessource(tiles["4-config"].at(i)->type)->name == "config/scene-rect-top-left.png") {
-            customSceneRect.setX(tiles["4-config"].at(i)->x());
-            customSceneRect.setY(tiles["4-config"].at(i)->y());
+    for(int i = 0; i < tiles.value("5-config").size(); i++) {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "config/scene-rect-top-left.png") {
+            customSceneRect.setX(tiles["5-config"].at(i)->x());
+            customSceneRect.setY(tiles["5-config"].at(i)->y());
             continue;
         }
 
-        if(dataLoader->getTileRessource(tiles["4-config"].at(i)->type)->name == "config/scene-rect-bottom-right.png") {
-            customSceneRect.setWidth(tiles["4-config"].at(i)->x() - customSceneRect.x());
-            customSceneRect.setHeight(tiles["4-config"].at(i)->y() - customSceneRect.y());
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "config/scene-rect-bottom-right.png") {
+            customSceneRect.setWidth(tiles["5-config"].at(i)->x() - customSceneRect.x());
+            customSceneRect.setHeight(tiles["5-config"].at(i)->y() - customSceneRect.y());
             break;
         }
     }
@@ -114,8 +114,8 @@ void Game::placeTiles() {
 
 QList<Tile*> Game::collisionTilesNearby(int x, int y) {
     QList<Tile*> tilesNearby;
-    for(int i = 0; i < tiles["3-collision"].size(); i++) {
-        Tile *tile = tiles["3-collision"].at(i);
+    for(int i = 0; i < tiles["4-collision"].size(); i++) {
+        Tile *tile = tiles["4-collision"].at(i);
         // TODO : remplacer le 130 par la constante de taille des tiles
         if(tile->x() > x - 2 * 130 && tile->x() < x + 2 * 130 &&
                 tile->y() > y - 2 * 130 && tile->y() < y + 2 * 130) {
