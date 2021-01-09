@@ -78,8 +78,13 @@ private:
     // TILES RESSOURCES ------------------------------------------------------------------
 
 public:
-    QHash<int, QPixmap*> tileRessources;
-    QPixmap* getTileRessource(int id);
+    typedef struct TileRessource_s {
+        QList<QList<int>> tiles;
+        QPixmap *image;
+        QString name;
+    } TileRessourceStruct;
+    QHash<int, TileRessourceStruct*> tileRessources;
+    TileRessourceStruct* getTileRessource(int type);
 
 
 private:

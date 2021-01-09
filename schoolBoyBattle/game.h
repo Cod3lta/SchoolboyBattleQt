@@ -43,6 +43,7 @@ private:
     void placeTiles();
     void reset();
     void playerMoveTimer();
+
 protected:
 
 };

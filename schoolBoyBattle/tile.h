@@ -23,9 +23,9 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    int type;
 
 private:
-    int type;
     QString layer;
     DataLoader *dataLoader;
     QPixmap* image;

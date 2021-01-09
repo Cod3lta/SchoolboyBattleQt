@@ -28,9 +28,7 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
 
     //QPixmap background(":/Resources/background/terrain.png");
     //setBackgroundBrush(background);
-    setCustomSceneRect();
     //setSceneRect(background.rect());
-    //setSceneRect(0, 0, 100, 100);
 
     // Refresh du déplacement des joueurs
     playerRefreshDelta = new QElapsedTimer();
@@ -41,6 +39,7 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     playerRefreshDelta->start();
 
     placeTiles();
+    setCustomSceneRect();
 
     // TODO : Afficher les bonbons sur le terrain
     for(int i = 0; i < 1; i++) {
@@ -75,7 +74,21 @@ void Game::keyRelease(QKeyEvent *event) {
 }
 
 void Game::setCustomSceneRect() {
+    QRectF customSceneRect;
+    for(int i = 0; i < tiles.value("4-config").size(); i++) {
+        if(dataLoader->getTileRessource(tiles["4-config"].at(i)->type)->name == "config/scene-rect-top-left.png") {
+            customSceneRect.setX(tiles["4-config"].at(i)->x());
+            customSceneRect.setY(tiles["4-config"].at(i)->y());
+            continue;
+        }
 
+        if(dataLoader->getTileRessource(tiles["4-config"].at(i)->type)->name == "config/scene-rect-bottom-right.png") {
+            customSceneRect.setWidth(tiles["4-config"].at(i)->x() - customSceneRect.x());
+            customSceneRect.setHeight(tiles["4-config"].at(i)->y() - customSceneRect.y());
+            break;
+        }
+    }
+    setSceneRect(customSceneRect);
 }
 
 void Game::placeTiles() {

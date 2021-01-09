@@ -162,7 +162,6 @@ void DataLoader::getLayerSize(int *layerWidth, int *layerHeight, int size, QDomN
         return;
     }
 
-
     int minX = chunks.at(0).toElement().attribute("x").toInt();
     int maxX = minX;
     int minY = chunks.at(0).toElement().attribute("y").toInt();
@@ -186,9 +185,10 @@ void DataLoader::loadTilesRessources() {
     QHashIterator<int, QString> tilesIdsIterator(tilesIds);
     while (tilesIdsIterator.hasNext()) {
         tilesIdsIterator.next();
-        tileRessources.insert(
-                    tilesIdsIterator.key(),
-                    new QPixmap(":/Resources/world/" + tilesIdsIterator.value()));
+        TileRessourceStruct *tileRessource = new TileRessourceStruct();
+        tileRessource->image = new QPixmap(":/Resources/world/" + tilesIdsIterator.value());
+        tileRessource->name = tilesIdsIterator.value();
+        tileRessources.insert(tilesIdsIterator.key(), tileRessource);
     }
 }
 
@@ -211,6 +211,13 @@ QHash<int, QString> DataLoader::loadTilesIds() {
     return tilesIds;
 }
 
-QPixmap* DataLoader::getTileRessource(int type) {
-    return tileRessources.value(type);
+DataLoader::TileRessourceStruct* DataLoader::getTileRessource(int type) {
+    QHashIterator<int, TileRessourceStruct*> tileRessourceIterator(tileRessources);
+    while (tileRessourceIterator.hasNext()) {
+        tileRessourceIterator.next();
+        if(tileRessourceIterator.key() == type) {
+            return tileRessourceIterator.value();
+        }
+    }
+    return nullptr;
 }
