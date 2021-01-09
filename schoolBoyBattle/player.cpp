@@ -17,14 +17,17 @@
 Player::Player(
         int id,
         int team,
-        QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas,
+        DataLoader *dataLoader,
+        QList<Tile*> *collisionTiles,
         int playerWidth, int playerHeight, int playerSpeed, 
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
+      dataLoader(dataLoader),
       id(id),
       playerWidth(playerWidth),
       playerHeight(playerHeight),
-      playerSpeed(playerSpeed)
+      playerSpeed(playerSpeed),
+      collisionTiles(collisionTiles)
 {
     // Spawn point des équipes
     teamsSpawnpoint.insert(red, {500, 500});
@@ -37,14 +40,14 @@ Player::Player(
 
     // L'animation dépends de gender et team :
     // Doit être après l'initialisation de ces variables !
-    loadAnimations(sharedAnimationsDatas);
+    loadAnimations();
     setAnimation(idle);
     setZIndex();
 }
 
-void Player::loadAnimations(QHash<int, DataLoader::PlayerAnimationsStruct*> *sharedAnimationsDatas) {
-    animations.insert(idle, setupAnimation(150, sharedAnimationsDatas->value(DataLoader::getPlayerAnimationId(gender, team, idle))));
-    animations.insert(run, setupAnimation(50, sharedAnimationsDatas->value(DataLoader::getPlayerAnimationId(gender, team, run))));
+void Player::loadAnimations() {
+    animations.insert(idle, setupAnimation(150, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
+    animations.insert(run, setupAnimation(45, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
 }
 
 Player::AnimationsLocalDatasStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {
@@ -76,25 +79,98 @@ void Player::keyMove(int playerId, int direction, bool value) {
 }
 
 void Player::refresh(int delta) {
-    move(delta);
+    /*
+     * déterminer le vecteur mouvement
+     * s'il y a une collision
+     *      vecteur de mouvement = déterminer le vecteur de réponse
+     * déplacer le joueur en fonction du vecteur de mouvement
+     */
+    QVector2D movingVector = calculateMovingVector(delta);
+    if(collide(movingVector)) {
+        movingVector = calculateAnswerVector(movingVector);
+    }
+    if(id == 0)
+        qDebug() << x() / 130 << "\t" << y() / 130 << "\t" << movingVector;
+    move(movingVector);
     if(getAnimationType() == run) {
         setZIndex();
     }
 }
 
-void Player::setZIndex() {
-    setZValue(y());
+// COLLISIONS ET DEPLACEMENTS ----------------------------------------------------------
+
+/*
+ * déplacer le joueur dans la direction du vecteur mouvement
+ * tester s'il y a une collision
+ * remettre le joueur dans sa position initiale
+ */
+bool Player::collide(QVector2D movingVector) {
+
+    move(2*movingVector);
+    bool returnValue = false;
+
+    // Les items en contacte avec le joueur
+    QList<QGraphicsItem*> itemsColliding = collidingItems();
+
+    // Les tiles sur la couche collision autour du joueur
+    QList<Tile*> collisionTilesNearby = static_cast<Game*>(scene())->collisionTilesNearby(x(), y());
+
+    // Si on entre en contacte avec une tile et s'il
+    // y a une tile collision près du joueur
+    if(itemsColliding.size() > 0 && collisionTilesNearby.size() > 0) {
+        for(int i = 0; i < itemsColliding.size(); i++) {
+            QGraphicsItem *collidingItem = itemsColliding.at(i);
+
+            for(int j = 0; j < collisionTilesNearby.size(); j++) {
+                Tile *tileNearby = collisionTilesNearby.at(j);
+
+                if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
+                    returnValue = true;
+                    break;
+                }
+            }
+        }
+    }
+    move(2*movingVector, true);
+    return returnValue;
+
 }
 
-void Player::move(int delta) {
+QVector2D Player::calculateMovingVector(int delta) {
     QVector2D v;
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
     v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
-    double deltaMinified=delta/10e6;
-    v*=deltaMinified * playerSpeed;
-    setX(x() + v.x());
-    setY(y() + v.y());
+    double deltaMinified = delta / 10e6;
+    v *= deltaMinified * playerSpeed;
+    return v;
+}
+
+QVector2D Player::calculateAnswerVector(QVector2D movingVector) {
+    bool collideX = collide(QVector2D(movingVector.x(), 0));
+    bool collideY = collide(QVector2D(0, movingVector.y()));
+
+    QVector2D normalVector(
+                movingVector.x() * collideX * -1,
+                movingVector.y() * collideY * -1);
+
+    QVector2D answerVector = movingVector + normalVector;
+    //QVector2D answerVector(0, 0);
+
+    return answerVector;
+}
+
+void Player::move(QVector2D vector, bool inverted) {
+    if(inverted)
+        vector = -vector;
+    setX(x() + vector.x());
+    setY(y() + vector.y());
+}
+
+// -------------------------------------------------------------------------------------
+
+void Player::setZIndex() {
+    setZValue(y() + playerHeight);
 }
 
 void Player::validate_candies() {

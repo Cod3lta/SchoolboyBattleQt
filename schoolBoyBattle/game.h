@@ -25,6 +25,7 @@ public:
     void exit();
     void keyPress(QKeyEvent *event);
     void keyRelease(QKeyEvent *event);
+    QList<Tile*> collisionTilesNearby(int x, int y);
 
 private:
     QTimer *playerRefresh;

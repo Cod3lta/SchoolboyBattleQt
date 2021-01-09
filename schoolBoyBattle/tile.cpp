@@ -6,7 +6,7 @@
 #define TILE_SIZE 130
 
 Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
-    :QGraphicsItem(parent),
+    :QGraphicsObject(parent),
       type(type),
       layer(layer)
 {
@@ -22,14 +22,17 @@ Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString
 // Paints contents of item in local coordinates
 void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
 
-    painter->setPen(QPen(Qt::black));
-    painter->setBrush(QBrush(Qt::white));
-    //painter->drawRect(boundingRect());
+
     //painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
 
     if(!(layer == "3-collision" || layer == "4-config")) {
         QRectF sourceRect(0, 0, image->width(), image->height());
         painter->drawPixmap(boundingRect(), *image, sourceRect);
+    }else{
+        if(type == 10) {
+            painter->setPen(QPen(Qt::red));
+            //painter->drawRect(boundingRect());
+        }
     }
 
     // Lignes pour le compilateur

@@ -35,7 +35,7 @@ public:
         int nbFrame;
     } PlayerAnimationsStruct;
     QHash<int, DataLoader::PlayerAnimationsStruct*> playerAnimations;
-    static int getPlayerAnimationId(int gender, int team, int animation);
+    int getPlayerAnimationId(int gender, int team, int animation);
 
 private:
     QDomDocument terrainXMLDoc;
@@ -79,7 +79,6 @@ private:
 
 public:
     typedef struct TileRessource_s {
-        QList<QList<int>> tiles;
         QPixmap *image;
         QString name;
     } TileRessourceStruct;

@@ -3,11 +3,12 @@
 
 #include "dataloader.h"
 
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 
 
-class Tile : public QGraphicsItem
+class Tile : public QGraphicsObject
 {
+    Q_OBJECT
 
 public:
     Tile(
