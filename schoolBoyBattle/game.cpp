@@ -62,7 +62,6 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     }
 
     addItem(keyboardInputs);
-    addRect(0, 0, 200, 200, QPen(Qt::red));
 }
 
 void Game::keyPress(QKeyEvent *event) {

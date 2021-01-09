@@ -89,6 +89,8 @@ void Player::refresh(int delta) {
     if(collide(movingVector)) {
         movingVector = calculateAnswerVector(movingVector);
     }
+    if(id == 0)
+        qDebug() << x() / 130 << "\t" << y() / 130 << "\t" << movingVector;
     move(movingVector);
     if(getAnimationType() == run) {
         setZIndex();
@@ -104,7 +106,7 @@ void Player::refresh(int delta) {
  */
 bool Player::collide(QVector2D movingVector) {
 
-    move(movingVector);
+    move(2*movingVector);
     bool returnValue = false;
 
     // Les items en contacte avec le joueur
@@ -129,7 +131,7 @@ bool Player::collide(QVector2D movingVector) {
             }
         }
     }
-    move(movingVector, true);
+    move(2*movingVector, true);
     return returnValue;
 
 }
@@ -146,13 +148,14 @@ QVector2D Player::calculateMovingVector(int delta) {
 
 QVector2D Player::calculateAnswerVector(QVector2D movingVector) {
     bool collideX = collide(QVector2D(movingVector.x(), 0));
-    bool collideY = collide(QVector2D(movingVector.y(), 0));
+    bool collideY = collide(QVector2D(0, movingVector.y()));
 
     QVector2D normalVector(
                 movingVector.x() * collideX * -1,
                 movingVector.y() * collideY * -1);
 
     QVector2D answerVector = movingVector + normalVector;
+    //QVector2D answerVector(0, 0);
 
     return answerVector;
 }

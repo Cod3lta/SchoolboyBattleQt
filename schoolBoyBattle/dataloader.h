@@ -79,7 +79,6 @@ private:
 
 public:
     typedef struct TileRessource_s {
-        QList<QList<int>> tiles;
         QPixmap *image;
         QString name;
     } TileRessourceStruct;
