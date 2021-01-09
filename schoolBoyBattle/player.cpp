@@ -18,6 +18,7 @@ Player::Player(
         int id,
         int team,
         DataLoader *dataLoader,
+        QList<Tile*> *collisionTiles,
         int playerWidth, int playerHeight, int playerSpeed, 
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
@@ -25,7 +26,8 @@ Player::Player(
       id(id),
       playerWidth(playerWidth),
       playerHeight(playerHeight),
-      playerSpeed(playerSpeed)
+      playerSpeed(playerSpeed),
+      collisionTiles(collisionTiles)
 {
     // Spawn point des équipes
     teamsSpawnpoint.insert(red, {500, 500});
@@ -77,21 +79,39 @@ void Player::keyMove(int playerId, int direction, bool value) {
 }
 
 void Player::refresh(int delta) {
-    move(delta);
+    if(!collide(delta))
+        move(delta);
     if(getAnimationType() == run) {
         setZIndex();
     }
+}
+
+bool Player::collide(int delta) {
+    move(delta);
+
+    QList<QGraphicsItem*> itemsColliding = collidingItems();
+    if(itemsColliding.size() > 0) {
+        for(int i = 0; i < itemsColliding.size(); i++) {
+            QGraphicsItem *item = itemsColliding.at(i);
+
+        }
+    }
+
+    move(delta, true);
+    return false;
 }
 
 void Player::setZIndex() {
     setZValue(y() + playerHeight);
 }
 
-void Player::move(int delta) {
+void Player::move(int delta, bool inverted) {
     QVector2D v;
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
     v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
+    if(inverted)
+        v = -v;
     double deltaMinified=delta/10e6;
     v*=deltaMinified * playerSpeed;
     setX(x() + v.x());

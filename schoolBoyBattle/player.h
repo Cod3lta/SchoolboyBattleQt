@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include "dataloader.h"
+#include "tile.h"
 
 #include <QMainWindow>
 #include <QGraphicsItem>
@@ -19,13 +20,13 @@ public:
             int id,
             int team,
             DataLoader *dataLoader,
+            QList<Tile*> *collisionTiles,
             int playerWidth, int playerHeight, int playerSpeed,
             QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void move(int delta);
     void refresh(int delta);
 
 private:
@@ -54,7 +55,9 @@ private:
     const int playerSpeed;
 
     QHash<Team, QList<int>> teamsSpawnpoint;
+    QList<Tile*> *collisionTiles;
 
+    void move(int delta, bool inverted = false);
     void validate_candies();
     void takeCandy();
     void animationNextFrame();
@@ -64,6 +67,7 @@ private:
     Player::Facing getFacing();
     void setZIndex();
     void loadAnimations();
+    bool collide(int delta);
     Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
 
 public slots:

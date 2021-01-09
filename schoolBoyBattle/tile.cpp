@@ -6,7 +6,7 @@
 #define TILE_SIZE 130
 
 Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
-    :QGraphicsItem(parent),
+    :QGraphicsObject(parent),
       type(type),
       layer(layer)
 {
