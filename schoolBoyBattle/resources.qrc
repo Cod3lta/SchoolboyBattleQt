@@ -14,12 +14,34 @@
         <file>Resources/candy/peanut-big.png</file>
         <file>Resources/candy/peanut-small.png</file>
         <file>Resources/world/debugTerrain.tmx</file>
-        <file>Resources/world/clock.png</file>
-        <file>Resources/world/face.png</file>
-        <file>Resources/world/planks.png</file>
-        <file>Resources/world/wall.png</file>
         <file>Resources/world/config/collision.png</file>
         <file>Resources/world/config/scene-rect-bottom-right.png</file>
         <file>Resources/world/config/scene-rect-top-left.png</file>
+        <file>Resources/world/config/spawn-black.png</file>
+        <file>Resources/world/config/spawn-red.png</file>
+        <file>Resources/world/base/face.png</file>
+        <file>Resources/world/base/planks.png</file>
+        <file>Resources/world/base/walls/wall-1.png</file>
+        <file>Resources/world/base/walls/wall-2.png</file>
+        <file>Resources/world/base/walls/wall-3.png</file>
+        <file>Resources/world/base/walls/wall-4.png</file>
+        <file>Resources/world/base/walls/wall-5.png</file>
+        <file>Resources/world/base/walls/wall-6.png</file>
+        <file>Resources/world/base/walls/wall-7.png</file>
+        <file>Resources/world/base/walls/wall-8.png</file>
+        <file>Resources/world/base/walls/wall-9.png</file>
+        <file>Resources/world/base/walls/wall-10.png</file>
+        <file>Resources/world/base/walls/wall-11.png</file>
+        <file>Resources/world/base/walls/wall-12.png</file>
+        <file>Resources/world/base/walls/wall-13.png</file>
+        <file>Resources/world/base/walls/wall-14.png</file>
+        <file>Resources/world/base/walls/wall-15.png</file>
+        <file>Resources/world/base/walls/wall-16.png</file>
+        <file>Resources/world/deco/clock.png</file>
+        <file>Resources/world/deco/dark-table.png</file>
+        <file>Resources/world/deco/desk-student-north.png</file>
+        <file>Resources/world/deco/desk-student-south.png</file>
+        <file>Resources/world/deco/shelf-bottom.png</file>
+        <file>Resources/world/deco/shelf-top.png</file>
     </qresource>
 </RCC>
