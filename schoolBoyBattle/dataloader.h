@@ -113,7 +113,9 @@ public:
 private:
     void loadTileLayers();
     QList<QList<int>> setupTileLayer(QDomNodeList chunks);
-    void getLayerSize(int *layerWidth, int *layerHeight, int size, QDomNodeList chunks);
+    void getLayerPlacement(int *layerWidth, int *layerHeight, int *chunkMinX, int *chunkMinY, int size, QDomNodeList chunks);
+    QHash<QString, int> highestLowestPointsOfMap();
+    void updateTileLayers();
 
     // TILES RESSOURCES ------------------------------------------------------------------
 
@@ -124,7 +126,7 @@ public:
     } TileRessourcesStruct;
     // le int est le tileType (ce qu'il y a dans le .tmx)
     QHash<int, TileRessourcesStruct*> tileRessources;
-    TileRessourcesStruct* getTileRessource(int type);
+    TileRessourcesStruct* getTileRessource(int tileType);
 
 
 private:

@@ -28,9 +28,12 @@ public:
     DataLoader::TileLayerStruct* layerRessources;
 
 private:
-    DataLoader *dataLoader;
     QString layer;
     QPixmap* image;
+
+protected:
+    DataLoader *dataLoader;
+
 };
 
 #endif // TILE_H

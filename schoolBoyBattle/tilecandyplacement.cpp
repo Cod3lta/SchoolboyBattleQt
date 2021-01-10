@@ -1,3 +1,4 @@
+#include "dataloader.h"
 #include "tilecandyplacement.h"
 
 #include <QPainter>
@@ -9,13 +10,12 @@ TileCandyPlacement::TileCandyPlacement(
         int respawnDelayMs,
         int indexX,
         int indexY,
-        int sceneTopLeftX,
-        int sceneTopLeftY,
+        DataLoader::TileLayerStruct* layerRessources,
         QString layer,
         int type,
         DataLoader *dataLoader,
         QGraphicsItem* parent) :
-    Tile(indexX, indexY, sceneTopLeftX, sceneTopLeftY, layer, type, dataLoader, parent),
+    Tile(indexX, indexY, layerRessources, layer, type, dataLoader, parent),
     respawnDelayMs(respawnDelayMs)
 {
     int min = 5000, max = 50;
@@ -36,6 +36,7 @@ void TileCandyPlacement::paint(QPainter *painter, const QStyleOptionGraphicsItem
         painter->setPen(QPen(Qt::blue));
         painter->drawRect(boundingRect());
         painter->drawText(10, 10, QString::number(timer->remainingTime()));
+        //painter->drawText(10, 50, dataLoader->getTileRessource(tileType)->name);
     }
 
     // Lignes pour le compilateur

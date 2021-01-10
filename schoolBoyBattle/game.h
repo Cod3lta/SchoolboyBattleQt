@@ -47,7 +47,6 @@ private:
     void playerMoveTimer();
     void placeTilesCandyPlacement();
 
-protected:
 
 };
 #endif // MAINWINDOW_H

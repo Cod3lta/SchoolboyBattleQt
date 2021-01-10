@@ -19,7 +19,7 @@ Player::Player(
         int team,
         DataLoader *dataLoader,
         QList<Tile*> *collisionTiles,
-        int playerWidth, int playerHeight, int playerSpeed, 
+        int playerWidth, int playerHeight, int playerSpeed,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       dataLoader(dataLoader),
@@ -90,7 +90,6 @@ void Player::refresh(int delta) {
         movingVector = calculateAnswerVector(movingVector);
     }
     if(id == 0)
-        qDebug() << x() / 130 << "\t" << y() / 130 << "\t" << movingVector;
     move(movingVector);
     if(getAnimationType() == run) {
         setZIndex();

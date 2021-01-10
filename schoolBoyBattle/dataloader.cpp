@@ -5,6 +5,8 @@
 #include <QHash>
 #include <QDomDocument>
 
+#define PLAYER_AFTER_LAYER 1
+
 DataLoader::DataLoader(QString terrainFileName)
 {
     terrainXMLDoc = getFileContent(terrainFileName);
@@ -14,6 +16,7 @@ DataLoader::DataLoader(QString terrainFileName)
     loadCandyRessources();
     //loadCandyPlacements();
     loadTileLayers();
+    updateTileLayers();
 }
 
 QDomDocument DataLoader::getFileContent(QString fileName) {
@@ -167,14 +170,11 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
 
     QList<QList<int>> dimLevel;
 
-    int firstChunkX = chunks.at(0).toElement().attribute("x").toInt();
-    int firstChunkY = chunks.at(0).toElement().attribute("y").toInt();
-    int size = chunks.at(0).toElement().attribute("width").toInt();
-    int layerWidth = 0;
-    int layerHeight = 0;
+    int chunkSize = chunks.at(0).toElement().attribute("width").toInt(); // 16
+    int chunkMinX = 0, chunkMinY = 0, layerWidth = 0, layerHeight = 0;
 
     // Déterminer la taille de la layer
-    getLayerSize(&layerWidth, &layerHeight, size, chunks);
+    getLayerPlacement(&layerWidth, &layerHeight, &chunkMinX, &chunkMinY, chunkSize, chunks);
 
     // Initialiser la liste
     for(int i = 0; i < layerHeight; i++) {
@@ -195,12 +195,12 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
         for(int i = 0; i < stringList.length(); i++) {
             intList.append(stringList.at(i).toInt());
         }
-        for(int j = 0; j < size; j++) {
-            for(int k = 0; k < size; k++) {
-                int insertYList = chunk.attribute("y").toInt() + j - firstChunkY;
-                int insertXList = chunk.attribute("x").toInt() + k - firstChunkX;
+        for(int y = 0; y < chunkSize; y++) {
+            for(int x = 0; x < chunkSize; x++) {
+                int insertYList = chunk.attribute("y").toInt() + y - chunkMinY;
+                int insertXList = chunk.attribute("x").toInt() + x - chunkMinX;
                 QList<int> subList = dimLevel.value(insertYList);
-                subList.replace(insertXList, intList.at(j*size + k));
+                subList.replace(insertXList, intList.at(y*chunkSize + x));
                 dimLevel.replace(insertYList, subList);
             }
         }
@@ -212,10 +212,10 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
  * Mets dans les variables layerWidth et layerHeight la taille de la layer
  * (nombre de tiles en x et nombre de tiles en y)
  */
-void DataLoader::getLayerSize(int *layerWidth, int *layerHeight, int size, QDomNodeList chunks) {
+void DataLoader::getLayerPlacement(int *layerWidth, int *layerHeight, int *chunkMinX, int *chunkMinY, int chunkSize, QDomNodeList chunks) {
     if(chunks.length() == 1) {
-        *layerWidth = size;
-        *layerHeight = size;
+        *layerWidth = chunkSize;
+        *layerHeight = chunkSize;
         return;
     }
 
@@ -231,9 +231,43 @@ void DataLoader::getLayerSize(int *layerWidth, int *layerHeight, int size, QDomN
         minY = minY < newY ? minY : newY;
         maxY = maxY > newY ? maxY : newY;
     }
-    *layerWidth = maxX - minX + size;
-    *layerHeight = maxY - minY + size;
+    *chunkMinX = minX;
+    *chunkMinY = minY;
+    *layerWidth = maxX - minX + chunkSize;
+    *layerHeight = maxY - minY + chunkSize;
 }
+
+QHash<QString, int> DataLoader::highestLowestPointsOfMap() {
+    QMapIterator<QString, TileLayerStruct*> i(tileLayers);
+    QHash<QString, int> returnValue;
+    returnValue["highest"] = tileLayers.first()->topLeftY;
+    returnValue["lowest"] = tileLayers.first()->tiles.length() + tileLayers.first()->topLeftY;
+    while(i.hasNext()) {
+        i.next();
+        if(i.value()->topLeftY < returnValue["highest"])
+            returnValue["highest"] = i.value()->topLeftY;
+        if(i.value()->tiles.length() + i.value()->topLeftY > returnValue["lowest"])
+            returnValue["lowest"] = i.value()->tiles.length() + i.value()->topLeftY;
+    }
+    returnValue["highest"] *= 130;
+    returnValue["lowest"] *= 130;
+    return returnValue;
+}
+
+void DataLoader::updateTileLayers() {
+    QMapIterator<QString, TileLayerStruct*> i(tileLayers);
+    QHash<QString, int> HLPoints = highestLowestPointsOfMap();
+    int j = 0;
+    while(i.hasNext()) {
+        i.next();
+        if(j <= PLAYER_AFTER_LAYER)
+            i.value()->zIndex += HLPoints["highest"];
+        if(j > PLAYER_AFTER_LAYER)
+            i.value()->zIndex += HLPoints["lowest"];
+        j++;
+    }
+}
+
 
 // TILE RESSOURCES --------------------------------------------------------------------------
 
@@ -268,9 +302,9 @@ QHash<int, QString> DataLoader::loadTilesIds() {
     return tilesIds;
 }
 
-DataLoader::TileRessourcesStruct* DataLoader::getTileRessource(int type) {
-    if(tileRessources.contains(type)) {
-        return tileRessources[type];
+DataLoader::TileRessourcesStruct* DataLoader::getTileRessource(int tileType) {
+    if(tileRessources.contains(tileType)) {
+        return tileRessources[tileType];
     }
     return nullptr;
 }
