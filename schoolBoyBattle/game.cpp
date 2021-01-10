@@ -130,7 +130,6 @@ void Game::placeTiles() {
                         tilesList.append(tile);
                         addItem(tile);
                     }
-                }
             }
             tiles.insert(key, tilesList);
         }
