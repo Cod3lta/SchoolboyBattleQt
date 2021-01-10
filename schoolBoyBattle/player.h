@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "animateditem.h"
 #include "dataloader.h"
 #include "tile.h"
 
@@ -13,7 +14,7 @@
 
 
 
-class Player : public QGraphicsObject
+class Player : public QGraphicsObject, public AnimatedItem
 {
 public:
     Player(
@@ -40,8 +41,8 @@ private:
         QTimer *timer;
         int frameIndex;
         DataLoader::PlayerAnimationsStruct *sharedDatas;
-    } AnimationsLocalDatasStruct;
-    QHash<Animations, AnimationsLocalDatasStruct*> animations;
+    } AnimationsLocalStruct;
+    QHash<Animations, AnimationsLocalStruct*> animationsLocal;
 
     Team team;
     Gender gender;
@@ -70,7 +71,7 @@ private:
     Player::Facing getFacing();
     void setZIndex();
     void loadAnimations();
-    Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
+    Player::AnimationsLocalStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
 
 
 public slots:
