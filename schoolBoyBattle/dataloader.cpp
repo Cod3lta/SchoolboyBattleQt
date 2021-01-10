@@ -8,7 +8,7 @@
 DataLoader::DataLoader(QString terrainFileName)
 {
     loadPlayerAnimations();
-    loadCandyAnimations();
+    loadCandyTypes();
     terrainXMLDoc = getFileContent(terrainFileName);
     loadTiles();
     loadTilesRessources();
@@ -57,15 +57,15 @@ int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
     return -1;
 }
 
-// CANDY ANIMATIONS -------------------------------------------------------------------------
+// CANDY TYPES ------------------------------------------------------------------------------
 
-void DataLoader::loadCandyAnimations() {
-    candiesAnimations.insert(0, setupCandyAnimations(1, 1, ":/Resources/candy/peanut-small.png"));
-    candiesAnimations.insert(1, setupCandyAnimations(1, 5, ":/Resources/candy/mandarin-small.png"));
+void DataLoader::loadCandyTypes() {
+    candyTypes.insert("candy/peanut-small.png", setupCandyType(1, 1, ":/Resources/candy/peanut-small.png"));
+    candyTypes.insert("candy/mandarin-small.png", setupCandyType(1, 5, ":/Resources/candy/mandarin-small.png"));
 }
 
-DataLoader::CandyAnimationsStruct * DataLoader::setupCandyAnimations(int nbFrame, int nbPoints, QString filename) {
-    CandyAnimationsStruct *c = new CandyAnimationsStruct();
+DataLoader::CandyTypesStruct * DataLoader::setupCandyType(int nbFrame, int nbPoints, QString filename) {
+    CandyTypesStruct *c = new CandyTypesStruct();
     c->nbPoints = nbPoints;
     c->image = new QPixmap(filename);
     c->nbFrame = nbFrame;
@@ -73,14 +73,14 @@ DataLoader::CandyAnimationsStruct * DataLoader::setupCandyAnimations(int nbFrame
 
 }
 
-int DataLoader::getCandyAnimationId(int type) {
+int DataLoader::getCandyTypeId(int type) {
     // TODO : Améliorer ce code un peu moche
     if(type == 0) return 0;
     if(type == 1) return 1;
     return -1;
 }
 
-// CANDY ANIMATIONS -------------------------------------------------------------------------
+// CANDY PLACEMENTS -------------------------------------------------------------------------
 
 
 void DataLoader::loadCandyPlacements() {
@@ -213,7 +213,7 @@ void DataLoader::loadTilesRessources() {
     QHashIterator<int, QString> tilesIdsIterator(tilesIds);
     while (tilesIdsIterator.hasNext()) {
         tilesIdsIterator.next();
-        TileRessourceStruct *tileRessource = new TileRessourceStruct();
+        TileRessourcesStruct *tileRessource = new TileRessourcesStruct();
         tileRessource->image = new QPixmap(":/Resources/" + tilesIdsIterator.value());
         tileRessource->name = tilesIdsIterator.value();
         tileRessources.insert(tilesIdsIterator.key(), tileRessource);
@@ -239,8 +239,8 @@ QHash<int, QString> DataLoader::loadTilesIds() {
     return tilesIds;
 }
 
-DataLoader::TileRessourceStruct* DataLoader::getTileRessource(int type) {
-    QHashIterator<int, TileRessourceStruct*> tileRessourceIterator(tileRessources);
+DataLoader::TileRessourcesStruct* DataLoader::getTileRessource(int type) {
+    QHashIterator<int, TileRessourcesStruct*> tileRessourceIterator(tileRessources);
     while (tileRessourceIterator.hasNext()) {
         tileRessourceIterator.next();
         if(tileRessourceIterator.key() == type) {

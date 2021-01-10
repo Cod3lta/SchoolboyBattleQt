@@ -26,10 +26,10 @@ Candy::Candy(
 // Setup des animations des candies ---------------------------------------------------------
 
 void Candy::loadAnimations() {
-    animations.insert(idle, setupCandyAnimationData(-1, dataLoader->candiesAnimations.value(DataLoader::getCandyAnimationId(type))));
+    animations.insert(idle, setupCandyAnimationData(-1, dataLoader->candyTypes.value(DataLoader::getCandyTypeId(type))));
 }
 
-Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas) {
+Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyTypesStruct *sharedDatas) {
     AnimationsLocalDatasStruct *c = new AnimationsLocalDatasStruct();
     c->frameIndex = 0;
     c->sharedDatas = sharedDatas;

@@ -2,9 +2,10 @@
 #define CANDY_H
 #include <QGraphicsItem>
 #include <QPixmap>
+#include "animateditem.h"
 #include "dataloader.h"
 
-class Candy : public QGraphicsItem
+class Candy : public QGraphicsItem, public AnimatedItem
 {
 public:
     Candy(int type, DataLoader *dataLoader, QGraphicsItem *parent = nullptr);
@@ -22,12 +23,12 @@ private:
     typedef struct Animations_s {
         QTimer *timer;
         int frameIndex;
-        DataLoader::CandyAnimationsStruct *sharedDatas;
+        DataLoader::CandyTypesStruct *sharedDatas;
     } AnimationsLocalDatasStruct;
 
     QHash<Animations, AnimationsLocalDatasStruct*> animations;
     void loadAnimations();
-    Candy::AnimationsLocalDatasStruct *setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas);
+    Candy::AnimationsLocalDatasStruct *setupCandyAnimationData(int framerate, DataLoader::CandyTypesStruct *sharedDatas);
     int id;
     Type type;
     DataLoader *dataLoader;

@@ -34,7 +34,7 @@ public:
         QPixmap *image;
         int nbFrame;
     } PlayerAnimationsStruct;
-    QHash<int, DataLoader::PlayerAnimationsStruct*> playerAnimations;
+    QHash<int, PlayerAnimationsStruct*> playerAnimations;
     int getPlayerAnimationId(int gender, int team, int animation);
 
 private:
@@ -42,20 +42,20 @@ private:
     void loadPlayerAnimations();
     DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, QString fileName);
 
-    // CANDY ANIMATIONS ------------------------------------------------------------------
+    // CANDY TYPES -----------------------------------------------------------------------
 
 public:
-    typedef struct CandyAnimations_s {
+    typedef struct CandyTypes_s {
         QPixmap *image;
         int nbFrame;
         int nbPoints;
-    } CandyAnimationsStruct;
-    QHash<int, CandyAnimationsStruct*> candiesAnimations;
-    static int getCandyAnimationId(int type);
+    } CandyTypesStruct;
+    QHash<QString, CandyTypesStruct*> candyTypes;
+    static int getCandyTypeId(int type);
 
 private:
-    void loadCandyAnimations();
-    CandyAnimationsStruct *setupCandyAnimations(int nbFrame, int nbPoints, QString filename);
+    void loadCandyTypes();
+    CandyTypesStruct *setupCandyType(int nbFrame, int nbPoints, QString filename);
 
     // CANDY PLACEMENTS ------------------------------------------------------------------
 
@@ -97,10 +97,10 @@ private:
 public:
     typedef struct TileRessource_s {
         QPixmap *image;
-        QString name;
-    } TileRessourceStruct;
-    QHash<int, TileRessourceStruct*> tileRessources;
-    TileRessourceStruct* getTileRessource(int type);
+        QString name;   // corresponds au chemin d'accès du fichier
+    } TileRessourcesStruct;
+    QHash<int, TileRessourcesStruct*> tileRessources;
+    TileRessourcesStruct* getTileRessource(int type);
 
 
 private:

@@ -46,12 +46,12 @@ Player::Player(
 }
 
 void Player::loadAnimations() {
-    animations.insert(idle, setupAnimation(150, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
-    animations.insert(run, setupAnimation(50, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
+    animationsLocal.insert(idle, setupAnimation(150, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
+    animationsLocal.insert(run, setupAnimation(50, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
 }
 
-Player::AnimationsLocalDatasStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {
-    AnimationsLocalDatasStruct* aStruct = new AnimationsLocalDatasStruct;
+Player::AnimationsLocalStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {
+    AnimationsLocalStruct* aStruct = new AnimationsLocalStruct;
     aStruct->frameIndex = 0;
     aStruct->timer = new QTimer();
     aStruct->timer->setInterval(framerate);
@@ -183,17 +183,17 @@ void Player::takeCandy() {
 
 void Player::setAnimation(Animations a) {
     // Arrêter le timer de l'animation qui se termine
-    if(animations.contains(currentAnimation)) {
-        animations.value(currentAnimation)->timer->stop();
+    if(animationsLocal.contains(currentAnimation)) {
+        animationsLocal.value(currentAnimation)->timer->stop();
     }
     // Changer l'animation
     currentAnimation = a;
     // Démarer le timer de la nouvelle animation
-    animations.value(a)->timer->start();
+    animationsLocal.value(a)->timer->start();
 }
 
 void Player::animationNextFrame() {
-    AnimationsLocalDatasStruct *a = animations.value(currentAnimation);
+    AnimationsLocalStruct *a = animationsLocal.value(currentAnimation);
     a->frameIndex++;
     if(a->frameIndex >= a->sharedDatas->nbFrame) {
         a->frameIndex = 0;
@@ -236,7 +236,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     }
 
 
-    AnimationsLocalDatasStruct *animToDraw = animations.value(currentAnimation);
+    AnimationsLocalStruct *animToDraw = animationsLocal.value(currentAnimation);
     QPixmap *imageToDraw = animToDraw->sharedDatas->image;
     if(facing == facingLeft) {
         QTransform trans;
