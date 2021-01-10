@@ -12,7 +12,6 @@ DataLoader::DataLoader(QString terrainFileName)
     loadCandyAnimations();
     loadTilesRessources();
     loadCandyRessources();
-    //loadCandyPlacements();
     loadTileLayers();
 }
 
@@ -82,34 +81,6 @@ DataLoader::CandyRessourcesStruct *DataLoader::getCandyRessources(int tileType) 
         return candiesRessources[tileType];
     }
     return nullptr;
-}
-
-// CANDY PLACEMENTS -------------------------------------------------------------------------
-
-
-void DataLoader::loadCandyPlacements() {
-    for(int y = 0; y < tileLayers["6-candy-placements"]->tiles.length(); y++) {
-        for(int x = 0; x < tileLayers["6-candy-placements"]->tiles.at(y).length(); x++) {
-            int tileType = tileLayers["6-candy-placements"]->tiles.at(y).at(x);
-            if(tileType != 0)
-                candyPlacements.append(setupCandyPlacement(x, y, getCandyRessources(tileType)));
-        }
-    }
-}
-
-DataLoader::CandyPlacementStruct *DataLoader::setupCandyPlacement(int x, int y, CandyRessourcesStruct *candyRessources) {
-    CandyPlacementStruct *candyPlacement = new CandyPlacementStruct();
-    candyPlacement->taken = false;
-    candyPlacement->x = x;
-    candyPlacement->y = y;
-    candyPlacement->timer = new QTimer();
-    candyPlacement->timer->setInterval(candyRessources->respawnDelayMs);
-    candyPlacement->timer->stop();
-    return candyPlacement;
-}
-
-void DataLoader::takeCandy(int x, int y) {
-
 }
 
 // CANDY ANIMATIONS ------------------------------------------------------------------

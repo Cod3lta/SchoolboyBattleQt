@@ -73,27 +73,6 @@ private:
     void loadCandyAnimations();
     DataLoader::CandyAnimationsStruct *setupCandyAnimation(int nbFrame, QString fileName);
 
-    // CANDY PLACEMENTS ------------------------------------------------------------------
-
-public:
-    typedef struct CandyPlacements_s {
-        int x;
-        int y;
-        bool taken;
-        QTimer *timer;
-        //Candy *candy;
-    } CandyPlacementStruct;
-    QList<CandyPlacementStruct*> candyPlacements;
-
-public slots:
-    void takeCandy(int x, int y);
-
-private:
-    void loadCandyPlacements();
-    CandyPlacementStruct *setupCandyPlacement(int x, int y, CandyRessourcesStruct *candyRessources);
-
-
-
     // TILE LAYERS ----------------------------------------------------------------------
 
 public:
