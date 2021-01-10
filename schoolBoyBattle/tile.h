@@ -28,7 +28,6 @@ public:
 
 private:
     QString layer;
-    DataLoader *dataLoader;
     QPixmap* image;
 };
 

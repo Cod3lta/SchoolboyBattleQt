@@ -27,6 +27,7 @@ private:
         DataLoader::CandyAnimationsStruct *sharedDatas;
     } AnimationsLocalStruct;
 
+
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     void loadAnimations();
     Candy::AnimationsLocalStruct *setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas);

@@ -7,11 +7,12 @@
 
 DataLoader::DataLoader(QString terrainFileName)
 {
-    loadPlayerAnimations();
-    loadCandyRessources();
     terrainXMLDoc = getFileContent(terrainFileName);
-    loadTiles();
+    loadPlayerAnimations();
+    loadCandyAnimations();
     loadTilesRessources();
+    loadCandyRessources();
+    loadTiles();
 }
 
 QDomDocument DataLoader::getFileContent(QString fileName) {

@@ -40,8 +40,6 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
 
     placeTiles();
     setCustomSceneRect();
-
-    // TODO : Afficher les bonbons sur le terrain
     placeCandies();
 
 
@@ -90,14 +88,12 @@ void Game::setCustomSceneRect() {
 void Game::placeCandies() {
     for(int i = 0; i < tiles.value("6-candy-placements").size(); i++) {
         Tile *tile = tiles.value("6-candy-placements").at(i);
-        if(tiles["6-candy-placements"].at(i) != 0) {
-            Candy *candy = new Candy(
-                        dataLoader->getCandyRessources(tile->tileType)->candyType,
-                        dataLoader->getCandyRessources(tile->tileType)->candySize,
-                        dataLoader);
-            candies.append(candy);
-            addItem(candy);
-        }
+        Candy *candy = new Candy(
+                    dataLoader->getCandyRessources(tile->tileType)->candyType,
+                    dataLoader->getCandyRessources(tile->tileType)->candySize,
+                    dataLoader);
+        candies.append(candy);
+        addItem(candy);
     }
 }
 

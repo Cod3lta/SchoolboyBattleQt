@@ -30,7 +30,10 @@ Candy::Candy(
 void Candy::loadAnimations() {
     animationsLocal.insert(
                 idle,
-                setupCandyAnimationData(-1, dataLoader->candyAnimations.value(dataLoader->getCandyAnimationId(candyType, candySize))));
+                setupCandyAnimationData(
+                    -1,
+                    dataLoader->candyAnimations.value(
+                        dataLoader->getCandyAnimationId(candyType, candySize))));
 }
 
 Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct* sharedDatas) {
