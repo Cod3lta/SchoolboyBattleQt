@@ -5,15 +5,17 @@
 
 #define TILE_SIZE 130
 
-Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
+Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources, QString layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
     :QGraphicsItem(parent),
       type(type),
+      layerRessources(layerRessources),
       layer(layer)
 {
     image = dataLoader->getTileRessource(type)->image;
-    int x = sceneTopLeftX * TILE_SIZE + indexX * TILE_SIZE;
-    int y = sceneTopLeftY * TILE_SIZE + indexY * TILE_SIZE;
+    int x = layerRessources->topLeftX * TILE_SIZE + indexX * TILE_SIZE;
+    int y = layerRessources->topLeftY * TILE_SIZE + indexY * TILE_SIZE;
     setPos(x, y);
+    setZValue(layerRessources->zIndex);
 }
 
 

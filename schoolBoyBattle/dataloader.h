@@ -67,6 +67,7 @@ public:
         int height;
         int topLeftX;
         int topLeftY;
+        int zIndex;
     } TileLayerStruct;
     QMap<QString, TileLayerStruct*> tileLayers;
 

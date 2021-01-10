@@ -13,8 +13,7 @@ public:
     Tile(
             int x,
             int y,
-            int sceneTopLeftX,
-            int sceneTopLeftY,
+            DataLoader::TileLayerStruct* layerRessources,
             QString layer,
             int type,
             DataLoader *dataLoader,
@@ -24,6 +23,7 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     int type;
+    DataLoader::TileLayerStruct* layerRessources;
 
 private:
     QString layer;

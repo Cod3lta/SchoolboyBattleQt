@@ -103,7 +103,7 @@ void Game::placeTiles() {
             for(int k = 0; k < value->tiles.at(j).size(); k++) {
                 int type = value->tiles.at(j).at(k);
                 if(type != 0) {
-                    Tile *tile = new Tile(k, j, value->topLeftX, value->topLeftY, key, type, dataLoader);
+                    Tile *tile = new Tile(k, j, value, key, type, dataLoader);
                     tilesList.append(tile);
                     addItem(tile);
                 }

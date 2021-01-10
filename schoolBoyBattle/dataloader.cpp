@@ -100,6 +100,7 @@ void DataLoader::loadTiles() {
         tileLayer->height = tileLayer->tiles.size();
         tileLayer->width = tileLayer->tiles.at(0).size();
         QDomElement firstChunk = layers.at(i).firstChild().firstChild().toElement();
+        tileLayer->zIndex = i;
         tileLayer->topLeftX = firstChunk.attributes().namedItem("x").nodeValue().toInt();
         tileLayer->topLeftY = firstChunk.attributes().namedItem("y").nodeValue().toInt();
         tileLayers.insert(layer.attribute("name"), tileLayer);
