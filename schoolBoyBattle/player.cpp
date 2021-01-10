@@ -90,7 +90,6 @@ void Player::refresh(int delta) {
         movingVector = calculateAnswerVector(movingVector);
     }
     if(id == 0)
-        qDebug() << x() / 130 << "\t" << y() / 130 << "\t" << movingVector;
     move(movingVector);
     if(getAnimationType() == run) {
         setZIndex();

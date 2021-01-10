@@ -15,7 +15,7 @@ public:
             int sceneTopLeftX,
             int sceneTopLeftY,
             QString layer,
-            int type,
+            int tileType,
             DataLoader *dataLoader,
             QGraphicsItem* parent = nullptr);
     ~TileCandyPlacement();
@@ -29,6 +29,7 @@ private:
     QTimer *timer;
 
 public slots:
+    void spawnCandy();
     void takeCandy();
 
 };

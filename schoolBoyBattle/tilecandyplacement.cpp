@@ -12,19 +12,21 @@ TileCandyPlacement::TileCandyPlacement(
         int sceneTopLeftX,
         int sceneTopLeftY,
         QString layer,
-        int type,
+        int tileType,
         DataLoader *dataLoader,
         QGraphicsItem* parent) :
-    Tile(indexX, indexY, sceneTopLeftX, sceneTopLeftY, layer, type, dataLoader, parent),
+    Tile(indexX, indexY, sceneTopLeftX, sceneTopLeftY, layer, tileType, dataLoader, parent),
     respawnDelayMs(respawnDelayMs)
 {
-    int min = 5000, max = 50;
-    int delayFirstSpawnMs = min + (rand() % static_cast<int>(max - min + 1));
+    int min = 5000, max = 10000;
+    int randomDelayFirstSpawnMs = min + (rand() % static_cast<int>(max - min + 1));
     timer = new QTimer();
-    //QTimer *timer = new QTimer();
+    timer->setInterval(respawnDelayMs + randomDelayFirstSpawnMs);
+    timer->start();
+    connect(timer, &QTimer::timeout, this, &TileCandyPlacement::spawnCandy);
 }
 
-void TileCandyPlacement::takeCandy() {
+void TileCandyPlacement::spawnCandy() {
     timer->setInterval(respawnDelayMs);
 }
 
@@ -36,6 +38,7 @@ void TileCandyPlacement::paint(QPainter *painter, const QStyleOptionGraphicsItem
         painter->setPen(QPen(Qt::blue));
         painter->drawRect(boundingRect());
         painter->drawText(10, 10, QString::number(timer->remainingTime()));
+        painter->drawText(10, 30, QString::number(tileType));
     }
 
     // Lignes pour le compilateur
