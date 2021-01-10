@@ -49,13 +49,15 @@ public:
         int nbPoints;
         int candyType;
         int candySize;
+        int respawnDelayMs;
     } CandyRessourcesStruct;
-    QHash<int, CandyRessourcesStruct*> candyRessources;
-    CandyRessourcesStruct *getCandyRessources(int type);
+    // le int est le tileType (ce qu'il y a dans le .tmx)
+    QHash<int, CandyRessourcesStruct*> candiesRessources;
+    CandyRessourcesStruct *getCandyRessources(int tileType);
 
 private:
     void loadCandyRessources();
-    DataLoader::CandyRessourcesStruct *setupCandyRessources(int nbPoints, int candyType, int candySize);
+    DataLoader::CandyRessourcesStruct *setupCandyRessources(int nbPoints, int candyType, int candySize, int delayRespawnMs);
 
     // CANDY ANIMATIONS ------------------------------------------------------------------
 
@@ -78,14 +80,17 @@ public:
         int x;
         int y;
         bool taken;
-        //Candy *candy;
         QTimer *timer;
+        //Candy *candy;
     } CandyPlacementStruct;
     QList<CandyPlacementStruct*> candyPlacements;
 
+public slots:
+    void takeCandy(int x, int y);
+
 private:
     void loadCandyPlacements();
-    CandyPlacementStruct *setupCandyPlacement(int x, int y, QString name);
+    CandyPlacementStruct *setupCandyPlacement(int x, int y, CandyRessourcesStruct *candyRessources);
 
 
 
@@ -105,8 +110,8 @@ public:
     QMap<QString, TileLayerStruct*> tileLayers;
 
 private:
-    void loadTiles();
-    QList<QList<int>> buildLayer(QDomNodeList chunks);
+    void loadTileLayers();
+    QList<QList<int>> setupTileLayer(QDomNodeList chunks);
     void getLayerSize(int *layerWidth, int *layerHeight, int size, QDomNodeList chunks);
 
     // TILES RESSOURCES ------------------------------------------------------------------
@@ -116,6 +121,7 @@ public:
         QPixmap *image;
         QString name;   // corresponds au chemin d'accès du fichier depuis :/Resources
     } TileRessourcesStruct;
+    // le int est le tileType (ce qu'il y a dans le .tmx)
     QHash<int, TileRessourcesStruct*> tileRessources;
     TileRessourcesStruct* getTileRessource(int type);
 

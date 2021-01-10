@@ -13,6 +13,7 @@
 #include "view.h"
 #include "tile.h"
 
+#include "tilecandyplacement.h"
 #include "dataloader.h"
 #define REFRESH_DELAY 1/60*1000
 #define PLAYER_WIDTH 120
@@ -40,7 +41,7 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
 
     placeTiles();
     setCustomSceneRect();
-    placeCandies();
+    placeTilesCandyPlacement();
 
 
     // Joueurs
@@ -85,37 +86,54 @@ void Game::setCustomSceneRect() {
     setSceneRect(customSceneRect);
 }
 
-void Game::placeCandies() {
-    for(int i = 0; i < tiles.value("6-candy-placements").size(); i++) {
-        Tile *tile = tiles.value("6-candy-placements").at(i);
-        Candy *candy = new Candy(
-                    dataLoader->getCandyRessources(tile->tileType)->candyType,
-                    dataLoader->getCandyRessources(tile->tileType)->candySize,
-                    dataLoader);
-        candies.append(candy);
-        addItem(candy);
+void Game::placeTilesCandyPlacement() {
+    DataLoader::TileLayerStruct* candyPlacementsLayer = dataLoader->tileLayers["6-candy-placements"];
+
+    for(int y = 0; y < candyPlacementsLayer->tiles.size(); y++) {
+        for(int x = 0; x < candyPlacementsLayer->tiles.at(y).size(); x++) {
+            int tileType = candyPlacementsLayer->tiles.at(y).at(x);
+            if(tileType != 0) {
+                TileCandyPlacement *candyPlacement = new TileCandyPlacement(
+                            dataLoader->getCandyRessources(tileType)->respawnDelayMs,
+                            x,
+                            y,
+                            candyPlacementsLayer->topLeftX,
+                            candyPlacementsLayer->topLeftY,
+                            "6-candy-placements",
+                            tileType,
+                            dataLoader);
+                addItem(candyPlacement);
+            }
+        }
     }
 }
 
+/*
+ * Va créer et placer sur la scène toutes les tiles de toutes les layers
+ * sauf celles qui sont sur la layer "6-candy-placements"
+ * Ces tiles seront placées dans la fonction placeCandyPlacements()
+ */
 void Game::placeTiles() {
     QMap<QString, DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;
     QMapIterator<QString, DataLoader::TileLayerStruct*> layersIterator(layers);
     while (layersIterator.hasNext()) {
         layersIterator.next();
-        QList<Tile*> tilesList;
-        DataLoader::TileLayerStruct* value = layersIterator.value();
-        QString key = layersIterator.key();
-        for(int y = 0; y < value->tiles.size(); y++) {
-            for(int x = 0; x < value->tiles.at(y).size(); x++) {
-                int type = value->tiles.at(y).at(x);
-                if(type != 0) {
-                    Tile *tile = new Tile(x, y, value->topLeftX, value->topLeftY, key, type, dataLoader);
-                    tilesList.append(tile);
-                    addItem(tile);
+        if(layersIterator.key() != "6-candy-placements") {
+            QList<Tile*> tilesList;
+            DataLoader::TileLayerStruct* value = layersIterator.value();
+            QString key = layersIterator.key();
+            for(int y = 0; y < value->tiles.size(); y++) {
+                for(int x = 0; x < value->tiles.at(y).size(); x++) {
+                    int tileType = value->tiles.at(y).at(x);
+                    if(tileType != 0) {
+                        Tile *tile = new Tile(x, y, value->topLeftX, value->topLeftY, key, tileType, dataLoader);
+                        tilesList.append(tile);
+                        addItem(tile);
+                    }
                 }
             }
+            tiles.insert(key, tilesList);
         }
-        tiles.insert(key, tilesList);
     }
 }
 
