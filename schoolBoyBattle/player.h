@@ -71,7 +71,7 @@ private:
     Player::Facing getFacing();
     void setZIndex();
     void loadAnimations();
-    Player::AnimationsLocalDatasStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
+    Player::AnimationsLocalStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
 
 
 public slots:

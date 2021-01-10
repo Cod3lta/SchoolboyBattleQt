@@ -42,10 +42,7 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     setCustomSceneRect();
 
     // TODO : Afficher les bonbons sur le terrain
-    for(int i = 0; i < 1; i++) {
-        candies.append(new Candy(1, dataLoader));
-        addItem(candies.at(i));
-    }
+    placeCandies();
 
 
     // Joueurs
@@ -75,13 +72,13 @@ void Game::keyRelease(QKeyEvent *event) {
 void Game::setCustomSceneRect() {
     QRectF customSceneRect;
     for(int i = 0; i < tiles.value("5-config").size(); i++) {
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "world/config/scene-rect-top-left.png") {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->tileType)->name == "world/config/scene-rect-top-left.png") {
             customSceneRect.setX(tiles["5-config"].at(i)->x());
             customSceneRect.setY(tiles["5-config"].at(i)->y());
             continue;
         }
 
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "world/config/scene-rect-bottom-right.png") {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->tileType)->name == "world/config/scene-rect-bottom-right.png") {
             customSceneRect.setWidth(tiles["5-config"].at(i)->x() - customSceneRect.x());
             customSceneRect.setHeight(tiles["5-config"].at(i)->y() - customSceneRect.y());
             break;
@@ -90,19 +87,19 @@ void Game::setCustomSceneRect() {
     setSceneRect(customSceneRect);
 }
 
-/*void Game::placeCandies() {
-    for(int i = 0; i < tiles.value("5-config").size(); i++) {
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "candy/peanut-small.png") {
-            Candy *candy = new Candy(0, dataLoader);
-            candies.append(candy);
-            addItem(candy);
-        }else if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "candy/mandarin-small.png") {
-            Candy *candy = new Candy(0, dataLoader);
+void Game::placeCandies() {
+    for(int i = 0; i < tiles.value("6-candy-placements").size(); i++) {
+        Tile *tile = tiles.value("6-candy-placements").at(i);
+        if(tiles["6-candy-placements"].at(i) != 0) {
+            Candy *candy = new Candy(
+                        dataLoader->getCandyRessources(tile->tileType)->candyType,
+                        dataLoader->getCandyRessources(tile->tileType)->candySize,
+                        dataLoader);
             candies.append(candy);
             addItem(candy);
         }
     }
-}*/
+}
 
 void Game::placeTiles() {
     QMap<QString, DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;
@@ -112,11 +109,11 @@ void Game::placeTiles() {
         QList<Tile*> tilesList;
         DataLoader::TileLayerStruct* value = layersIterator.value();
         QString key = layersIterator.key();
-        for(int j = 0; j < value->tiles.size(); j++) {
-            for(int k = 0; k < value->tiles.at(j).size(); k++) {
-                int type = value->tiles.at(j).at(k);
+        for(int y = 0; y < value->tiles.size(); y++) {
+            for(int x = 0; x < value->tiles.at(y).size(); x++) {
+                int type = value->tiles.at(y).at(x);
                 if(type != 0) {
-                    Tile *tile = new Tile(k, j, value->topLeftX, value->topLeftY, key, type, dataLoader);
+                    Tile *tile = new Tile(x, y, value->topLeftX, value->topLeftY, key, type, dataLoader);
                     tilesList.append(tile);
                     addItem(tile);
                 }

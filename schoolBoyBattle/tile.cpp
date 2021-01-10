@@ -7,7 +7,7 @@
 
 Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
     :QGraphicsObject(parent),
-      type(type),
+      tileType(type),
       layer(layer)
 {
     image = dataLoader->getTileRessource(type)->image;
@@ -29,7 +29,7 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         QRectF sourceRect(0, 0, image->width(), image->height());
         painter->drawPixmap(boundingRect(), *image, sourceRect);
     }else{
-        if(type == 10) {
+        if(tileType == 10) {
             painter->setPen(QPen(Qt::red));
             //painter->drawRect(boundingRect());
         }

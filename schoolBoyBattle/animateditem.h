@@ -1,6 +1,8 @@
 #ifndef ANIMATEDITEM_H
 #define ANIMATEDITEM_H
 
+#include "dataloader.h"
+
 #include <QTimer>
 #include <QHash>
 
@@ -17,6 +19,10 @@ protected:
         int frameIndex;
     } AnimationsLocalStruct;
     QHash<int, AnimationsLocalStruct*> animationsLocal;
+
+    //void loadAnimations();
+    //AnimationsLocalStruct* setupAnimation(int framerate, DataLoader dataLoader);
+
 };
 
 #endif // ANIMATEDITEM_H
