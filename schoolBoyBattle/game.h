@@ -44,6 +44,7 @@ private:
     void placeTiles();
     void reset();
     void playerMoveTimer();
+    void placeCandies();
 
 protected:
 

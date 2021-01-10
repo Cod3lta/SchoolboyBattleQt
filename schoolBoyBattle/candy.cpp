@@ -4,19 +4,20 @@
 #include <QDebug>
 #include "game.h"
 
-#define CANDY_WIDTH 75
-#define CANDY_HEIGHT 75
-#define HITBOX_DEBUG true
+#define CANDY_WIDTH 130
+#define CANDY_HEIGHT 130
+#define HITBOX_DEBUG false
 
 
 Candy::Candy(
         int type,
-        QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas,
+        DataLoader *dataLoader,
         QGraphicsItem *parent)
     : QGraphicsItem(parent),
-      type(static_cast<Type>(type))
+      type(static_cast<Type>(type)),
+      dataLoader(dataLoader)
 {
-    loadAnimations(sharedAnimationsDatas);
+    loadAnimations();
     setAnimation(idle);
     setPos(750, 500);
     setZIndex();
@@ -24,8 +25,8 @@ Candy::Candy(
 
 // Setup des animations des candies ---------------------------------------------------------
 
-void Candy::loadAnimations(QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas) {
-    animations.insert(idle, setupCandyAnimationData(-1, sharedAnimationsDatas->value(DataLoader::getCandyAnimationId(type))));
+void Candy::loadAnimations() {
+    animations.insert(idle, setupCandyAnimationData(-1, dataLoader->candiesAnimations.value(DataLoader::getCandyAnimationId(type))));
 }
 
 Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas) {
@@ -55,7 +56,7 @@ void Candy::animationNextFrame() {
     update();
 }
 
-void Candy::setAnimation(AnimationsJeTestDesTrucs a) {
+void Candy::setAnimation(Animations a) {
     // Arrêter le timer de l'animation qui se termine
     if(animations.contains(animationJeTestDautresTrucs)) {
         animations.value(animationJeTestDautresTrucs)->timer->stop();
@@ -79,7 +80,6 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     if(HITBOX_DEBUG) {
         // Debug rect
         painter->setPen(QPen(Qt::black));
-        painter->setBrush(QBrush(Qt::white));
         painter->drawRect(boundingRect());
         painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
     }

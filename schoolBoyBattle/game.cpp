@@ -43,7 +43,7 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
 
     // TODO : Afficher les bonbons sur le terrain
     for(int i = 0; i < 1; i++) {
-        candies.append(new Candy(1, &dataLoader->candiesAnimations));
+        candies.append(new Candy(1, dataLoader));
         addItem(candies.at(i));
     }
 
@@ -75,13 +75,13 @@ void Game::keyRelease(QKeyEvent *event) {
 void Game::setCustomSceneRect() {
     QRectF customSceneRect;
     for(int i = 0; i < tiles.value("5-config").size(); i++) {
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "config/scene-rect-top-left.png") {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "world/config/scene-rect-top-left.png") {
             customSceneRect.setX(tiles["5-config"].at(i)->x());
             customSceneRect.setY(tiles["5-config"].at(i)->y());
             continue;
         }
 
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "config/scene-rect-bottom-right.png") {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "world/config/scene-rect-bottom-right.png") {
             customSceneRect.setWidth(tiles["5-config"].at(i)->x() - customSceneRect.x());
             customSceneRect.setHeight(tiles["5-config"].at(i)->y() - customSceneRect.y());
             break;
@@ -89,6 +89,20 @@ void Game::setCustomSceneRect() {
     }
     setSceneRect(customSceneRect);
 }
+
+/*void Game::placeCandies() {
+    for(int i = 0; i < tiles.value("5-config").size(); i++) {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "candy/peanut-small.png") {
+            Candy *candy = new Candy(0, dataLoader);
+            candies.append(candy);
+            addItem(candy);
+        }else if(dataLoader->getTileRessource(tiles["5-config"].at(i)->type)->name == "candy/mandarin-small.png") {
+            Candy *candy = new Candy(0, dataLoader);
+            candies.append(candy);
+            addItem(candy);
+        }
+    }
+}*/
 
 void Game::placeTiles() {
     QMap<QString, DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;

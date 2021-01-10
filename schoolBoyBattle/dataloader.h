@@ -44,7 +44,6 @@ private:
 
     // CANDY ANIMATIONS ------------------------------------------------------------------
 
-
 public:
     typedef struct CandyAnimations_s {
         QPixmap *image;
@@ -56,9 +55,27 @@ public:
 
 private:
     void loadCandyAnimations();
-    DataLoader::CandyAnimationsStruct *setupCandyAnimations(int nbFrame, int nbPoints, QString filename);
+    CandyAnimationsStruct *setupCandyAnimations(int nbFrame, int nbPoints, QString filename);
 
-    // TILES -----------------------------------------------------------------------------
+    // CANDY PLACEMENTS ------------------------------------------------------------------
+
+public:
+    typedef struct CandyPlacements_s {
+        int x;
+        int y;
+        bool taken;
+        //Candy *candy;
+        QTimer *timer;
+    } CandyPlacementStruct;
+    QList<CandyPlacementStruct*> candyPlacements;
+
+private:
+    void loadCandyPlacements();
+    CandyPlacementStruct *setupCandyPlacement(int x, int y, QString name);
+
+
+
+    // TILE LAYERS ----------------------------------------------------------------------
 
 public:
     typedef struct TileLayer_s {

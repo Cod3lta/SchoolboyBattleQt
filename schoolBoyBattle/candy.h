@@ -7,21 +7,16 @@
 class Candy : public QGraphicsItem
 {
 public:
-    Candy(int type, QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas, QGraphicsItem *parent = nullptr);
+    Candy(int type, DataLoader *dataLoader, QGraphicsItem *parent = nullptr);
     ~Candy();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
+
+
     enum Type {peanut = 0, mandarin = 1};
-    enum AnimationsJeTestDesTrucs {idle = 0};
-    typedef struct CandyPlacements_s {
-        int x;
-        int y;
-        bool taken;
-        //Candy *candy;
-        QTimer *timer;
-    } CandyPlacementsStruct;
+    enum Animations {idle = 0};
 
 private:
     typedef struct Animations_s {
@@ -30,15 +25,16 @@ private:
         DataLoader::CandyAnimationsStruct *sharedDatas;
     } AnimationsLocalDatasStruct;
 
-    QHash<AnimationsJeTestDesTrucs, AnimationsLocalDatasStruct*> animations;
-    void loadAnimations(QHash<int, DataLoader::CandyAnimationsStruct *> *sharedAnimationsDatas);
+    QHash<Animations, AnimationsLocalDatasStruct*> animations;
+    void loadAnimations();
     Candy::AnimationsLocalDatasStruct *setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas);
     int id;
     Type type;
-    AnimationsJeTestDesTrucs animationJeTestDautresTrucs;
+    DataLoader *dataLoader;
+    Animations animationJeTestDautresTrucs;
     void setType(Type t);
     void animationNextFrame();
-    void setAnimation(AnimationsJeTestDesTrucs a);
+    void setAnimation(Animations a);
     void setZIndex();
 };
 

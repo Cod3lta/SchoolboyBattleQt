@@ -57,7 +57,7 @@ int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
     return -1;
 }
 
-// CANDY ------------------------------------------------------------------------------------
+// CANDY ANIMATIONS -------------------------------------------------------------------------
 
 void DataLoader::loadCandyAnimations() {
     candiesAnimations.insert(0, setupCandyAnimations(1, 1, ":/Resources/candy/peanut-small.png"));
@@ -80,7 +80,34 @@ int DataLoader::getCandyAnimationId(int type) {
     return -1;
 }
 
-// TILE -------------------------------------------------------------------------------------
+// CANDY ANIMATIONS -------------------------------------------------------------------------
+
+
+void DataLoader::loadCandyPlacements() {
+    for(int y = 0; y < tileLayers["6-candyPlacements"]->tiles.length(); y++) {
+        for(int x = 0; x < tileLayers["5-config"]->tiles.at(y).length(); x++) {
+            int tileType = tileLayers["5-config"]->tiles.at(y).at(x);
+            if(tileType != 0)
+                candyPlacements.append(setupCandyPlacement(x, y, getTileRessource(tileType)->name));
+        }
+    }
+}
+
+DataLoader::CandyPlacementStruct *DataLoader::setupCandyPlacement(int x, int y, QString name) {
+    if(name == "candy/peanut-small.png") {
+
+    }else if(name == "candy/mandarin-small.png") {
+
+    }
+    CandyPlacementStruct *candyPlacement = new CandyPlacementStruct();
+    candyPlacement->taken = false;
+    candyPlacement->timer = new QTimer();
+    candyPlacement->x = x;
+    candyPlacement->y = y;
+    return candyPlacement;
+}
+
+// TILE LAYERS ------------------------------------------------------------------------------
 
 // https://lucidar.me/fr/dev-c-cpp/reading-xml-files-with-qt/
 void DataLoader::loadTiles() {
