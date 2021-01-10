@@ -24,7 +24,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
-    bool taken;
+    bool candySpawned;
     int respawnDelayMs;
     QTimer *timer;
 

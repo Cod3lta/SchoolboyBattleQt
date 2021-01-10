@@ -10,7 +10,7 @@
 #include "game.h"
 
 // Les textures sont étirées pour entrer dans le rectangle du joueur
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 
 
 

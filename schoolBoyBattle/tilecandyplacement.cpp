@@ -27,6 +27,12 @@ TileCandyPlacement::TileCandyPlacement(
 }
 
 void TileCandyPlacement::spawnCandy() {
+    candySpawned = true;
+}
+
+
+void TileCandyPlacement::takeCandy() {
+    candySpawned = false;
     timer->setInterval(respawnDelayMs);
 }
 
@@ -39,6 +45,8 @@ void TileCandyPlacement::paint(QPainter *painter, const QStyleOptionGraphicsItem
         painter->drawRect(boundingRect());
         painter->drawText(10, 10, QString::number(timer->remainingTime()));
         painter->drawText(10, 30, QString::number(tileType));
+        painter->setPen(QPen(Qt::red));
+        painter->drawPath(shape());
     }
 
     // Lignes pour le compilateur
@@ -55,8 +63,13 @@ QRectF TileCandyPlacement::boundingRect() const {
 
 // collisions detection
 QPainterPath TileCandyPlacement::shape() const {
+    double widthRatio = 0.6;
     QPainterPath path;
-    path.addRect(boundingRect());
+    path.addRect(QRectF(
+                     boundingRect().x() + (1 - widthRatio) * boundingRect().width() / 2,
+                     boundingRect().y() + boundingRect().height() - boundingRect().height() * widthRatio,
+                     boundingRect().width() * widthRatio,
+                     boundingRect().height() * widthRatio * 2));
     return path;
 }
 
