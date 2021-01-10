@@ -2,10 +2,9 @@
 #define CANDY_H
 #include <QGraphicsItem>
 #include <QPixmap>
-#include "animateditem.h"
 #include "dataloader.h"
 
-class Candy : public QGraphicsItem, public AnimatedItem
+class Candy : public QGraphicsItem
 {
 public:
     Candy(int candyType, int candySize, DataLoader *dataLoader, QGraphicsItem *parent = nullptr);
