@@ -42,6 +42,9 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
+    for(int i = 0; i < tileCandyPlacements.length(); i++) {
+        connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+    }
 
 
     // Joueurs
@@ -102,6 +105,7 @@ void Game::placeTilesCandyPlacement() {
                             "6-candy-placements",
                             tileType,
                             dataLoader);
+                tileCandyPlacements.append(candyPlacement);
                 addItem(candyPlacement);
             }
         }
@@ -159,6 +163,14 @@ void Game::playerMoveTimer() {
         qobject_cast<View *>(views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 }
+
+Candy* Game::spawnCandy(int x, int y, int candyType, int candySize) {
+    Candy *candy = new Candy(x, y, candyType, candySize, dataLoader);
+    addItem(candy);
+    candies.append(candy);
+    return candy;
+}
+
 
 void Game::reset() {
 

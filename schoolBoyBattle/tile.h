@@ -17,7 +17,7 @@ public:
             int sceneTopLeftX,
             int sceneTopLeftY,
             QString layer,
-            int type,                   // numéro qu'il y a dans le .tmx
+            int tileType,                   // numéro qu'il y a dans le .tmx
             DataLoader *dataLoader,
             QGraphicsItem* parent = nullptr);
     ~Tile();
@@ -28,9 +28,11 @@ public:
     int tileType;
 
 private:
-    DataLoader *dataLoader;
     QString layer;
     QPixmap* image;
+
+protected:
+    DataLoader *dataLoader;
 };
 
 #endif // TILE_H

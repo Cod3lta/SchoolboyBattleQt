@@ -10,18 +10,20 @@
 
 
 Candy::Candy(
+        int x,
+        int y,
         int candyType,
         int candySize,
         DataLoader *dataLoader,
-        QGraphicsItem *parent)
-    : QGraphicsItem(parent),
+        QGraphicsObject *parent)
+    : QGraphicsObject(parent),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
       dataLoader(dataLoader)
 {
     loadAnimations();
     setAnimation(idle);
-    setPos(750, 500);
+    setPos(x, y);
     setZIndex();
 }
 
@@ -31,21 +33,21 @@ void Candy::loadAnimations() {
     animationsLocal.insert(
                 idle,
                 setupCandyAnimationData(
-                    -1,
                     dataLoader->candyAnimations.value(
                         dataLoader->getCandyAnimationId(candyType, candySize))));
 }
 
-Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct* sharedDatas) {
+Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(DataLoader::CandyAnimationsStruct* sharedDatas) {
     AnimationsLocalStruct *c = new AnimationsLocalStruct();
     c->frameIndex = 0;
     c->sharedDatas = sharedDatas;
     // Si on donne un -1 pour le framerate, il n'y a pas d'animation
     c->timer = new QTimer();
-    if(framerate >= 0) {
-        c->timer->setInterval(framerate);
+    if(sharedDatas->framerate >= 0) {
+        c->timer->setInterval(sharedDatas->framerate);
         c->timer->stop();
     }
+    connect(c->timer, &QTimer::timeout, this, &Candy::animationNextFrame);
     return c;
 }
 
@@ -75,7 +77,7 @@ void Candy::setAnimation(Animations a) {
 }
 
 void Candy::setZIndex() {
-    setZValue(y());
+    setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
 
@@ -83,12 +85,11 @@ void Candy::setZIndex() {
 
 // Paints contents of item in local coordinates
 void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-
     if(HITBOX_DEBUG) {
         // Debug rect
-        painter->setPen(QPen(Qt::black));
+        painter->setPen(QPen(Qt::yellow));
         painter->drawRect(boundingRect());
-        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
+        painter->drawText(10, 10, QString::number(id));
     }
 
     AnimationsLocalStruct *candyToDraw = animationsLocal.value(animation);

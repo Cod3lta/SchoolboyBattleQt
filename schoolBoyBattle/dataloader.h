@@ -65,13 +65,14 @@ public:
     typedef struct CandyAnimations_s {
         QPixmap *image;
         int nbFrame;
+        int framerate;
     } CandyAnimationsStruct;
     QHash<int, CandyAnimationsStruct*> candyAnimations;
     int getCandyAnimationId(int type, int size);
 
 private:
     void loadCandyAnimations();
-    DataLoader::CandyAnimationsStruct *setupCandyAnimation(int nbFrame, QString fileName);
+    DataLoader::CandyAnimationsStruct *setupCandyAnimation(int nbFrame, int framerate, QString fileName);
 
     // TILE LAYERS ----------------------------------------------------------------------
 
@@ -103,11 +104,11 @@ public:
     // le int est le tileType (ce qu'il y a dans le .tmx)
     QHash<int, TileRessourcesStruct*> tileRessources;
     TileRessourcesStruct* getTileRessource(int type);
+    int getTileType(QString name);
 
 
 private:
     void loadTilesRessources();
-    int getTileType(QString name);
     QHash<int, QString> loadTilesIds();
 
 };

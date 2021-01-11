@@ -1,12 +1,14 @@
 #ifndef TILECANDYPLACEMENT_H
 #define TILECANDYPLACEMENT_H
 
+#include "candy.h"
 #include "tile.h"
 
 #include <QGraphicsObject>
 
 class TileCandyPlacement : public Tile
 {
+    Q_OBJECT
 public:
     TileCandyPlacement(
             int respawnDelayMs,
@@ -15,7 +17,7 @@ public:
             int sceneTopLeftX,
             int sceneTopLeftY,
             QString layer,
-            int type,
+            int tileType,
             DataLoader *dataLoader,
             QGraphicsItem* parent = nullptr);
     ~TileCandyPlacement();
@@ -24,12 +26,17 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
-    bool taken;
+    bool candySpawned;
     int respawnDelayMs;
     QTimer *timer;
+    Candy *candy;
 
 public slots:
+    void spawnCandyTimer();
     void takeCandy();
+
+signals:
+    Candy* spawnCandy(int x, int y, int candyType, int candySize);
 
 };
 
