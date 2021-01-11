@@ -29,7 +29,7 @@ private:
 
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     void loadAnimations();
-    Candy::AnimationsLocalStruct *setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas);
+    Candy::AnimationsLocalStruct *setupCandyAnimationData(DataLoader::CandyAnimationsStruct *sharedDatas);
     int id;
     Type candyType;
     Size candySize;

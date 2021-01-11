@@ -31,19 +31,18 @@ void Candy::loadAnimations() {
     animationsLocal.insert(
                 idle,
                 setupCandyAnimationData(
-                    100,
                     dataLoader->candyAnimations.value(
                         dataLoader->getCandyAnimationId(candyType, candySize))));
 }
 
-Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct* sharedDatas) {
+Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(DataLoader::CandyAnimationsStruct* sharedDatas) {
     AnimationsLocalStruct *c = new AnimationsLocalStruct();
     c->frameIndex = 0;
     c->sharedDatas = sharedDatas;
     // Si on donne un -1 pour le framerate, il n'y a pas d'animation
     c->timer = new QTimer();
-    if(framerate >= 0) {
-        c->timer->setInterval(framerate);
+    if(sharedDatas->framerate >= 0) {
+        c->timer->setInterval(sharedDatas->framerate);
         c->timer->stop();
     }
     connect(c->timer, &QTimer::timeout, this, &Candy::animationNextFrame);
