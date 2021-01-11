@@ -32,6 +32,7 @@ private:
     QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
     QList<Candy*> candies;
+    // la string est le nom des layers
     QHash<QString, QList<Tile*>> tiles;
     KeyInputs *keyboardInputs;
 
@@ -44,6 +45,7 @@ private:
     void placeTiles();
     void reset();
     void playerMoveTimer();
+    void placeTilesCandyPlacement();
 
 protected:
 

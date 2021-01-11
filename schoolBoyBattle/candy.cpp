@@ -4,19 +4,22 @@
 #include <QDebug>
 #include "game.h"
 
-#define CANDY_WIDTH 75
-#define CANDY_HEIGHT 75
-#define HITBOX_DEBUG true
+#define CANDY_WIDTH 130
+#define CANDY_HEIGHT 130
+#define HITBOX_DEBUG false
 
 
 Candy::Candy(
-        int type,
-        QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas,
+        int candyType,
+        int candySize,
+        DataLoader *dataLoader,
         QGraphicsItem *parent)
     : QGraphicsItem(parent),
-      type(static_cast<Type>(type))
+      candyType(static_cast<Type>(candyType)),
+      candySize(static_cast<Size>(candySize)),
+      dataLoader(dataLoader)
 {
-    loadAnimations(sharedAnimationsDatas);
+    loadAnimations();
     setAnimation(idle);
     setPos(750, 500);
     setZIndex();
@@ -24,12 +27,17 @@ Candy::Candy(
 
 // Setup des animations des candies ---------------------------------------------------------
 
-void Candy::loadAnimations(QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas) {
-    animations.insert(idle, setupCandyAnimationData(-1, sharedAnimationsDatas->value(DataLoader::getCandyAnimationId(type))));
+void Candy::loadAnimations() {
+    animationsLocal.insert(
+                idle,
+                setupCandyAnimationData(
+                    -1,
+                    dataLoader->candyAnimations.value(
+                        dataLoader->getCandyAnimationId(candyType, candySize))));
 }
 
-Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas) {
-    AnimationsLocalDatasStruct *c = new AnimationsLocalDatasStruct();
+Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct* sharedDatas) {
+    AnimationsLocalStruct *c = new AnimationsLocalStruct();
     c->frameIndex = 0;
     c->sharedDatas = sharedDatas;
     // Si on donne un -1 pour le framerate, il n'y a pas d'animation
@@ -47,7 +55,7 @@ Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate,
 // autres trucs de la classe ----------------------------------------------------------------
 
 void Candy::animationNextFrame() {
-    AnimationsLocalDatasStruct *a = animations.value(animationJeTestDautresTrucs);
+    AnimationsLocalStruct *a = animationsLocal.value(animation);
     a->frameIndex++;
     if(a->frameIndex >= a->sharedDatas->nbFrame) {
         a->frameIndex = 0;
@@ -55,15 +63,15 @@ void Candy::animationNextFrame() {
     update();
 }
 
-void Candy::setAnimation(AnimationsJeTestDesTrucs a) {
+void Candy::setAnimation(Animations a) {
     // Arrêter le timer de l'animation qui se termine
-    if(animations.contains(animationJeTestDautresTrucs)) {
-        animations.value(animationJeTestDautresTrucs)->timer->stop();
+    if(animationsLocal.contains(animation)) {
+        animationsLocal.value(animation)->timer->stop();
     }
     // Changer l'animation
-    animationJeTestDautresTrucs = a;
+    animation = a;
     // Démarer le timer de la nouvelle animation
-    animations.value(a)->timer->start();
+    animationsLocal.value(a)->timer->start();
 }
 
 void Candy::setZIndex() {
@@ -79,12 +87,11 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     if(HITBOX_DEBUG) {
         // Debug rect
         painter->setPen(QPen(Qt::black));
-        painter->setBrush(QBrush(Qt::white));
         painter->drawRect(boundingRect());
         painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
     }
 
-    AnimationsLocalDatasStruct *candyToDraw = animations.value(animationJeTestDautresTrucs);
+    AnimationsLocalStruct *candyToDraw = animationsLocal.value(animation);
     QPixmap *imageToDraw = candyToDraw->sharedDatas->image;
 
     QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->sharedDatas->nbFrame * candyToDraw->frameIndex, 0,

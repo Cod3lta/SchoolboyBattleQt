@@ -18,6 +18,7 @@ SOURCES += \
     menu.cpp \
     player.cpp \
     tile.cpp \
+    tilecandyplacement.cpp \
     view.cpp \
     viewscontainer.cpp
 
@@ -30,6 +31,7 @@ HEADERS += \
     menu.h \
     player.h \
     tile.h \
+    tilecandyplacement.h \
     view.h \
     viewscontainer.h
 

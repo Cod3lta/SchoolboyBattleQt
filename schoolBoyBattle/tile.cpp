@@ -7,7 +7,8 @@
 
 Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
     :QGraphicsObject(parent),
-      type(type),
+      tileType(type),
+      dataLoader(dataLoader),
       layer(layer)
 {
     image = dataLoader->getTileRessource(type)->image;
@@ -25,11 +26,11 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
     //painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
 
-    if(!(layer == "3-collision" || layer == "4-config")) {
+    if(!(layer == "4-collision" || layer == "5-config")) {
         QRectF sourceRect(0, 0, image->width(), image->height());
         painter->drawPixmap(boundingRect(), *image, sourceRect);
     }else{
-        if(type == 10) {
+        if(dataLoader->getTileRessource(tileType)->name == "world/config/collision.png") {
             painter->setPen(QPen(Qt::red));
             //painter->drawRect(boundingRect());
         }
