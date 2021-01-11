@@ -16,7 +16,7 @@ TileCandyPlacement::TileCandyPlacement(
         int tileType,
         DataLoader *dataLoader,
         QGraphicsItem* parent) :
-    Tile(indexX, indexY, sceneTopLeftX, sceneTopLeftY, layer, tileType, dataLoader, parent),
+    Tile(indexX, indexY, layerRessources, layer, tileType, dataLoader, parent),
     respawnDelayMs(respawnDelayMs)
 {
     int min = 1000, max = 10000;
