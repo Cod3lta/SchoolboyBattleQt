@@ -65,13 +65,14 @@ public:
     typedef struct CandyAnimations_s {
         QPixmap *image;
         int nbFrame;
+        int framerate;
     } CandyAnimationsStruct;
     QHash<int, CandyAnimationsStruct*> candyAnimations;
     int getCandyAnimationId(int type, int size);
 
 private:
     void loadCandyAnimations();
-    DataLoader::CandyAnimationsStruct *setupCandyAnimation(int nbFrame, QString fileName);
+    DataLoader::CandyAnimationsStruct *setupCandyAnimation(int nbFrame, int framerate, QString fileName);
 
     // TILE LAYERS ----------------------------------------------------------------------
 

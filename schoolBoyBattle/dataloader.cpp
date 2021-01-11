@@ -86,14 +86,15 @@ DataLoader::CandyRessourcesStruct *DataLoader::getCandyRessources(int tileType) 
 // CANDY ANIMATIONS ------------------------------------------------------------------
 
 void DataLoader::loadCandyAnimations() {
-    candyAnimations.insert(0, setupCandyAnimation(1, ":/Resources/candy/peanut-small.png"));
-    candyAnimations.insert(1, setupCandyAnimation(1, ":/Resources/candy/mandarin-small.png"));
-    candyAnimations.insert(2, setupCandyAnimation(1, ":/Resources/candy/peanut-big.png"));
-    candyAnimations.insert(3, setupCandyAnimation(1, ":/Resources/candy/mandarin-big.png"));
+    candyAnimations.insert(0, setupCandyAnimation(1, 100 , ":/Resources/candy/peanut-small.png"));
+    candyAnimations.insert(1, setupCandyAnimation(1, 100, ":/Resources/candy/mandarin-small.png"));
+    candyAnimations.insert(2, setupCandyAnimation(1, -1, ":/Resources/candy/peanut-big.png"));
+    candyAnimations.insert(3, setupCandyAnimation(1, -1, ":/Resources/candy/mandarin-big.png"));
 }
-DataLoader::CandyAnimationsStruct *DataLoader::setupCandyAnimation(int nbFrame, QString fileName) {
+DataLoader::CandyAnimationsStruct *DataLoader::setupCandyAnimation(int nbFrame, int framerate, QString fileName) {
     CandyAnimationsStruct* aStruct = new CandyAnimationsStruct;
     aStruct->nbFrame = nbFrame;
+    aStruct->framerate = framerate;
     aStruct->image = new QPixmap(fileName);
     return aStruct;
 }

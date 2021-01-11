@@ -43,5 +43,7 @@
         <file>Resources/world/deco/shelf-bottom.png</file>
         <file>Resources/world/deco/shelf-top.png</file>
         <file>Resources/debugTerrain.tmx</file>
+        <file>Resources/candy/idle/mandarin-small-idle.png</file>
+        <file>Resources/candy/idle/peanut-small-idle.png</file>
     </qresource>
 </RCC>

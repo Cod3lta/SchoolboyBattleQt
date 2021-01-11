@@ -15,8 +15,8 @@ Candy::Candy(
         int candyType,
         int candySize,
         DataLoader *dataLoader,
-        QGraphicsItem *parent)
-    : QGraphicsItem(parent),
+        QGraphicsObject *parent)
+    : QGraphicsObject(parent),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
       dataLoader(dataLoader)
@@ -33,21 +33,21 @@ void Candy::loadAnimations() {
     animationsLocal.insert(
                 idle,
                 setupCandyAnimationData(
-                    -1,
                     dataLoader->candyAnimations.value(
                         dataLoader->getCandyAnimationId(candyType, candySize))));
 }
 
-Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct* sharedDatas) {
+Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(DataLoader::CandyAnimationsStruct* sharedDatas) {
     AnimationsLocalStruct *c = new AnimationsLocalStruct();
     c->frameIndex = 0;
     c->sharedDatas = sharedDatas;
     // Si on donne un -1 pour le framerate, il n'y a pas d'animation
     c->timer = new QTimer();
-    if(framerate >= 0) {
-        c->timer->setInterval(framerate);
+    if(sharedDatas->framerate >= 0) {
+        c->timer->setInterval(sharedDatas->framerate);
         c->timer->stop();
     }
+    connect(c->timer, &QTimer::timeout, this, &Candy::animationNextFrame);
     return c;
 }
 
