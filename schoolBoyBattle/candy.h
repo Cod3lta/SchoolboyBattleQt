@@ -1,13 +1,13 @@
 #ifndef CANDY_H
 #define CANDY_H
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QPixmap>
 #include "dataloader.h"
 
-class Candy : public QGraphicsItem
+class Candy : public QGraphicsObject
 {
 public:
-    Candy(int candyType, int candySize, DataLoader *dataLoader, QGraphicsItem *parent = nullptr);
+    Candy(int candyType, int candySize, DataLoader *dataLoader, QGraphicsObject *parent = nullptr);
     ~Candy();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
