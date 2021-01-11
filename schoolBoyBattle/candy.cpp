@@ -77,7 +77,7 @@ void Candy::setAnimation(Animations a) {
 }
 
 void Candy::setZIndex() {
-    setZValue(1000000);
+    setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
 

@@ -31,7 +31,7 @@ Player::Player(
 {
     // Spawn point des équipes
     teamsSpawnpoint.insert(red, {500, 500});
-    teamsSpawnpoint.insert(black, {1000, 500});
+    teamsSpawnpoint.insert(black, {1000, 300});
 
 
     this->team = static_cast<Team>(team);
