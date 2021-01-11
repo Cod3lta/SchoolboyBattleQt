@@ -7,6 +7,7 @@
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
 #define HITBOX_DEBUG false
+#define LERP_AMOUNT 50
 
 
 Candy::Candy(
@@ -15,16 +16,22 @@ Candy::Candy(
         int candyType,
         int candySize,
         DataLoader *dataLoader,
+        TileCandyPlacement *tilePlacement,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
-      dataLoader(dataLoader)
+      dataLoader(dataLoader),
+      tilePlacement(tilePlacement),
+      taken(false)
 {
     loadAnimations();
     setAnimation(idle);
     setPos(x, y);
     setZIndex();
+    if(tilePlacement != nullptr) {
+        connect(this, &Candy::pickedUp, tilePlacement, &TileCandyPlacement::candyPickedUp);
+    }
 }
 
 // Setup des animations des candies ---------------------------------------------------------
@@ -80,6 +87,22 @@ void Candy::setZIndex() {
     setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
+void Candy::pickUp(Player *player) {
+    taken = true;
+    emit pickedUp();
+    currentPlayer = player;
+}
+
+bool Candy::isTaken() {
+    return taken;
+}
+
+void Candy::refresh() {
+    if(taken) {
+        setX(x() + ((currentPlayer->x() + dataLoader->getPlayerSize().y()/2) - x()) / LERP_AMOUNT);
+        setY(y() + ((currentPlayer->y() + dataLoader->getPlayerSize().x()/2) - y()) / LERP_AMOUNT);
+    }
+}
 
 // OVERRIDE REQUIRED ------------------------------------------------------------------------
 

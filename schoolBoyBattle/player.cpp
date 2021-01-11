@@ -87,9 +87,12 @@ void Player::refresh(int delta) {
         movingVector = calculateAnswerVector(movingVector);
     }
     move(movingVector);
+
     if(getAnimationType() == run) {
         setZIndex();
     }
+
+    collideWithCandy();
 }
 
 // COLLISIONS ET DEPLACEMENTS ----------------------------------------------------------
@@ -101,6 +104,7 @@ void Player::refresh(int delta) {
  */
 bool Player::collide(QVector2D movingVector) {
 
+    // On simule une avancée du joueur pour savoir si là où il veut aller il peut y aller
     move(2*movingVector);
     bool returnValue = false;
 
@@ -108,17 +112,17 @@ bool Player::collide(QVector2D movingVector) {
     QList<QGraphicsItem*> itemsColliding = collidingItems();
 
     // Les tiles sur la couche collision autour du joueur
-    QList<Tile*> collisionTilesNearby = static_cast<Game*>(scene())->collisionTilesNearby(x(), y());
+    QList<Tile*> collisionTilesNearby = static_cast<Game*>(scene())->tilesNearby("4-collision", x(), y());
 
-    // Si on entre en contacte avec une tile et s'il
-    // y a une tile collision près du joueur
-    if(itemsColliding.size() > 0 && collisionTilesNearby.size() > 0) {
+    // S'il y a une tile collision près du joueur
+    if(collisionTilesNearby.size() > 0) {
         for(int i = 0; i < itemsColliding.size(); i++) {
             QGraphicsItem *collidingItem = itemsColliding.at(i);
 
             for(int j = 0; j < collisionTilesNearby.size(); j++) {
                 Tile *tileNearby = collisionTilesNearby.at(j);
-
+                // Si un des items avec lesquels on collide se trouve dans la liste des tiles
+                // de collisions qui se trouvent à proximité
                 if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
                     returnValue = true;
                     break;
@@ -126,9 +130,29 @@ bool Player::collide(QVector2D movingVector) {
             }
         }
     }
+    // On remet le joueur à sa position normale
     move(2*movingVector, true);
     return returnValue;
 
+}
+
+bool Player::collideWithCandy() {
+    QList<QGraphicsItem*> itemsColliding = collidingItems();
+    QList<Candy *> candiesNearby = static_cast<Game*>(scene())->candiesNearby(x(), y());
+    if(candiesNearby.length() > 0) {
+        for(int i = 0; i < itemsColliding.size(); i++) {
+            QGraphicsItem *collidingItem = itemsColliding.at(i);
+
+            for(int j = 0; j < candiesNearby.size(); j++) {
+                Candy *candyNearby = candiesNearby.at(j);
+                if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
+                    candyNearby->pickUp(this);
+                    //return candy;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 QVector2D Player::calculateMovingVector(int delta) {
