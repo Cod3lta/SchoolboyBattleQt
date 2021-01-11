@@ -10,6 +10,8 @@
 
 
 Candy::Candy(
+        int x,
+        int y,
         int candyType,
         int candySize,
         DataLoader *dataLoader,
@@ -21,7 +23,7 @@ Candy::Candy(
 {
     loadAnimations();
     setAnimation(idle);
-    setPos(750, 500);
+    setPos(x, y);
     setZIndex();
 }
 
@@ -75,7 +77,7 @@ void Candy::setAnimation(Animations a) {
 }
 
 void Candy::setZIndex() {
-    setZValue(y());
+    setZValue(1000000);
 }
 
 
@@ -83,12 +85,11 @@ void Candy::setZIndex() {
 
 // Paints contents of item in local coordinates
 void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-
     if(HITBOX_DEBUG) {
         // Debug rect
-        painter->setPen(QPen(Qt::black));
+        painter->setPen(QPen(Qt::yellow));
         painter->drawRect(boundingRect());
-        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
+        painter->drawText(10, 10, QString::number(id));
     }
 
     AnimationsLocalStruct *candyToDraw = animationsLocal.value(animation);

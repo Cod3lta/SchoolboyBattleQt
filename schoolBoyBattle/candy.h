@@ -7,7 +7,7 @@
 class Candy : public QGraphicsItem
 {
 public:
-    Candy(int candyType, int candySize, DataLoader *dataLoader, QGraphicsItem *parent = nullptr);
+    Candy(int x, int y, int candyType, int candySize, DataLoader *dataLoader, QGraphicsItem *parent = nullptr);
     ~Candy();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

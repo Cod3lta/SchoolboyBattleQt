@@ -13,6 +13,7 @@
 #include "keyinputs.h"
 #include "dataloader.h"
 #include "tile.h"
+#include "tilecandyplacement.h"
 #include <QElapsedTimer>
 
 class Game : public QGraphicsScene
@@ -32,6 +33,7 @@ private:
     QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
     QList<Candy*> candies;
+    QList<TileCandyPlacement*> tileCandyPlacements;
     // la string est le nom des layers
     QHash<QString, QList<Tile*>> tiles;
     KeyInputs *keyboardInputs;
@@ -48,6 +50,9 @@ private:
     void placeTilesCandyPlacement();
 
 protected:
+
+public slots:
+    Candy* spawnCandy(int x, int y, int candyType, int candySize);
 
 };
 #endif // MAINWINDOW_H

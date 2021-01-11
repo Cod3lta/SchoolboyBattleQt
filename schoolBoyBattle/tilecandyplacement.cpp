@@ -1,9 +1,10 @@
 #include "tilecandyplacement.h"
 
 #include <QPainter>
+#include <QDebug>
 
 #define TILE_SIZE 130
-#define HITBOX_DEBUG true
+#define HITBOX_DEBUG false
 
 TileCandyPlacement::TileCandyPlacement(
         int respawnDelayMs,
@@ -18,16 +19,22 @@ TileCandyPlacement::TileCandyPlacement(
     Tile(indexX, indexY, sceneTopLeftX, sceneTopLeftY, layer, tileType, dataLoader, parent),
     respawnDelayMs(respawnDelayMs)
 {
-    int min = 5000, max = 10000;
+    int min = 1000, max = 10000;
     int randomDelayFirstSpawnMs = min + (rand() % static_cast<int>(max - min + 1));
     timer = new QTimer();
     timer->setInterval(respawnDelayMs + randomDelayFirstSpawnMs);
     timer->start();
-    connect(timer, &QTimer::timeout, this, &TileCandyPlacement::spawnCandy);
+    connect(timer, &QTimer::timeout, this, &TileCandyPlacement::spawnCandyTimer);
 }
 
-void TileCandyPlacement::spawnCandy() {
+void TileCandyPlacement::spawnCandyTimer() {
     candySpawned = true;
+    candy = emit spawnCandy(
+                x(),
+                y(),
+                dataLoader->getCandyRessources(tileType)->candyType,
+                dataLoader->getCandyRessources(tileType)->candySize);
+    timer->stop();
 }
 
 
