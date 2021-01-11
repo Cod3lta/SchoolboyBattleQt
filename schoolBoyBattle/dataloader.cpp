@@ -31,19 +31,20 @@ QDomDocument DataLoader::getFileContent(QString fileName) {
 // PLAYER ANIMATIONS ------------------------------------------------------------------------
 
 void DataLoader::loadPlayerAnimations() {
-    playerAnimations.insert(0, setupPlayerAnimation(6, ":/Resources/player/idle/boy-black-idle.png"));
-    playerAnimations.insert(1, setupPlayerAnimation(6, ":/Resources/player/idle/girl-black-idle.png"));
-    playerAnimations.insert(2, setupPlayerAnimation(6, ":/Resources/player/idle/boy-red-idle.png"));
-    playerAnimations.insert(3, setupPlayerAnimation(6, ":/Resources/player/idle/girl-red-idle.png"));
-    playerAnimations.insert(4, setupPlayerAnimation(10, ":/Resources/player/run/boy-black-run.png"));
-    playerAnimations.insert(5, setupPlayerAnimation(10, ":/Resources/player/run/girl-black-run.png"));
-    playerAnimations.insert(6, setupPlayerAnimation(10, ":/Resources/player/run/boy-red-run.png"));
-    playerAnimations.insert(7, setupPlayerAnimation(10, ":/Resources/player/run/girl-red-run.png"));
+    playerAnimations.insert(0, setupPlayerAnimation(6, 150, ":/Resources/player/idle/boy-black-idle.png"));
+    playerAnimations.insert(1, setupPlayerAnimation(6, 150, ":/Resources/player/idle/girl-black-idle.png"));
+    playerAnimations.insert(2, setupPlayerAnimation(6, 150, ":/Resources/player/idle/boy-red-idle.png"));
+    playerAnimations.insert(3, setupPlayerAnimation(6, 150, ":/Resources/player/idle/girl-red-idle.png"));
+    playerAnimations.insert(4, setupPlayerAnimation(10, 50, ":/Resources/player/run/boy-black-run.png"));
+    playerAnimations.insert(5, setupPlayerAnimation(10, 50, ":/Resources/player/run/girl-black-run.png"));
+    playerAnimations.insert(6, setupPlayerAnimation(10, 50, ":/Resources/player/run/boy-red-run.png"));
+    playerAnimations.insert(7, setupPlayerAnimation(10, 50, ":/Resources/player/run/girl-red-run.png"));
 }
 
-DataLoader::PlayerAnimationsStruct* DataLoader::setupPlayerAnimation(int nbFrame, QString fileName) {
+DataLoader::PlayerAnimationsStruct* DataLoader::setupPlayerAnimation(int nbFrame, int framerate, QString fileName) {
     PlayerAnimationsStruct* aStruct = new PlayerAnimationsStruct;
     aStruct->nbFrame = nbFrame;
+    aStruct->framerate = framerate;
     aStruct->image = new QPixmap(fileName);
     return aStruct;
 }

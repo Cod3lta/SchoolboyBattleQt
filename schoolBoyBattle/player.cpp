@@ -46,15 +46,15 @@ Player::Player(
 }
 
 void Player::loadAnimations() {
-    animationsLocal.insert(idle, setupAnimation(150, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
-    animationsLocal.insert(run, setupAnimation(50, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
+    animationsLocal.insert(idle, setupAnimation(dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
+    animationsLocal.insert(run, setupAnimation(dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
 }
 
-Player::AnimationsLocalStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {
+Player::AnimationsLocalStruct* Player::setupAnimation(DataLoader::PlayerAnimationsStruct* sharedDatas) {
     AnimationsLocalStruct* aStruct = new AnimationsLocalStruct;
     aStruct->frameIndex = 0;
     aStruct->timer = new QTimer();
-    aStruct->timer->setInterval(framerate);
+    aStruct->timer->setInterval(sharedDatas->framerate);
     aStruct->timer->stop();
     connect(aStruct->timer, &QTimer::timeout, this, &Player::animationNextFrame);
     aStruct->sharedDatas = sharedDatas;

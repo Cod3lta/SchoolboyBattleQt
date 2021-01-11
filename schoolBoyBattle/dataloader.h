@@ -34,13 +34,14 @@ public:
     typedef struct PlayerAnimations_s {
         QPixmap *image;
         int nbFrame;
+        int framerate;
     } PlayerAnimationsStruct;
     QHash<int, PlayerAnimationsStruct*> playerAnimations;
     int getPlayerAnimationId(int gender, int team, int animation);
 
 private:
     void loadPlayerAnimations();
-    DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, QString fileName);
+    DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, int framerate, QString fileName);
 
     // CANDY RESSOURCES ------------------------------------------------------------
 
