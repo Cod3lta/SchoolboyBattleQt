@@ -54,7 +54,6 @@ private:
     const int playerHeight;
     const int playerSpeed;
 
-    QHash<Team, QList<int>> teamsSpawnpoint;
     QList<Tile*> *collisionTiles;
 
     void move(QVector2D vector, bool inverted = false);
@@ -70,7 +69,7 @@ private:
     Player::Facing getFacing();
     void setZIndex();
     void loadAnimations();
-    Player::AnimationsLocalStruct *setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas);
+    Player::AnimationsLocalStruct *setupAnimation(DataLoader::PlayerAnimationsStruct* sharedDatas);
 
 
 public slots:

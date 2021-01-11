@@ -14,8 +14,7 @@ public:
             int respawnDelayMs,
             int indexX,                         // Données nécessaires pour créer un objet Tile
             int indexY,
-            int sceneTopLeftX,
-            int sceneTopLeftY,
+            DataLoader::TileLayerStruct* layerRessources,
             QString layer,
             int tileType,
             DataLoader *dataLoader,

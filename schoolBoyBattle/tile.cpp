@@ -15,6 +15,7 @@ Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString
     int x = sceneTopLeftX * TILE_SIZE + indexX * TILE_SIZE;
     int y = sceneTopLeftY * TILE_SIZE + indexY * TILE_SIZE;
     setPos(x, y);
+    setZValue(layerRessources->zIndex);
 }
 
 
@@ -29,11 +30,6 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if(!(layer == "4-collision" || layer == "5-config")) {
         QRectF sourceRect(0, 0, image->width(), image->height());
         painter->drawPixmap(boundingRect(), *image, sourceRect);
-    }else{
-        if(dataLoader->getTileRessource(tileType)->name == "world/config/collision.png") {
-            painter->setPen(QPen(Qt::red));
-            //painter->drawRect(boundingRect());
-        }
     }
 
     // Lignes pour le compilateur

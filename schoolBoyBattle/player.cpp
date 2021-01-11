@@ -19,7 +19,7 @@ Player::Player(
         int team,
         DataLoader *dataLoader,
         QList<Tile*> *collisionTiles,
-        int playerWidth, int playerHeight, int playerSpeed, 
+        int playerWidth, int playerHeight, int playerSpeed,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       dataLoader(dataLoader),
@@ -29,14 +29,11 @@ Player::Player(
       playerSpeed(playerSpeed),
       collisionTiles(collisionTiles)
 {
-    // Spawn point des équipes
-    teamsSpawnpoint.insert(red, {500, 500});
-    teamsSpawnpoint.insert(black, {1000, 300});
-
-
     this->team = static_cast<Team>(team);
     gender = rand()%2 == 0 ? girl : boy;
-    setPos(teamsSpawnpoint[this->team].at(0), teamsSpawnpoint[this->team].at(1));
+    setPos(
+                dataLoader->getTeamSpawnpoint(team).x(),
+                dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
 
     // L'animation dépends de gender et team :
     // Doit être après l'initialisation de ces variables !
@@ -46,15 +43,15 @@ Player::Player(
 }
 
 void Player::loadAnimations() {
-    animationsLocal.insert(idle, setupAnimation(150, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
-    animationsLocal.insert(run, setupAnimation(50, dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
+    animationsLocal.insert(idle, setupAnimation(dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
+    animationsLocal.insert(run, setupAnimation(dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
 }
 
-Player::AnimationsLocalStruct* Player::setupAnimation(int framerate, DataLoader::PlayerAnimationsStruct* sharedDatas) {
+Player::AnimationsLocalStruct* Player::setupAnimation(DataLoader::PlayerAnimationsStruct* sharedDatas) {
     AnimationsLocalStruct* aStruct = new AnimationsLocalStruct;
     aStruct->frameIndex = 0;
     aStruct->timer = new QTimer();
-    aStruct->timer->setInterval(framerate);
+    aStruct->timer->setInterval(sharedDatas->framerate);
     aStruct->timer->stop();
     connect(aStruct->timer, &QTimer::timeout, this, &Player::animationNextFrame);
     aStruct->sharedDatas = sharedDatas;
@@ -89,7 +86,6 @@ void Player::refresh(int delta) {
     if(collide(movingVector)) {
         movingVector = calculateAnswerVector(movingVector);
     }
-    if(id == 0)
     move(movingVector);
     if(getAnimationType() == run) {
         setZIndex();
@@ -269,12 +265,13 @@ QRectF Player::boundingRect() const {
 // collisions detection
 QPainterPath Player::shape() const {
     double widthRatio = 0.6;
+    double shapeHeight = 130;
     QPainterPath path;
     path.addRect(QRectF(
-                     boundingRect().x() + (1 - widthRatio) * boundingRect().width() / 2,
-                     boundingRect().y() + boundingRect().height(),
+                     (1 - widthRatio) * boundingRect().width() / 2,
+                     shapeHeight,
                      boundingRect().width() * widthRatio,
-                     0));
+                     boundingRect().height() - shapeHeight));
     return path;
 }
 

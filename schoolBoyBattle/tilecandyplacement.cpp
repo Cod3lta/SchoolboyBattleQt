@@ -1,3 +1,4 @@
+#include "dataloader.h"
 #include "tilecandyplacement.h"
 
 #include <QPainter>
@@ -10,8 +11,7 @@ TileCandyPlacement::TileCandyPlacement(
         int respawnDelayMs,
         int indexX,
         int indexY,
-        int sceneTopLeftX,
-        int sceneTopLeftY,
+        DataLoader::TileLayerStruct* layerRessources,
         QString layer,
         int tileType,
         DataLoader *dataLoader,

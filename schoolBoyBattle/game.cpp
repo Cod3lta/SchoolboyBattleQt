@@ -100,8 +100,7 @@ void Game::placeTilesCandyPlacement() {
                             dataLoader->getCandyRessources(tileType)->respawnDelayMs,
                             x,
                             y,
-                            candyPlacementsLayer->topLeftX,
-                            candyPlacementsLayer->topLeftY,
+                            candyPlacementsLayer,
                             "6-candy-placements",
                             tileType,
                             dataLoader);
@@ -130,7 +129,7 @@ void Game::placeTiles() {
                 for(int x = 0; x < value->tiles.at(y).size(); x++) {
                     int tileType = value->tiles.at(y).at(x);
                     if(tileType != 0) {
-                        Tile *tile = new Tile(x, y, value->topLeftX, value->topLeftY, key, tileType, dataLoader);
+                        Tile *tile = new Tile(x, y, value, key, tileType, dataLoader);
                         tilesList.append(tile);
                         addItem(tile);
                     }
@@ -155,6 +154,7 @@ QList<Tile*> Game::collisionTilesNearby(int x, int y) {
 }
 
 void Game::playerMoveTimer() {
+    qDebug() << players.at(0)->x() << "\t" << players.at(0)->y();
     int delta=playerRefreshDelta->nsecsElapsed();
     playerRefreshDelta->restart();
     for (int i = 0; i < players.size(); ++i) {

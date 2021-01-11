@@ -22,11 +22,22 @@ class DataLoader
 {
 public:
     DataLoader(QString terrainFileName);
+    int getTileSize();
+    QVector2D getPlayerSize();
 
 private:
+    int const tileSize = 130, playerHeight = 150, playerWidth = tileSize;
     QDomDocument terrainXMLDoc;
     QDomDocument getFileContent(QString fileName);
 
+    // PLAYER SPAWNPOINTS ----------------------------------------------------------------
+
+public:
+    QHash<int, QPoint> teamsSpawnpoints;
+    QPoint getTeamSpawnpoint(int teamId);
+
+private:
+    void setPlayersSpawnpoint();
 
     // PLAYER ANIMATIONS -----------------------------------------------------------------
 
@@ -34,13 +45,14 @@ public:
     typedef struct PlayerAnimations_s {
         QPixmap *image;
         int nbFrame;
+        int framerate;
     } PlayerAnimationsStruct;
     QHash<int, PlayerAnimationsStruct*> playerAnimations;
     int getPlayerAnimationId(int gender, int team, int animation);
 
 private:
     void loadPlayerAnimations();
-    DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, QString fileName);
+    DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, int framerate, QString fileName);
 
     // CANDY RESSOURCES ------------------------------------------------------------
 
@@ -83,6 +95,7 @@ public:
         int height;
         int topLeftX;
         int topLeftY;
+        int zIndex;
     } TileLayerStruct;
     // doit être dans une qmap car plus tard dans le game.cpp, on prendra chaque layer
     // dans l'ordre pour y construire les tiles (c'est pour ça que les layers sont
@@ -92,7 +105,9 @@ public:
 private:
     void loadTileLayers();
     QList<QList<int>> setupTileLayer(QDomNodeList chunks);
-    void getLayerSize(int *layerWidth, int *layerHeight, int size, QDomNodeList chunks);
+    void getLayerPlacement(int *layerWidth, int *layerHeight, int *chunkMinX, int *chunkMinY, int size, QDomNodeList chunks);
+    QHash<QString, int> highestLowestPointsOfMap();
+    void updateTileLayersZIndex();
 
     // TILES RESSOURCES ------------------------------------------------------------------
 
@@ -103,7 +118,7 @@ public:
     } TileRessourcesStruct;
     // le int est le tileType (ce qu'il y a dans le .tmx)
     QHash<int, TileRessourcesStruct*> tileRessources;
-    TileRessourcesStruct* getTileRessource(int type);
+    TileRessourcesStruct* getTileRessource(int tileType);
     int getTileType(QString name);
 
 

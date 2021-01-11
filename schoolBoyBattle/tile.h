@@ -14,8 +14,7 @@ public:
     Tile(
             int x,
             int y,
-            int sceneTopLeftX,
-            int sceneTopLeftY,
+            DataLoader::TileLayerStruct* layerRessources,
             QString layer,
             int tileType,                   // numéro qu'il y a dans le .tmx
             DataLoader *dataLoader,
@@ -26,6 +25,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
     int tileType;
+    DataLoader::TileLayerStruct* layerRessources;
 
 private:
     QString layer;
@@ -33,6 +33,7 @@ private:
 
 protected:
     DataLoader *dataLoader;
+
 };
 
 #endif // TILE_H
