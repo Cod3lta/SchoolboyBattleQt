@@ -7,7 +7,8 @@
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
 #define HITBOX_DEBUG false
-#define LERP_AMOUNT 50
+#define LERP_AMOUNT 30
+#define LERP_ACCELERATION 50
 
 
 Candy::Candy(
@@ -87,7 +88,7 @@ void Candy::setZIndex() {
     setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
-void Candy::pickUp(Player *player) {
+void Candy::pickUp(QGraphicsItem *player) {
     taken = true;
     emit pickedUp();
     currentPlayer = player;
@@ -97,10 +98,14 @@ bool Candy::isTaken() {
     return taken;
 }
 
-void Candy::refresh() {
+void Candy::followPlayer(QPointF pos, int posInQueue) {
     if(taken) {
-        setX(x() + ((currentPlayer->x() + dataLoader->getPlayerSize().y()/2) - x()) / LERP_AMOUNT);
-        setY(y() + ((currentPlayer->y() + dataLoader->getPlayerSize().x()/2) - y()) / LERP_AMOUNT);
+        int yOffset = 0;
+        int trucmuche = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
+        if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
+        setX(this->x() + (pos.x() - this->x()          ) / trucmuche);
+        setY(this->y() + (pos.y() - this->y() + yOffset) / trucmuche);
+        setZIndex();
     }
 }
 

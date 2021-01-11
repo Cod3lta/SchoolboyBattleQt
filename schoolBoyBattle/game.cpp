@@ -182,10 +182,6 @@ void Game::refreshEntities() {
         player->refresh(delta);
         qobject_cast<View *>(views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
-    // Refresh les candy
-    for(int i = 0; i < candies.size(); i++) {
-        candies.at(i)->refresh();
-    }
 }
 
 void Game::spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement) {

@@ -3,7 +3,6 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 #include "dataloader.h"
-#include "player.h"
 #include "tilecandyplacement.h"
 
 class Candy : public QGraphicsObject
@@ -22,8 +21,8 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void pickUp(Player *player);
-    void refresh();
+    void pickUp(QGraphicsItem *player);
+    void followPlayer(QPointF pos, int posInQueue);
     bool isTaken();
 
 
@@ -45,7 +44,7 @@ private:
     Size candySize;
     DataLoader *dataLoader;
     TileCandyPlacement* tilePlacement;
-    Player *currentPlayer;
+    QGraphicsItem *currentPlayer;
     bool taken;
 
 

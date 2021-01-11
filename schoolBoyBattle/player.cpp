@@ -93,6 +93,17 @@ void Player::refresh(int delta) {
     }
 
     collideWithCandy();
+
+    if(candiesTaken.length() > 0)
+        refreshTakenCandies();
+}
+
+void Player::refreshTakenCandies() {
+    // le 1er candy de la liste suit le joueur
+    candiesTaken.first()->followPlayer(pos(), 0);
+    for(int i = 1; i < candiesTaken.length(); i++) {
+        candiesTaken.at(i)->followPlayer(candiesTaken.at(i-1)->pos(), i);
+    }
 }
 
 // COLLISIONS ET DEPLACEMENTS ----------------------------------------------------------
@@ -147,6 +158,7 @@ bool Player::collideWithCandy() {
                 Candy *candyNearby = candiesNearby.at(j);
                 if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
                     candyNearby->pickUp(this);
+                    candiesTaken.prepend(candyNearby);
                     //return candy;
                 }
             }

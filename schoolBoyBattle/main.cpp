@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
-    int nbPlayers = 2;
+    int nbPlayers = 1;
     QApplication a(argc, argv);
 
     ViewsContainer v(nbPlayers);

@@ -3,6 +3,7 @@
 
 #include "dataloader.h"
 #include "tile.h"
+#include "candy.h"
 
 #include <QMainWindow>
 #include <QGraphicsItem>
@@ -48,6 +49,7 @@ private:
     Animations currentAnimation;
     Facing facing;
     DataLoader *dataLoader;
+    QList<Candy *> candiesTaken;
     int id;
     bool moves[4] = {false, false, false, false};
     const int playerWidth;
@@ -56,6 +58,7 @@ private:
 
     QList<Tile*> *collisionTiles;
 
+    void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);
     bool collide(QVector2D movingVector);
     bool collideWithCandy();
