@@ -269,12 +269,13 @@ QRectF Player::boundingRect() const {
 // collisions detection
 QPainterPath Player::shape() const {
     double widthRatio = 0.6;
+    double shapeHeight = 130;
     QPainterPath path;
     path.addRect(QRectF(
-                     boundingRect().x() + (1 - widthRatio) * boundingRect().width() / 2,
-                     boundingRect().y() + boundingRect().height(),
+                     (1 - widthRatio) * boundingRect().width() / 2,
+                     shapeHeight,
                      boundingRect().width() * widthRatio,
-                     0));
+                     boundingRect().height() - shapeHeight));
     return path;
 }
 

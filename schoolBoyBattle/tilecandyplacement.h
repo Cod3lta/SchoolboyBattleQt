@@ -7,6 +7,7 @@
 
 class TileCandyPlacement : public Tile
 {
+    Q_OBJECT
 public:
     TileCandyPlacement(
             int respawnDelayMs,
