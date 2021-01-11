@@ -10,7 +10,7 @@
 #include "game.h"
 
 // Les textures sont étirées pour entrer dans le rectangle du joueur
-#define HITBOX_DEBUG true
+#define HITBOX_DEBUG false
 
 
 
@@ -86,7 +86,6 @@ void Player::refresh(int delta) {
     if(collide(movingVector)) {
         movingVector = calculateAnswerVector(movingVector);
     }
-    if(id == 0)
     move(movingVector);
     if(getAnimationType() == run) {
         setZIndex();
