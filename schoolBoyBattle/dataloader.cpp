@@ -86,8 +86,8 @@ DataLoader::CandyRessourcesStruct *DataLoader::getCandyRessources(int tileType) 
 // CANDY ANIMATIONS ------------------------------------------------------------------
 
 void DataLoader::loadCandyAnimations() {
-    candyAnimations.insert(0, setupCandyAnimation(1, 100 , ":/Resources/candy/peanut-small.png"));
-    candyAnimations.insert(1, setupCandyAnimation(1, 100, ":/Resources/candy/mandarin-small.png"));
+    candyAnimations.insert(0, setupCandyAnimation(8, 100 , ":/Resources/candy/idle/peanut-small-idle.png"));
+    candyAnimations.insert(1, setupCandyAnimation(8, 100, ":/Resources/candy/idle/mandarin-small-idle.png"));
     candyAnimations.insert(2, setupCandyAnimation(1, -1, ":/Resources/candy/peanut-big.png"));
     candyAnimations.insert(3, setupCandyAnimation(1, -1, ":/Resources/candy/mandarin-big.png"));
 }
