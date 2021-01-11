@@ -16,7 +16,7 @@ public:
             int y,
             DataLoader::TileLayerStruct* layerRessources,
             QString layer,
-            int type,                   // numéro qu'il y a dans le .tmx
+            int tileType,                   // numéro qu'il y a dans le .tmx
             DataLoader *dataLoader,
             QGraphicsItem* parent = nullptr);
     ~Tile();

@@ -6,7 +6,7 @@
 
 class KeyInputs : public QGraphicsObject
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     KeyInputs(QGraphicsObject *parent = nullptr);
     ~KeyInputs();

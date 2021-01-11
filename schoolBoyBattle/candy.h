@@ -1,13 +1,13 @@
 #ifndef CANDY_H
 #define CANDY_H
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QPixmap>
 #include "dataloader.h"
 
-class Candy : public QGraphicsItem
+class Candy : public QGraphicsObject
 {
 public:
-    Candy(int candyType, int candySize, DataLoader *dataLoader, QGraphicsItem *parent = nullptr);
+    Candy(int x, int y, int candyType, int candySize, DataLoader *dataLoader, QGraphicsObject *parent = nullptr);
     ~Candy();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -29,7 +29,7 @@ private:
 
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     void loadAnimations();
-    Candy::AnimationsLocalStruct *setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas);
+    Candy::AnimationsLocalStruct *setupCandyAnimationData(DataLoader::CandyAnimationsStruct *sharedDatas);
     int id;
     Type candyType;
     Size candySize;
