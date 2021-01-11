@@ -1,7 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "animateditem.h"
 #include "dataloader.h"
 #include "tile.h"
 
@@ -14,7 +13,7 @@
 
 
 
-class Player : public QGraphicsObject, public AnimatedItem
+class Player : public QGraphicsObject
 {
 public:
     Player(
