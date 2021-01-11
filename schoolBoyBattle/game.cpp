@@ -150,7 +150,7 @@ QList<Tile*> Game::collisionTilesNearby(int x, int y) {
 }
 
 void Game::playerMoveTimer() {
-    qDebug() << players.at(0)->zValue();
+    qDebug() << players.at(0)->x() << "\t" << players.at(0)->y();
     int delta=playerRefreshDelta->nsecsElapsed();
     playerRefreshDelta->restart();
     for (int i = 0; i < players.size(); ++i) {

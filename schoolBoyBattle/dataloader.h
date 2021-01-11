@@ -22,11 +22,22 @@ class DataLoader
 {
 public:
     DataLoader(QString terrainFileName);
+    int getTileSize();
+    QVector2D getPlayerSize();
 
 private:
+    int const tileSize = 130, playerHeight = 150, playerWidth = tileSize;
     QDomDocument terrainXMLDoc;
     QDomDocument getFileContent(QString fileName);
 
+    // PLAYER SPAWNPOINTS ----------------------------------------------------------------
+
+public:
+    QHash<int, QPoint> teamsSpawnpoints;
+    QPoint getTeamSpawnpoint(int teamId);
+
+private:
+    void setPlayersSpawnpoint();
 
     // PLAYER ANIMATIONS -----------------------------------------------------------------
 
@@ -95,7 +106,7 @@ private:
     QList<QList<int>> setupTileLayer(QDomNodeList chunks);
     void getLayerPlacement(int *layerWidth, int *layerHeight, int *chunkMinX, int *chunkMinY, int size, QDomNodeList chunks);
     QHash<QString, int> highestLowestPointsOfMap();
-    void updateTileLayers();
+    void updateTileLayersZIndex();
 
     // TILES RESSOURCES ------------------------------------------------------------------
 

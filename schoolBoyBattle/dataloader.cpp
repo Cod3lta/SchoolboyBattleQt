@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QHash>
 #include <QDomDocument>
+#include <QVector2D>
 
 #define PLAYER_AFTER_LAYER 1
 
@@ -15,7 +16,8 @@ DataLoader::DataLoader(QString terrainFileName)
     loadTilesRessources();
     loadCandyRessources();
     loadTileLayers();
-    updateTileLayers();
+    updateTileLayersZIndex();
+    setPlayersSpawnpoint();
 }
 
 QDomDocument DataLoader::getFileContent(QString fileName) {
@@ -26,6 +28,43 @@ QDomDocument DataLoader::getFileContent(QString fileName) {
     xmlBOM.setContent(&file);
     file.close();
     return xmlBOM;
+}
+
+int DataLoader::getTileSize() {
+    return tileSize;
+}
+
+QVector2D DataLoader::getPlayerSize() {
+    return QVector2D(playerWidth, playerHeight);
+}
+
+// PLAYER SPAWNPOINTS -----------------------------------------------------------------------
+
+
+void DataLoader::setPlayersSpawnpoint() {
+    for(int y = 0; y < tileLayers["5-config"]->tiles.size(); y++) {
+        for(int x = 0; x < tileLayers["5-config"]->tiles.at(y).size(); x++) {
+            int tileType = tileLayers["5-config"]->tiles.at(y).at(x);
+            if(tileType == 0)
+                continue;
+            if(getTileRessource(tileType)->name == "world/config/spawn-red.png")
+                teamsSpawnpoints.insert(0,
+                                        QPoint(
+                                            getTileSize() * (x + tileLayers["5-config"]->topLeftX),
+                                            getTileSize() * (y + tileLayers["5-config"]->topLeftY)
+                        ));
+            if(getTileRessource(tileType)->name == "world/config/spawn-black.png")
+                teamsSpawnpoints.insert(1,
+                                        QPoint(
+                                            getTileSize() * (x + tileLayers["5-config"]->topLeftX),
+                                            getTileSize() * (y + tileLayers["5-config"]->topLeftY)
+                        ));
+        }
+    }
+}
+
+QPoint DataLoader::getTeamSpawnpoint(int teamId) {
+    return teamsSpawnpoints[teamId];
 }
 
 // PLAYER ANIMATIONS ------------------------------------------------------------------------
@@ -226,7 +265,7 @@ QHash<QString, int> DataLoader::highestLowestPointsOfMap() {
     return returnValue;
 }
 
-void DataLoader::updateTileLayers() {
+void DataLoader::updateTileLayersZIndex() {
     QMapIterator<QString, TileLayerStruct*> i(tileLayers);
     QHash<QString, int> HLPoints = highestLowestPointsOfMap();
     int j = 0;

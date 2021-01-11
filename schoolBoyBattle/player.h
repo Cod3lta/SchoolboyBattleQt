@@ -54,7 +54,6 @@ private:
     const int playerHeight;
     const int playerSpeed;
 
-    QHash<Team, QList<int>> teamsSpawnpoint;
     QList<Tile*> *collisionTiles;
 
     void move(QVector2D vector, bool inverted = false);

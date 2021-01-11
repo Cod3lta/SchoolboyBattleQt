@@ -10,7 +10,7 @@
 #include "game.h"
 
 // Les textures sont étirées pour entrer dans le rectangle du joueur
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 
 
 
@@ -29,14 +29,11 @@ Player::Player(
       playerSpeed(playerSpeed),
       collisionTiles(collisionTiles)
 {
-    // Spawn point des équipes
-    teamsSpawnpoint.insert(red, {500, 500});
-    teamsSpawnpoint.insert(black, {1000, 500});
-
-
     this->team = static_cast<Team>(team);
     gender = rand()%2 == 0 ? girl : boy;
-    setPos(teamsSpawnpoint[this->team].at(0), teamsSpawnpoint[this->team].at(1));
+    setPos(
+                dataLoader->getTeamSpawnpoint(team).x(),
+                dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
 
     // L'animation dépends de gender et team :
     // Doit être après l'initialisation de ces variables !

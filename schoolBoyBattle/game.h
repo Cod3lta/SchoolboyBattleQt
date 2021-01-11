@@ -35,8 +35,10 @@ private:
     // la string est le nom des layers
     QHash<QString, QList<Tile*>> tiles;
     KeyInputs *keyboardInputs;
-
     DataLoader *dataLoader;
+
+    QPoint redSpawnpoint;
+    QPoint blackSpawnpoint;
 
     bool startBool;
     int tabScore[];
@@ -46,7 +48,5 @@ private:
     void reset();
     void playerMoveTimer();
     void placeTilesCandyPlacement();
-
-
 };
 #endif // MAINWINDOW_H
