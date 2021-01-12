@@ -24,6 +24,7 @@ public:
     void pickUp(QGraphicsItem *player);
     void refresh(QPointF pos, int posInQueue);
     bool isTaken();
+    QGraphicsItem* getCurrentPlayer();
 
 
     enum Type : int {peanut = 0, mandarin = 1};

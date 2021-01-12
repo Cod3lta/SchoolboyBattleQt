@@ -10,7 +10,7 @@
 #include "game.h"
 
 // Les textures sont étirées pour entrer dans le rectangle du joueur
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 
 
 
@@ -147,7 +147,7 @@ bool Player::collide(QVector2D movingVector) {
 
 }
 
-bool Player::collideWithCandy() {
+void Player::collideWithCandy() {
     QList<QGraphicsItem*> itemsColliding = collidingItems();
     QList<Candy *> candiesNearby = static_cast<Game*>(scene())->candiesNearby(x(), y());
     if(candiesNearby.length() > 0) {
@@ -157,14 +157,23 @@ bool Player::collideWithCandy() {
             for(int j = 0; j < candiesNearby.size(); j++) {
                 Candy *candyNearby = candiesNearby.at(j);
                 if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
-                    candyNearby->pickUp(this);
-                    candiesTaken.prepend(candyNearby);
-                    //return candy;
+                    // si le candy qu'on touche est pris (pas par nous)
+                    if(candyNearby->isTaken()) {
+                        if(static_cast<Player*>(candyNearby->getCurrentPlayer()) != this) {
+                            // Voler le candy
+                        }
+                    }else{
+                        // Ramasser le candy
+                        // appeler une fonction publique de Candy au lieu d'un signal car utiliser
+                        // les signaux / slots demanderait de connecter au préalable tous les joueurs à
+                        // tous les candy
+                        candyNearby->pickUp(this);
+                        candiesTaken.prepend(candyNearby);
+                    }
                 }
             }
         }
     }
-    return false;
 }
 
 QVector2D Player::calculateMovingVector(int delta) {

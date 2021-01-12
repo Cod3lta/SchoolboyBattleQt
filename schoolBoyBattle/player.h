@@ -61,7 +61,7 @@ private:
     void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);
     bool collide(QVector2D movingVector);
-    bool collideWithCandy();
+    void collideWithCandy();
     QVector2D calculateMovingVector(int delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
     void validate_candies();

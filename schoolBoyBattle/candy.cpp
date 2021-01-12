@@ -7,8 +7,8 @@
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
 #define HITBOX_DEBUG false
-#define LERP_AMOUNT 5 // plus haut = distance parcourue plus petite
-#define LERP_ACCELERATION 80
+#define LERP_AMOUNT 30 // plus haut = distance parcourue plus petite
+#define LERP_ACCELERATION 50
 
 
 Candy::Candy(
@@ -98,102 +98,19 @@ bool Candy::isTaken() {
     return taken;
 }
 
+QGraphicsItem *Candy::getCurrentPlayer() {
+    return currentPlayer;
+}
+
 void Candy::refresh(QPointF pos, int posInQueue) {
     if(!taken) return;
-    /*int yOffset = 0;
-    int lerpConstant = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
+    int yOffset = 0;
+    int trucmuche = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
     if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
-    setX(this->x() + (pos.x() - this->x()          ) / lerpConstant);
-    setY(this->y() + (pos.y() - this->y() + yOffset) / lerpConstant);*/
-
-    QVector2D movingVector = calculateMovingVector(pos, posInQueue);
-    if(collide(movingVector))
-        movingVector = calculateAnswerVector(movingVector);
-    move(movingVector);
+    setX(this->x() + (pos.x() - this->x()          ) / trucmuche);
+    setY(this->y() + (pos.y() - this->y() + yOffset) / trucmuche);
     setZIndex();
 }
-
-////////////////////////////////////////////////////// FROM PLAYER //////////////////////////////////////////////////////
-
-/*
- * déplacer le joueur dans la direction du vecteur mouvement
- * tester s'il y a une collision
- * remettre le joueur dans sa position initiale
- */
-bool Candy::collide(QVector2D movingVector) {
-
-    // On simule une avancée du joueur pour savoir si là où il veut aller il peut y aller
-    move(2*movingVector);
-    bool returnValue = false;
-
-    // Les items en contacte avec le joueur
-    QList<QGraphicsItem*> itemsColliding = collidingItems();
-
-    // Les tiles sur la couche collision autour du joueur
-    QList<Tile*> collisionTilesNearby = static_cast<Game*>(scene())->tilesNearby("4-collision", x(), y());
-
-    // S'il y a une tile collision près du joueur
-    if(collisionTilesNearby.size() > 0) {
-        for(int i = 0; i < itemsColliding.size(); i++) {
-            QGraphicsItem *collidingItem = itemsColliding.at(i);
-
-            for(int j = 0; j < collisionTilesNearby.size(); j++) {
-                Tile *tileNearby = collisionTilesNearby.at(j);
-                // Si un des items avec lesquels on collide se trouve dans la liste des tiles
-                // de collisions qui se trouvent à proximité
-                if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
-                    returnValue = true;
-                    break;
-                }
-            }
-        }
-    }
-    // On remet le joueur à sa position normale
-    move(2*movingVector, true);
-    return returnValue;
-
-}
-
-QVector2D Candy::calculateMovingVector(QPointF pos, int posInQueue) {
-    QVector2D v;
-
-    int yOffset = 0;
-    int lerpConstant = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
-    if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
-    v.setX((pos.x() - this->x()          ) / lerpConstant);
-    v.setY((pos.y() - this->y() + yOffset) / lerpConstant);
-
-    //v.normalize();
-    //double deltaMinified = delta / 10e6;
-    //v *= deltaMinified * playerSpeed;
-    return v;
-}
-
-QVector2D Candy::calculateAnswerVector(QVector2D movingVector) {
-    bool collideX = collide(QVector2D(movingVector.x(), 0));
-    bool collideY = collide(QVector2D(0, movingVector.y()));
-
-    QVector2D normalVector(
-                movingVector.x() * collideX * -1,
-                movingVector.y() * collideY * -1);
-
-    QVector2D answerVector = movingVector + normalVector;
-    //QVector2D answerVector(0, 0);
-
-    return answerVector;
-}
-
-void Candy::move(QVector2D vector, bool inverted) {
-    if(inverted)
-        vector = -vector;
-    setX(x() + vector.x());
-    setY(y() + vector.y());
-
-}
-
-////////////////////////////////////////////////////// FROM PLAYER //////////////////////////////////////////////////////
-
-
 
 // OVERRIDE REQUIRED ------------------------------------------------------------------------
 

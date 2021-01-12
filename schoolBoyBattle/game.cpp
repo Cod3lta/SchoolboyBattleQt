@@ -145,11 +145,12 @@ QList<Tile*> Game::tilesNearby(QString layer, int x, int y) {
     for(int i = 0; i < tiles[layer].size(); i++) {
         Tile *tile = tiles[layer].at(i);
         // Sélectionner les tiles à proximité du point (x,y)
+        int tileSize = dataLoader->getTileSize();
         if(
-                tile->x() > x - 2 * dataLoader->getTileSize() &&
-                tile->x() < x + 2 * dataLoader->getTileSize() &&
-                tile->y() > y - 2 * dataLoader->getTileSize() &&
-                tile->y() < y + 2 * dataLoader->getTileSize()) {
+                tile->x() > x - 2 * tileSize &&
+                tile->x() < x + 2 * tileSize &&
+                tile->y() > y - 2 * tileSize &&
+                tile->y() < y + 2 * tileSize) {
             tilesNearby.append(tile);
         }
     }
@@ -160,13 +161,15 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
     QList<Candy*> candiesNearby;
     for(int i = 0; i < candies.size(); i++) {
         Candy *candy = candies.at(i);
-        // Sélectionner les tiles à proximité du point (x,y)
+        // Sélectionner les candy à proximité du point (x,y)
+        int tileSize = dataLoader->getTileSize();
         if(
-                !candy->isTaken() &&
-                candy->x() > x - 2 * dataLoader->getTileSize() &&
-                candy->x() < x + 2 * dataLoader->getTileSize() &&
-                candy->y() > y - 2 * dataLoader->getTileSize() &&
-                candy->y() < y + 2 * dataLoader->getTileSize()) {
+                // Nécessaire !
+                //!candy->isTaken() &&
+                candy->x() > x - 2 * tileSize &&
+                candy->x() < x + 2 * tileSize &&
+                candy->y() > y - 2 * tileSize &&
+                candy->y() < y + 2 * tileSize) {
             candiesNearby.append(candy);
         }
     }
