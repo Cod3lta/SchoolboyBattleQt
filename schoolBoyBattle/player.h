@@ -29,6 +29,7 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void refresh(int delta);
+    QList<Candy *> looseCandies(Candy *candy);
 
 private:
     enum Team : int {red = 0, black = 1};
