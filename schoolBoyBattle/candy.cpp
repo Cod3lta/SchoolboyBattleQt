@@ -98,6 +98,10 @@ bool Candy::isTaken() {
     return taken;
 }
 
+void Candy::setCurrentPlayer(QGraphicsItem *player) {
+    currentPlayer = player;
+}
+
 QGraphicsItem *Candy::getCurrentPlayer() {
     return currentPlayer;
 }

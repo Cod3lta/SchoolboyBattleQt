@@ -161,6 +161,10 @@ void Player::collideWithCandy() {
                     if(candyNearby->isTaken()) {
                         if(static_cast<Player*>(candyNearby->getCurrentPlayer()) != this) {
                             // Voler le candy
+                            QList<Candy *> candyGained = static_cast<Player *>(candyNearby->getCurrentPlayer())->looseCandies(candyNearby);
+                            for(int i = 0; i < candyGained.size(); i++)
+                                candyGained.at(i)->setCurrentPlayer(this);
+                            candiesTaken = candyGained + candiesTaken;
                         }
                     }else{
                         // Ramasser le candy
@@ -175,6 +179,22 @@ void Player::collideWithCandy() {
         }
     }
 }
+
+QList<Candy *> Player::looseCandies(Candy *candyStolen) {
+    QList<Candy*> candiesStolen;
+    for(int i = 0; i < candiesTaken.length(); i++) {
+        if(candiesTaken.at(i) == candyStolen) {
+            candiesStolen = candiesTaken.mid(i);
+            candiesTaken = candiesTaken.mid(0, i);
+            return candiesStolen;
+        }
+    }
+    return candiesStolen;
+}
+
+/*void Player::updateQueuePos() {
+
+}*/
 
 QVector2D Player::calculateMovingVector(int delta) {
     QVector2D v;
