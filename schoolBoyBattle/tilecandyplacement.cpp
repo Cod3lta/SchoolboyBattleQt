@@ -5,7 +5,7 @@
 #include <QDebug>
 
 #define TILE_SIZE 130
-#define HITBOX_DEBUG true
+#define HITBOX_DEBUG false
 
 TileCandyPlacement::TileCandyPlacement(
         int respawnDelayMs,
