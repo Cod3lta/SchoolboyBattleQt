@@ -22,7 +22,7 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void pickUp(QGraphicsItem *player);
-    void followPlayer(QPointF pos, int posInQueue);
+    void refresh(QPointF pos, int posInQueue);
     bool isTaken();
 
 
@@ -55,6 +55,10 @@ private:
     void animationNextFrame();
     void setAnimation(Animations a);
     void setZIndex();
+    void move(QVector2D vector, bool inverted = false);
+    QVector2D calculateAnswerVector(QVector2D movingVector);
+    bool collide(QVector2D movingVector);
+    QVector2D calculateMovingVector(QPointF pos, int posInQueue);
 
 signals:
     void pickedUp();
