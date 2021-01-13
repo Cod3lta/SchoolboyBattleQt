@@ -57,10 +57,6 @@ private:
     void animationNextFrame();
     void setAnimation(Animations a);
     void setZIndex();
-    void move(QVector2D vector, bool inverted = false);
-    QVector2D calculateAnswerVector(QVector2D movingVector);
-    bool collide(QVector2D movingVector);
-    QVector2D calculateMovingVector(QPointF pos, int posInQueue);
 
 signals:
     void pickedUp();

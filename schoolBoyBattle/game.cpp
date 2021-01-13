@@ -164,8 +164,6 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
         // Sélectionner les candy à proximité du point (x,y)
         int tileSize = dataLoader->getTileSize();
         if(
-                // Nécessaire !
-                //!candy->isTaken() &&
                 candy->x() > x - 2 * tileSize &&
                 candy->x() < x + 2 * tileSize &&
                 candy->y() > y - 2 * tileSize &&

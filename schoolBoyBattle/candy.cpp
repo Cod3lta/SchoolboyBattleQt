@@ -113,6 +113,7 @@ void Candy::refresh(QPointF pos, int posInQueue) {
     if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
     setX(this->x() + (pos.x() - this->x()          ) / trucmuche);
     setY(this->y() + (pos.y() - this->y() + yOffset) / trucmuche);
+
     setZIndex();
 }
 
