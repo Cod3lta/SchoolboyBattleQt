@@ -1,7 +1,6 @@
 #ifndef TILECANDYPLACEMENT_H
 #define TILECANDYPLACEMENT_H
 
-#include "candy.h"
 #include "tile.h"
 
 #include <QGraphicsObject>
@@ -28,14 +27,13 @@ private:
     bool candySpawned;
     int respawnDelayMs;
     QTimer *timer;
-    Candy *candy;
 
 public slots:
     void spawnCandyTimer();
-    void takeCandy();
+    void candyPickedUp();
 
 signals:
-    Candy* spawnCandy(int x, int y, int candyType, int candySize);
+    void spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement);
 
 };
 

@@ -7,6 +7,8 @@
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
 #define HITBOX_DEBUG false
+#define LERP_AMOUNT 30 // plus haut = distance parcourue plus petite
+#define LERP_ACCELERATION 50
 
 
 Candy::Candy(
@@ -15,16 +17,22 @@ Candy::Candy(
         int candyType,
         int candySize,
         DataLoader *dataLoader,
+        TileCandyPlacement *tilePlacement,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
-      dataLoader(dataLoader)
+      dataLoader(dataLoader),
+      tilePlacement(tilePlacement),
+      taken(false)
 {
     loadAnimations();
     setAnimation(idle);
     setPos(x, y);
     setZIndex();
+    if(tilePlacement != nullptr) {
+        connect(this, &Candy::pickedUp, tilePlacement, &TileCandyPlacement::candyPickedUp);
+    }
 }
 
 // Setup des animations des candies ---------------------------------------------------------
@@ -80,6 +88,34 @@ void Candy::setZIndex() {
     setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
+void Candy::pickUp(QGraphicsItem *player) {
+    taken = true;
+    emit pickedUp();
+    currentPlayer = player;
+}
+
+bool Candy::isTaken() {
+    return taken;
+}
+
+void Candy::setCurrentPlayer(QGraphicsItem *player) {
+    currentPlayer = player;
+}
+
+QGraphicsItem *Candy::getCurrentPlayer() {
+    return currentPlayer;
+}
+
+void Candy::refresh(QPointF pos, int posInQueue) {
+    if(!taken) return;
+    int yOffset = 0;
+    int trucmuche = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
+    if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
+    setX(this->x() + (pos.x() - this->x()          ) / trucmuche);
+    setY(this->y() + (pos.y() - this->y() + yOffset) / trucmuche);
+
+    setZIndex();
+}
 
 // OVERRIDE REQUIRED ------------------------------------------------------------------------
 
@@ -89,6 +125,8 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         // Debug rect
         painter->setPen(QPen(Qt::yellow));
         painter->drawRect(boundingRect());
+        painter->setPen(QPen(Qt::red));
+        painter->drawPath(shape());
         painter->drawText(10, 10, QString::number(id));
     }
 
@@ -115,7 +153,11 @@ QRectF Candy::boundingRect() const {
 // collisions detection
 QPainterPath Candy::shape() const {
     QPainterPath path;
-    path.addRect(boundingRect());
+    path.addRect(QRectF(
+                     boundingRect().x() + boundingRect().width() / 4,
+                     boundingRect().y() + boundingRect().height() / 4,
+                     boundingRect().width()/2,
+                     boundingRect().height()/2));
     return path;
 }
 

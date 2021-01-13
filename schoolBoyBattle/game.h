@@ -26,7 +26,8 @@ public:
     void exit();
     void keyPress(QKeyEvent *event);
     void keyRelease(QKeyEvent *event);
-    QList<Tile*> collisionTilesNearby(int x, int y);
+    QList<Tile*> tilesNearby(QString layer, int x, int y);
+    QList<Candy *> candiesNearby(int x, int y);
 
 private:
     QTimer *playerRefresh;
@@ -48,13 +49,13 @@ private:
     void setCustomSceneRect();
     void placeTiles();
     void reset();
-    void playerMoveTimer();
+    void refreshEntities();
     void placeTilesCandyPlacement();
 
 protected:
 
 public slots:
-    Candy* spawnCandy(int x, int y, int candyType, int candySize);
+    void spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement);
 
 };
 #endif // MAINWINDOW_H

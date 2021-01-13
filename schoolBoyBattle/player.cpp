@@ -87,8 +87,22 @@ void Player::refresh(int delta) {
         movingVector = calculateAnswerVector(movingVector);
     }
     move(movingVector);
+
     if(getAnimationType() == run) {
         setZIndex();
+    }
+
+    collideWithCandy();
+
+    if(candiesTaken.length() > 0)
+        refreshTakenCandies();
+}
+
+void Player::refreshTakenCandies() {
+    // le 1er candy de la liste suit le joueur
+    candiesTaken.first()->refresh(pos(), 0);
+    for(int i = 1; i < candiesTaken.length(); i++) {
+        candiesTaken.at(i)->refresh(candiesTaken.at(i-1)->pos(), i);
     }
 }
 
@@ -101,6 +115,7 @@ void Player::refresh(int delta) {
  */
 bool Player::collide(QVector2D movingVector) {
 
+    // On simule une avancée du joueur pour savoir si là où il veut aller il peut y aller
     move(2*movingVector);
     bool returnValue = false;
 
@@ -108,17 +123,17 @@ bool Player::collide(QVector2D movingVector) {
     QList<QGraphicsItem*> itemsColliding = collidingItems();
 
     // Les tiles sur la couche collision autour du joueur
-    QList<Tile*> collisionTilesNearby = static_cast<Game*>(scene())->collisionTilesNearby(x(), y());
+    QList<Tile*> collisionTilesNearby = static_cast<Game*>(scene())->tilesNearby("4-collision", x(), y());
 
-    // Si on entre en contacte avec une tile et s'il
-    // y a une tile collision près du joueur
-    if(itemsColliding.size() > 0 && collisionTilesNearby.size() > 0) {
+    // S'il y a une tile collision près du joueur
+    if(collisionTilesNearby.size() > 0) {
         for(int i = 0; i < itemsColliding.size(); i++) {
             QGraphicsItem *collidingItem = itemsColliding.at(i);
 
             for(int j = 0; j < collisionTilesNearby.size(); j++) {
                 Tile *tileNearby = collisionTilesNearby.at(j);
-
+                // Si un des items avec lesquels on collide se trouve dans la liste des tiles
+                // de collisions qui se trouvent à proximité
                 if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
                     returnValue = true;
                     break;
@@ -126,10 +141,60 @@ bool Player::collide(QVector2D movingVector) {
             }
         }
     }
+    // On remet le joueur à sa position normale
     move(2*movingVector, true);
     return returnValue;
 
 }
+
+void Player::collideWithCandy() {
+    QList<QGraphicsItem*> itemsColliding = collidingItems();
+    QList<Candy *> candiesNearby = static_cast<Game*>(scene())->candiesNearby(x(), y());
+    if(candiesNearby.length() > 0) {
+        for(int i = 0; i < itemsColliding.size(); i++) {
+            QGraphicsItem *collidingItem = itemsColliding.at(i);
+
+            for(int j = 0; j < candiesNearby.size(); j++) {
+                Candy *candyNearby = candiesNearby.at(j);
+                if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
+                    // si le candy qu'on touche est pris (pas par nous)
+                    if(candyNearby->isTaken()) {
+                        if(static_cast<Player*>(candyNearby->getCurrentPlayer()) != this) {
+                            // Voler le candy
+                            QList<Candy *> candyGained = static_cast<Player *>(candyNearby->getCurrentPlayer())->looseCandies(candyNearby);
+                            for(int i = 0; i < candyGained.size(); i++)
+                                candyGained.at(i)->setCurrentPlayer(this);
+                            candiesTaken = candyGained + candiesTaken;
+                        }
+                    }else{
+                        // Ramasser le candy
+                        // appeler une fonction publique de Candy au lieu d'un signal car utiliser
+                        // les signaux / slots demanderait de connecter au préalable tous les joueurs à
+                        // tous les candy
+                        candyNearby->pickUp(this);
+                        candiesTaken.prepend(candyNearby);
+                    }
+                }
+            }
+        }
+    }
+}
+
+QList<Candy *> Player::looseCandies(Candy *candyStolen) {
+    QList<Candy*> candiesStolen;
+    for(int i = 0; i < candiesTaken.length(); i++) {
+        if(candiesTaken.at(i) == candyStolen) {
+            candiesStolen = candiesTaken.mid(i);
+            candiesTaken = candiesTaken.mid(0, i);
+            return candiesStolen;
+        }
+    }
+    return candiesStolen;
+}
+
+/*void Player::updateQueuePos() {
+
+}*/
 
 QVector2D Player::calculateMovingVector(int delta) {
     QVector2D v;

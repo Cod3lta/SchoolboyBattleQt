@@ -3,6 +3,7 @@
 
 #include "dataloader.h"
 #include "tile.h"
+#include "candy.h"
 
 #include <QMainWindow>
 #include <QGraphicsItem>
@@ -28,6 +29,7 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void refresh(int delta);
+    QList<Candy *> looseCandies(Candy *candy);
 
 private:
     enum Team : int {red = 0, black = 1};
@@ -48,6 +50,7 @@ private:
     Animations currentAnimation;
     Facing facing;
     DataLoader *dataLoader;
+    QList<Candy *> candiesTaken;
     int id;
     bool moves[4] = {false, false, false, false};
     const int playerWidth;
@@ -56,8 +59,10 @@ private:
 
     QList<Tile*> *collisionTiles;
 
+    void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);
     bool collide(QVector2D movingVector);
+    void collideWithCandy();
     QVector2D calculateMovingVector(int delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
     void validate_candies();
@@ -70,7 +75,6 @@ private:
     void setZIndex();
     void loadAnimations();
     Player::AnimationsLocalStruct *setupAnimation(DataLoader::PlayerAnimationsStruct* sharedDatas);
-
 
 public slots:
     void keyMove(int playerId, int direction, bool value);

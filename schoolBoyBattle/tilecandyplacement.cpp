@@ -29,18 +29,20 @@ TileCandyPlacement::TileCandyPlacement(
 
 void TileCandyPlacement::spawnCandyTimer() {
     candySpawned = true;
-    candy = emit spawnCandy(
+    emit spawnCandy(
                 x(),
                 y(),
                 dataLoader->getCandyRessources(tileType)->candyType,
-                dataLoader->getCandyRessources(tileType)->candySize);
+                dataLoader->getCandyRessources(tileType)->candySize,
+                this);
     timer->stop();
 }
 
 
-void TileCandyPlacement::takeCandy() {
+void TileCandyPlacement::candyPickedUp() {
     candySpawned = false;
     timer->setInterval(respawnDelayMs);
+    timer->start();
 }
 
 // OVERRIDE REQUIRED

@@ -35,7 +35,7 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     playerRefreshDelta = new QElapsedTimer();
     playerRefresh = new QTimer(this);
     playerRefresh->setInterval(REFRESH_DELAY);
-    connect(playerRefresh, &QTimer::timeout, this, &Game::playerMoveTimer);
+    connect(playerRefresh, &QTimer::timeout, this, &Game::refreshEntities);
     playerRefresh->start();
     playerRefreshDelta->start();
 
@@ -140,35 +140,55 @@ void Game::placeTiles() {
     }
 }
 
-QList<Tile*> Game::collisionTilesNearby(int x, int y) {
+QList<Tile*> Game::tilesNearby(QString layer, int x, int y) {
     QList<Tile*> tilesNearby;
-    for(int i = 0; i < tiles["4-collision"].size(); i++) {
-        Tile *tile = tiles["4-collision"].at(i);
-        // TODO : remplacer le 130 par la constante de taille des tiles
-        if(tile->x() > x - 2 * 130 && tile->x() < x + 2 * 130 &&
-                tile->y() > y - 2 * 130 && tile->y() < y + 2 * 130) {
+    for(int i = 0; i < tiles[layer].size(); i++) {
+        Tile *tile = tiles[layer].at(i);
+        // Sélectionner les tiles à proximité du point (x,y)
+        int tileSize = dataLoader->getTileSize();
+        if(
+                tile->x() > x - 2 * tileSize &&
+                tile->x() < x + 2 * tileSize &&
+                tile->y() > y - 2 * tileSize &&
+                tile->y() < y + 2 * tileSize) {
             tilesNearby.append(tile);
         }
     }
     return tilesNearby;
 }
 
-void Game::playerMoveTimer() {
-    qDebug() << players.at(0)->x() << "\t" << players.at(0)->y();
+QList<Candy*> Game::candiesNearby(int x, int y) {
+    QList<Candy*> candiesNearby;
+    for(int i = 0; i < candies.size(); i++) {
+        Candy *candy = candies.at(i);
+        // Sélectionner les candy à proximité du point (x,y)
+        int tileSize = dataLoader->getTileSize();
+        if(
+                candy->x() > x - 2 * tileSize &&
+                candy->x() < x + 2 * tileSize &&
+                candy->y() > y - 2 * tileSize &&
+                candy->y() < y + 2 * tileSize) {
+            candiesNearby.append(candy);
+        }
+    }
+    return candiesNearby;
+}
+
+void Game::refreshEntities() {
     int delta=playerRefreshDelta->nsecsElapsed();
+    // Refresh le joueur
     playerRefreshDelta->restart();
-    for (int i = 0; i < players.size(); ++i) {
+    for(int i = 0; i < players.size(); i++) {
         Player *player = players.at(i);
         player->refresh(delta);
         qobject_cast<View *>(views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 }
 
-Candy* Game::spawnCandy(int x, int y, int candyType, int candySize) {
-    Candy *candy = new Candy(x, y, candyType, candySize, dataLoader);
+void Game::spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement) {
+    Candy *candy = new Candy(x, y, candyType, candySize, dataLoader, tilePlacement);
     addItem(candy);
     candies.append(candy);
-    return candy;
 }
 
 
