@@ -7,8 +7,8 @@
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
 #define HITBOX_DEBUG false
-#define LERP_AMOUNT 30 // plus haut = distance parcourue plus petite
-#define LERP_ACCELERATION 50
+#define LERP_AMOUNT 50 // plus haut = distance parcourue plus petite
+#define LERP_ACCELERATION 30
 
 
 Candy::Candy(
@@ -106,13 +106,13 @@ QGraphicsItem *Candy::getCurrentPlayer() {
     return currentPlayer;
 }
 
-void Candy::refresh(QPointF pos, int posInQueue) {
+void Candy::refresh(QPointF pos, int posInQueue, double delta) {
     if(!taken) return;
     int yOffset = 0;
-    int trucmuche = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
+    int lerpFactor = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
     if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
-    setX(this->x() + (pos.x() - this->x()          ) / trucmuche);
-    setY(this->y() + (pos.y() - this->y() + yOffset) / trucmuche);
+    setX(this->x() + (pos.x() - this->x()          ) / lerpFactor * delta);
+    setY(this->y() + (pos.y() - this->y() + yOffset) / lerpFactor * delta);
 
     setZIndex();
 }

@@ -59,11 +59,11 @@ private:
 
     QList<Tile*> *collisionTiles;
 
-    void refreshTakenCandies();
+    void refreshTakenCandies(double delta);
     void move(QVector2D vector, bool inverted = false);
     bool collide(QVector2D movingVector);
     void collideWithCandy();
-    QVector2D calculateMovingVector(int delta);
+    QVector2D calculateMovingVector(double delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
     void validate_candies();
     void takeCandy();

@@ -22,7 +22,7 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void pickUp(QGraphicsItem *player);
-    void refresh(QPointF pos, int posInQueue);
+    void refresh(QPointF pos, int posInQueue, double delta);
     bool isTaken();
     QGraphicsItem* getCurrentPlayer();
     void setCurrentPlayer(QGraphicsItem *player);

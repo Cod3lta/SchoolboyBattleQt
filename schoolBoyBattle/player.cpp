@@ -82,7 +82,9 @@ void Player::refresh(int delta) {
      *      vecteur de mouvement = déterminer le vecteur de réponse
      * déplacer le joueur en fonction du vecteur de mouvement
      */
-    QVector2D movingVector = calculateMovingVector(delta);
+
+    double deltaMs = delta / 10e6;
+    QVector2D movingVector = calculateMovingVector(deltaMs);
     if(collide(movingVector)) {
         movingVector = calculateAnswerVector(movingVector);
     }
@@ -95,14 +97,14 @@ void Player::refresh(int delta) {
     collideWithCandy();
 
     if(candiesTaken.length() > 0)
-        refreshTakenCandies();
+        refreshTakenCandies(deltaMs);
 }
 
-void Player::refreshTakenCandies() {
+void Player::refreshTakenCandies(double delta) {
     // le 1er candy de la liste suit le joueur
-    candiesTaken.first()->refresh(pos(), 0);
+    candiesTaken.first()->refresh(pos(), 0, delta);
     for(int i = 1; i < candiesTaken.length(); i++) {
-        candiesTaken.at(i)->refresh(candiesTaken.at(i-1)->pos(), i);
+        candiesTaken.at(i)->refresh(candiesTaken.at(i-1)->pos(), i, delta);
     }
 }
 
@@ -196,13 +198,12 @@ QList<Candy *> Player::looseCandies(Candy *candyStolen) {
 
 }*/
 
-QVector2D Player::calculateMovingVector(int delta) {
+QVector2D Player::calculateMovingVector(double delta) {
     QVector2D v;
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
     v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
-    double deltaMinified = delta / 10e6;
-    v *= deltaMinified * playerSpeed;
+    v *= delta * playerSpeed;
     return v;
 }
 
