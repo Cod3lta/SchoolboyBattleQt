@@ -1,15 +1,20 @@
-#include "viewscontainer.h"
+
+#include "stackedwidget.h"
 
 #include <QApplication>
+#include <QMainWindow>
 
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
-    int nbPlayers = 2;
     QApplication a(argc, argv);
 
-    ViewsContainer v(nbPlayers);
+    QMainWindow w;
+    w.setWindowTitle("SchoolBoyBattle");
+    w.setWindowIcon(QIcon(":/Resources/schoolboybattle-icon.ico"));
+    w.setCentralWidget(new StackedWidget);
+
     //v.showFullScreen();
-    v.show();
+    w.show();
     return a.exec();
 }

@@ -31,13 +31,6 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     //setBackgroundBrush(background);
     //setSceneRect(background.rect());
 
-    // Refresh du déplacement des joueurs
-    playerRefreshDelta = new QElapsedTimer();
-    playerRefresh = new QTimer(this);
-    playerRefresh->setInterval(REFRESH_DELAY);
-    connect(playerRefresh, &QTimer::timeout, this, &Game::refreshEntities);
-    playerRefresh->start();
-    playerRefreshDelta->start();
 
     placeTiles();
     setCustomSceneRect();
@@ -61,6 +54,17 @@ Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
     }
 
     addItem(keyboardInputs);
+
+
+    QList<QGraphicsView*> views = this->views();
+
+    // Refresh du déplacement des joueurs
+    playerRefreshDelta = new QElapsedTimer();
+    playerRefresh = new QTimer(this);
+    playerRefresh->setInterval(REFRESH_DELAY);
+    connect(playerRefresh, &QTimer::timeout, this, &Game::refreshEntities);
+    playerRefresh->start();
+    playerRefreshDelta->start();
 }
 
 void Game::keyPress(QKeyEvent *event) {
@@ -175,13 +179,15 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
 }
 
 void Game::refreshEntities() {
+    if(views().length() == 0)
+        return;
     int delta=playerRefreshDelta->nsecsElapsed();
     // Refresh le joueur
     playerRefreshDelta->restart();
     for(int i = 0; i < players.size(); i++) {
         Player *player = players.at(i);
         player->refresh(delta);
-        qobject_cast<View *>(views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
+        qobject_cast<View *>(this->views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
 }
 

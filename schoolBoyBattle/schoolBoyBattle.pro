@@ -13,27 +13,31 @@ SOURCES += \
     dataloader.cpp \
     display.cpp \
     game.cpp \
+    gamewidget.cpp \
     keyinputs.cpp \
     main.cpp \
     menu.cpp \
     player.cpp \
+    stackedwidget.cpp \
+    startmenu.cpp \
     tile.cpp \
     tilecandyplacement.cpp \
-    view.cpp \
-    viewscontainer.cpp
+    view.cpp
 
 HEADERS += \
     candy.h \
     dataloader.h \
     display.h \
     game.h \
+    gamewidget.h \
     keyinputs.h \
     menu.h \
     player.h \
+    stackedwidget.h \
+    startmenu.h \
     tile.h \
     tilecandyplacement.h \
-    view.h \
-    viewscontainer.h
+    view.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
