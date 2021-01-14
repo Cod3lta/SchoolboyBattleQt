@@ -129,16 +129,18 @@ DataLoader::CandyRessourcesStruct *DataLoader::getCandyRessources(int tileType) 
 // CANDY ANIMATIONS ------------------------------------------------------------------
 
 void DataLoader::loadCandyAnimations() {
-    candyAnimations.insert(0, setupCandyAnimation(8, 100 , ":/Resources/candy/idle/peanut-small-idle.png"));
-    candyAnimations.insert(1, setupCandyAnimation(8, 100, ":/Resources/candy/idle/mandarin-small-idle.png"));
-    candyAnimations.insert(2, setupCandyAnimation(12, 100, ":/Resources/candy/idle/peanut-big-idle.png"));
-    candyAnimations.insert(3, setupCandyAnimation(10, 100, ":/Resources/candy/idle/mandarin-big-idle.png"));
+    candyAnimations.insert(0, setupCandyAnimation(8, 100 , "peanut-small-idle"));
+    candyAnimations.insert(1, setupCandyAnimation(8, 100, "mandarin-small-idle"));
+    candyAnimations.insert(2, setupCandyAnimation(12, 100, "peanut-big-idle"));
+    candyAnimations.insert(3, setupCandyAnimation(10, 100, "mandarin-big-idle"));
 }
 DataLoader::CandyAnimationsStruct *DataLoader::setupCandyAnimation(int nbFrame, int framerate, QString fileName) {
     CandyAnimationsStruct* aStruct = new CandyAnimationsStruct;
     aStruct->nbFrame = nbFrame;
     aStruct->framerate = framerate;
-    aStruct->image = new QPixmap(fileName);
+    aStruct->image = new QPixmap(":/Resources/candy/idle/" + fileName + ".png");
+    aStruct->imageBlack = new QPixmap(":/Resources/candy/idle/hovers/" + fileName + "-black.png");
+    aStruct->imageRed = new QPixmap(":/Resources/candy/idle/hovers/" + fileName + "-red.png");
     return aStruct;
 }
 

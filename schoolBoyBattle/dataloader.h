@@ -76,6 +76,8 @@ private:
 public:
     typedef struct CandyAnimations_s {
         QPixmap *image;
+        QPixmap *imageBlack;
+        QPixmap *imageRed;
         int nbFrame;
         int framerate;
     } CandyAnimationsStruct;

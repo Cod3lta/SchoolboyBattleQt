@@ -165,7 +165,7 @@ void Player::collideWithCandy() {
                             // Voler le candy
                             QList<Candy *> candyGained = static_cast<Player *>(candyNearby->getCurrentPlayer())->looseCandies(candyNearby);
                             for(int i = 0; i < candyGained.size(); i++)
-                                candyGained.at(i)->setCurrentPlayer(this);
+                                candyGained.at(i)->setCurrentPlayer(this, team);
                             candiesTaken = candyGained + candiesTaken;
                         }
                     }else{
@@ -173,7 +173,7 @@ void Player::collideWithCandy() {
                         // appeler une fonction publique de Candy au lieu d'un signal car utiliser
                         // les signaux / slots demanderait de connecter au préalable tous les joueurs à
                         // tous les candy
-                        candyNearby->pickUp(this);
+                        candyNearby->pickUp(this, team);
                         candiesTaken.prepend(candyNearby);
                     }
                 }

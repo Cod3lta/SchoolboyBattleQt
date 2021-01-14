@@ -19,7 +19,9 @@ Candy::Candy(
         DataLoader *dataLoader,
         TileCandyPlacement *tilePlacement,
         QGraphicsObject *parent)
-    : QGraphicsObject(parent),
+    :
+      QGraphicsObject(parent),
+      idTeam(-1),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
       dataLoader(dataLoader),
@@ -88,18 +90,20 @@ void Candy::setZIndex() {
     setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
-void Candy::pickUp(QGraphicsItem *player) {
+void Candy::pickUp(QGraphicsItem *player, int team) {
     taken = true;
     emit pickedUp();
     currentPlayer = player;
+    idTeam = team;
 }
 
 bool Candy::isTaken() {
     return taken;
 }
 
-void Candy::setCurrentPlayer(QGraphicsItem *player) {
+void Candy::setCurrentPlayer(QGraphicsItem *player, int team) {
     currentPlayer = player;
+    idTeam = team;
 }
 
 QGraphicsItem *Candy::getCurrentPlayer() {
@@ -132,11 +136,18 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     AnimationsLocalStruct *candyToDraw = animationsLocal.value(animation);
     QPixmap *imageToDraw = candyToDraw->sharedDatas->image;
+    QPixmap *imageHover = candyToDraw->sharedDatas->image;
+    if(idTeam == 0)
+         imageHover = candyToDraw->sharedDatas->imageRed;
+    else if(idTeam == 1)
+         imageHover = candyToDraw->sharedDatas->imageBlack;
 
     QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->sharedDatas->nbFrame * candyToDraw->frameIndex, 0,
                                imageToDraw->width() / candyToDraw->sharedDatas->nbFrame, imageToDraw->height());
     QRectF targetRect = boundingRect();
+
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
+    if(idTeam != -1) painter->drawPixmap(targetRect, *imageHover, sourceRect);
 
     // Lignes pour le compilateur
     Q_UNUSED(option)

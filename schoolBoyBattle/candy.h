@@ -21,11 +21,11 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void pickUp(QGraphicsItem *player);
+    void pickUp(QGraphicsItem *player, int team);
     void refresh(QPointF pos, int posInQueue, double delta);
     bool isTaken();
     QGraphicsItem* getCurrentPlayer();
-    void setCurrentPlayer(QGraphicsItem *player);
+    void setCurrentPlayer(QGraphicsItem *player, int team);
 
 
     enum Type : int {peanut = 0, mandarin = 1};
@@ -42,6 +42,7 @@ private:
 
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     int id;
+    int idTeam;
     Type candyType;
     Size candySize;
     DataLoader *dataLoader;
