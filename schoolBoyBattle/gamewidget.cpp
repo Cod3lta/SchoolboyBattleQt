@@ -4,22 +4,10 @@
 #include <QLabel>
 #include <QLayout>
 #include <QKeyEvent>
+#include <QDebug>
 
 GameWidget::GameWidget(QWidget *parent) : QWidget(parent)
 {
-    int nbPlayers = 2;
-    QString terrainFileName = ":/Resources/debugTerrain.tmx";
-    game = new Game(nbPlayers, terrainFileName);
-    QBoxLayout *hlayout = new QHBoxLayout(this);
-
-    for(int i = 0; i < nbPlayers; i++) {
-        View *v = new View(i);
-        v->setScene(game);
-        hlayout->addWidget(v);
-        views.append(v);
-    }
-
-    setLayout(hlayout);
 }
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
@@ -38,6 +26,23 @@ void GameWidget::keyReleaseEvent(QKeyEvent *event) {
     game->keyRelease(event);
 }
 
-void GameWidget::createLocalGame()
-{
+void GameWidget::restartLocalGame(int nbPlayers) {
+    QString terrainFileName = ":/Resources/debugTerrain.tmx";
+    game = new Game(terrainFileName);
+    QBoxLayout *hlayout = new QHBoxLayout(this);
+
+    for(int i = 0; i < nbPlayers; i++) {
+        View *v = new View(i);
+        v->setScene(game);
+        hlayout->addWidget(v);
+        views.append(v);
+    }
+
+    qDebug() << "Has focus ? " << hasFocus();
+
+    setLayout(hlayout);
+    setFocusPolicy(Qt::StrongFocus);
+    setFocus();
+
+    qDebug() << "Has focus ? " << hasFocus();
 }

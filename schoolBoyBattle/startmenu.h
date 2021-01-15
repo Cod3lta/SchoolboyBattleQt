@@ -2,6 +2,7 @@
 #define STARTMENU_H
 
 #include <QDialog>
+#include <QSignalMapper>
 
 class StartMenu : public QWidget
 {
@@ -9,11 +10,14 @@ class StartMenu : public QWidget
 public:
     explicit StartMenu(QWidget *parent = nullptr);
 
-private slots:
-    void startLocalGame();
-
 signals:
-    void changeWidget(int i);
+    void startLocalGame(int i);
+    void startServer();
+    void startClient();
+    void setVisibleWidget(int i);
+
+private:
+    QSignalMapper *signalMapper;
 
 };
 

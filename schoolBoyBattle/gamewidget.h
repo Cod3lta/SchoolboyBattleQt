@@ -19,7 +19,7 @@ private:
     Game *game;
 
 public slots:
-    void createLocalGame();
+    void restartLocalGame(int nbPlayers);
 
 signals:
 

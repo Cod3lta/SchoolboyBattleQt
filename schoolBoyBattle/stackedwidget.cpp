@@ -5,7 +5,7 @@
 StackedWidget::StackedWidget()
 {
 
-    GameWidget *gameWidget = new GameWidget(this);
+    gameWidget = new GameWidget(this);
     StartMenu *startMenu = new StartMenu(this);
     QWidget *thirdPageWidget = new QWidget(this);
 
@@ -14,5 +14,7 @@ StackedWidget::StackedWidget()
     addWidget(thirdPageWidget);
 
     setCurrentWidget(startMenu);
-    connect(startMenu, &StartMenu::changeWidget, this, &StackedWidget::setCurrentIndex);
+    connect(startMenu, &StartMenu::startLocalGame, gameWidget, &GameWidget::restartLocalGame);
+    connect(startMenu, &StartMenu::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
+    setFocusPolicy(Qt::StrongFocus);
 }

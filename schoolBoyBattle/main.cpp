@@ -10,11 +10,12 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QMainWindow w;
+    w.setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     w.setWindowTitle("SchoolBoyBattle");
     w.setWindowIcon(QIcon(":/Resources/schoolboybattle-icon.ico"));
     w.setCentralWidget(new StackedWidget);
 
-    //v.showFullScreen();
-    w.show();
+    w.showFullScreen();
+    //w.show();
     return a.exec();
 }

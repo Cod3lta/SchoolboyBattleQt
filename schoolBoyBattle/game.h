@@ -21,7 +21,7 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
-    Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent = nullptr);
+    Game(QString terrainFileName, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
     void keyPress(QKeyEvent *event);
@@ -55,6 +55,7 @@ private:
 protected:
 
 public slots:
+    void startGame(int nbPlayers);
     void spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement);
 
 };

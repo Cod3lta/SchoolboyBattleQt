@@ -20,43 +20,39 @@
 #define PLAYER_HEIGHT 150
 #define PLAYER_SPEED 8
 
-Game::Game(int nbPlayers, QString terrainFileName, QGraphicsScene *parent)
+Game::Game(QString terrainFileName, QGraphicsScene *parent)
     : QGraphicsScene(parent)
 {
 
     // Chargement des données
     dataLoader = new DataLoader(terrainFileName);
 
-    //QPixmap background(":/Resources/background/terrain.png");
-    //setBackgroundBrush(background);
-    //setSceneRect(background.rect());
 
 
+    keyboardInputs = new KeyInputs();
+
+
+    addItem(keyboardInputs);
+
+    startGame(2);
+}
+
+void Game::startGame(int nbPlayers)
+{
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
-    for(int i = 0; i < tileCandyPlacements.length(); i++) {
+    for(int i = 0; i < tileCandyPlacements.length(); i++)
         connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
-    }
-
 
     // Joueurs
     for(int i = 0; i < nbPlayers; i++) {
         players.append(new Player(i, i%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
         addItem(players.at(i));
     }
-
-    keyboardInputs = new KeyInputs();
-
     // Connecter les signaux de keyboardInputs aux slots des joueurs pour le clavier
-    for (int i = 0; i < players.size(); ++i) {
+    for (int i = 0; i < players.size(); ++i)
         connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(i), &Player::keyMove);
-    }
-
-    addItem(keyboardInputs);
-
-
-    QList<QGraphicsView*> views = this->views();
 
     // Refresh du déplacement des joueurs
     playerRefreshDelta = new QElapsedTimer();
