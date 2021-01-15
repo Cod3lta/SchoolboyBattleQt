@@ -1,5 +1,5 @@
 
-#include "stackedwidget.h"
+#include "mainwidget.h"
 
 #include <QApplication>
 #include <QMainWindow>
@@ -13,9 +13,9 @@ int main(int argc, char *argv[])
     w.setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     w.setWindowTitle("SchoolBoyBattle");
     w.setWindowIcon(QIcon(":/Resources/schoolboybattle-icon.ico"));
-    w.setCentralWidget(new StackedWidget);
+    w.setCentralWidget(new MainWidget);
 
-    w.showFullScreen();
-    //w.show();
+    //w.showFullScreen();
+    w.show();
     return a.exec();
 }

@@ -1,4 +1,4 @@
-QT       += core gui network
+QT       += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,13 +16,15 @@ SOURCES += \
     gamewidget.cpp \
     keyinputs.cpp \
     main.cpp \
+    mainwidget.cpp \
     menu.cpp \
     player.cpp \
-    stackedwidget.cpp \
     startmenu.cpp \
+    tcpclient.cpp \
     tile.cpp \
     tilecandyplacement.cpp \
-    view.cpp
+    view.cpp \
+    waitingroom.cpp
 
 HEADERS += \
     candy.h \
@@ -31,13 +33,15 @@ HEADERS += \
     game.h \
     gamewidget.h \
     keyinputs.h \
+    mainwidget.h \
     menu.h \
     player.h \
-    stackedwidget.h \
     startmenu.h \
+    tcpclient.h \
     tile.h \
     tilecandyplacement.h \
-    view.h
+    view.h \
+    waitingroom.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -46,5 +50,3 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resources.qrc
-
-QT += xml
