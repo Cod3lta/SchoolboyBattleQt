@@ -70,8 +70,8 @@ void TcpServer::jsonReceived(ServerWorker *sender, const QJsonObject &doc)
     jsonFromLoggedIn(sender, doc);
 }
 
-void TcpServer::userDisconnected(ServerWorker *sender)
-{
+void TcpServer::userDisconnected(ServerWorker *sender, int threadIdx) {
+    threadsLoaded[threadIdx]--;
     clients.removeAll(sender);
     const QString userName = sender->getUsername();
     if (!userName.isEmpty()) {
