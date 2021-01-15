@@ -1,38 +1,44 @@
 #ifndef TCPSERVER_H
 #define TCPSERVER_H
 
-#include "clientworker.h"
+#include "serverworker.h"
 
 #include <QTcpServer>
 #include <QObject>
+#include <QThread>
 
 class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
     TcpServer(QObject *parent = nullptr);
+    ~TcpServer();
 
 private:
-    QVector<ClientWorker *> clients;
-    void jsonFromLoggedOut(ClientWorker *sender, const QJsonObject &doc);
-    void jsonFromLoggedIn(ClientWorker *sender, const QJsonObject &doc);
-    void sendJson(ClientWorker *destination, const QJsonObject &message);
+    const int idealThreadCount;
+    QVector<QThread *> availableThreads;
+    QVector<int> threadsLoaded;
+    QVector<ServerWorker *> clients;
+    void jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &doc);
+    void jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &doc);
+    void sendJson(ServerWorker *destination, const QJsonObject &message);
 
 protected:
-    void incomingConnection(qintptr sockerDescription) override;
+    void incomingConnection(qintptr socketDescription) override;
 
 signals:
     void logMessage(const QString &msg);
+    void stopAllClients();
 
 public slots:
     void stopServer();
 
 private slots:
     // On exclut un client car c'est lui qui a envoyé le packet
-    void broadcast(const QJsonObject &msg, ClientWorker *exclude);
-    void jsonReceived(ClientWorker *sender, const QJsonObject &doc);
-    void userDisconnected(ClientWorker *client);
-    void userError(ClientWorker *sender);
+    void broadcast(const QJsonObject &msg, ServerWorker *exclude);
+    void jsonReceived(ServerWorker *sender, const QJsonObject &doc);
+    void userDisconnected(ServerWorker *client, int threadIdx);
+    void userError(ServerWorker *sender);
 };
 
 #endif // TCPSERVER_H

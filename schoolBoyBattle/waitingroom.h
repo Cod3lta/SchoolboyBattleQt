@@ -19,6 +19,7 @@ public slots:
     void startClient(QHostAddress address, qint16 port);
 
 signals:
+    void setVisibleWidget(int i);
 };
 
 #endif // WAITINGROOM_H

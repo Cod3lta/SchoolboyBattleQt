@@ -4,6 +4,7 @@
 #include <QJsonParseError>
 #include <QTcpSocket>
 #include <QJsonObject>
+#include <QMessageBox>
 
 TcpClient::TcpClient(QObject *parent) :
     QObject(parent),
@@ -13,6 +14,9 @@ TcpClient::TcpClient(QObject *parent) :
     connect(socket, &QTcpSocket::connected, this, &TcpClient::connected);
     connect(socket, &QTcpSocket::readyRead, this, &TcpClient::onReadyRead);
     connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, &TcpClient::error);
+    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, [=] () {
+        emit connectionError();
+    });
     connect(socket, &QTcpSocket::disconnected, this, &TcpClient::disconnected);
     connect(socket, &QTcpSocket::disconnected, this, [=]() {loggedIn = false; });
 }
@@ -108,4 +112,67 @@ void TcpClient::onReadyRead() {
             break;
         }
     }
+}
+
+void TcpClient::error(QAbstractSocket::SocketError error) {
+    // show a message to the user that informs of what kind of error occurred
+    switch (error) {
+    case QAbstractSocket::RemoteHostClosedError:
+    case QAbstractSocket::ProxyConnectionClosedError:
+        return; // handled by disconnectedFromServer
+    case QAbstractSocket::ConnectionRefusedError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("The host refused the connection"));
+        break;
+    case QAbstractSocket::ProxyConnectionRefusedError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("The proxy refused the connection"));
+        break;
+    case QAbstractSocket::ProxyNotFoundError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("Could not find the proxy"));
+        break;
+    case QAbstractSocket::HostNotFoundError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("Could not find the server"));
+        break;
+    case QAbstractSocket::SocketAccessError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("You don't have permissions to execute this operation"));
+        break;
+    case QAbstractSocket::SocketResourceError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("Too many connections opened"));
+        break;
+    case QAbstractSocket::SocketTimeoutError:
+        QMessageBox::warning(nullptr, tr("Error"), tr("Operation timed out"));
+        return;
+    case QAbstractSocket::ProxyConnectionTimeoutError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("Proxy timed out"));
+        break;
+    case QAbstractSocket::NetworkError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("Unable to reach the network"));
+        break;
+    case QAbstractSocket::UnknownSocketError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("An unknown error occured"));
+        break;
+    case QAbstractSocket::UnsupportedSocketOperationError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("Operation not supported"));
+        break;
+    case QAbstractSocket::ProxyAuthenticationRequiredError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("Your proxy requires authentication"));
+        break;
+    case QAbstractSocket::ProxyProtocolError:
+        QMessageBox::critical(nullptr, tr("Error"), tr("Proxy comunication failed"));
+        break;
+    case QAbstractSocket::TemporaryError:
+    case QAbstractSocket::OperationError:
+        QMessageBox::warning(nullptr, tr("Error"), tr("Operation failed, please try again"));
+        return;
+    default:
+        Q_UNREACHABLE();
+    }
+    /*
+    // enable the button to connect to the server again
+    ui->connectButton->setEnabled(true);
+    // disable the ui to send and display messages
+    ui->sendButton->setEnabled(false);
+    ui->messageEdit->setEnabled(false);
+    ui->chatView->setEnabled(false);*/
+    // reset the last printed username
+    //m_lastUserName.clear();
 }

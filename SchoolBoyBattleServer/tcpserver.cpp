@@ -4,33 +4,56 @@
 #include <QJsonObject>
 
 TcpServer::TcpServer(QObject *parent) :
-    QTcpServer(parent)
-{}
+    QTcpServer(parent),
+    idealThreadCount(qMax(QThread::idealThreadCount(), 1))
+{
+    availableThreads.reserve(idealThreadCount);
+    threadsLoaded.reserve(idealThreadCount);
+}
+
+TcpServer::~TcpServer() {
+    for (int i = 0; i < availableThreads.size(); i++) {
+        availableThreads.at(i)->quit();
+        availableThreads.at(i)->wait();
+    }
+}
 
 void TcpServer::incomingConnection(qintptr socketDescriptor)
 {
-    ClientWorker *client = new ClientWorker(this);
-    if(!client->setSocketDescriptor(socketDescriptor)) {
-        client->deleteLater();
+    ServerWorker *worker = new ServerWorker(this);
+    if(!worker->setSocketDescriptor(socketDescriptor)) {
+        worker->deleteLater();
         return;
     }
-    connect(client, &ClientWorker::disconnectedFromClient, this, std::bind(&TcpServer::userDisconnected, this, client));
-    connect(client, &ClientWorker::error, this, std::bind(&TcpServer::userError, this, client));
-    connect(client, &ClientWorker::jsonRecieved, this, std::bind(&TcpServer::jsonReceived, this, client, std::placeholders::_1));
-    connect(client, &ClientWorker::logMessage, this, &TcpServer::logMessage);
-    clients.append(client);
+    int threadIdx = availableThreads.size();
+    if(threadIdx < idealThreadCount) {
+        availableThreads.append(new QThread(this));
+        threadsLoaded.append(1);
+        availableThreads.last()->start();
+    }else{
+        // Trouver le thread avec le moins de clients et l'utiliser
+        threadIdx = std::distance(threadsLoaded.cbegin(), std::min_element(threadsLoaded.cbegin(), threadsLoaded.cend()));
+        threadsLoaded[threadIdx]++;
+    }
+    worker->moveToThread(availableThreads.at(threadIdx));
+    connect(availableThreads.at(threadIdx), &QThread::finished, worker, &QObject::deleteLater);
+    connect(worker, &ServerWorker::disconnectedFromClient, this, std::bind(&TcpServer::userDisconnected, this, worker, threadIdx));
+    connect(worker, &ServerWorker::error, this, std::bind(&TcpServer::userError, this, worker));
+    connect(worker, &ServerWorker::jsonRecieved, this, std::bind(&TcpServer::jsonReceived, this, worker, std::placeholders::_1));
+    connect(worker, &ServerWorker::logMessage, this, &TcpServer::logMessage);
+    clients.append(worker);
     emit logMessage("Nouveau client connecté");
 }
 
-void TcpServer::sendJson(ClientWorker *destination, const QJsonObject &message)
+void TcpServer::sendJson(ServerWorker *destination, const QJsonObject &message)
 {
     Q_ASSERT(destination);
     destination->sendJson(message);
 }
 
-void TcpServer::broadcast(const QJsonObject &message, ClientWorker *exclude)
+void TcpServer::broadcast(const QJsonObject &message, ServerWorker *exclude)
 {
-    for (ClientWorker *worker : clients) {
+    for (ServerWorker *worker : clients) {
         Q_ASSERT(worker);
         if (worker == exclude)
             continue;
@@ -38,7 +61,7 @@ void TcpServer::broadcast(const QJsonObject &message, ClientWorker *exclude)
     }
 }
 
-void TcpServer::jsonReceived(ClientWorker *sender, const QJsonObject &doc)
+void TcpServer::jsonReceived(ServerWorker *sender, const QJsonObject &doc)
 {
     Q_ASSERT(sender);
     emit logMessage(QLatin1String("JSON reçu ") + QString::fromUtf8(QJsonDocument(doc).toJson()));
@@ -47,7 +70,7 @@ void TcpServer::jsonReceived(ClientWorker *sender, const QJsonObject &doc)
     jsonFromLoggedIn(sender, doc);
 }
 
-void TcpServer::userDisconnected(ClientWorker *sender)
+void TcpServer::userDisconnected(ServerWorker *sender)
 {
     clients.removeAll(sender);
     const QString userName = sender->getUsername();
@@ -61,7 +84,7 @@ void TcpServer::userDisconnected(ClientWorker *sender)
     sender->deleteLater();
 }
 
-void TcpServer::userError(ClientWorker *sender)
+void TcpServer::userError(ServerWorker *sender)
 {
     Q_UNUSED(sender)
     emit logMessage(QLatin1String("Error from ") + sender->getUsername());
@@ -69,13 +92,13 @@ void TcpServer::userError(ClientWorker *sender)
 
 void TcpServer::stopServer()
 {
-    for (ClientWorker *worker : clients) {
+    for (ServerWorker *worker : clients) {
         worker->disconnectFromClient();
     }
     close();
 }
 
-void TcpServer::jsonFromLoggedOut(ClientWorker *sender, const QJsonObject &docObj)
+void TcpServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docObj)
 {
     Q_ASSERT(sender);
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
@@ -89,7 +112,7 @@ void TcpServer::jsonFromLoggedOut(ClientWorker *sender, const QJsonObject &docOb
     const QString newUserName = usernameVal.toString().simplified();
     if (newUserName.isEmpty())
         return;
-    for (ClientWorker *worker : qAsConst(clients)) {
+    for (ServerWorker *worker : qAsConst(clients)) {
         if (worker == sender)
             continue;
         if (worker->getUsername().compare(newUserName, Qt::CaseInsensitive) == 0) {
@@ -112,7 +135,7 @@ void TcpServer::jsonFromLoggedOut(ClientWorker *sender, const QJsonObject &docOb
     broadcast(connectedMessage, sender);
 }
 
-void TcpServer::jsonFromLoggedIn(ClientWorker *sender, const QJsonObject &docObj)
+void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj)
 {
     Q_ASSERT(sender);
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));

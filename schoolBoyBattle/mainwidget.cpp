@@ -18,5 +18,6 @@ MainWidget::MainWidget() :
     connect(startMenu, &StartMenu::startLocalGame, gameWidget, &GameWidget::restartLocalGame);
     connect(startMenu, &StartMenu::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
     connect(startMenu, &StartMenu::startClient, waitingRoom, &WaitingRoom::startClient);
+    connect(waitingRoom, &WaitingRoom::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
     setFocusPolicy(Qt::StrongFocus);
 }

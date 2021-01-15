@@ -1,14 +1,14 @@
-#ifndef CLIENTWORKER_H
-#define CLIENTWORKER_H
+#ifndef SERVERWORKER_H
+#define SERVERWORKER_H
 
 #include <QObject>
 #include <QTcpSocket>
 
-class ClientWorker : public QObject
+class ServerWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit ClientWorker(QObject *parent = nullptr);
+    explicit ServerWorker(QObject *parent = nullptr);
     virtual bool setSocketDescriptor(qintptr socketDescriptor);
     QString getUsername() const;
     void setUsername(const QString &username);
@@ -32,4 +32,4 @@ private slots:
 
 };
 
-#endif // CLIENTWORKER_H
+#endif // SERVERWORKER_H

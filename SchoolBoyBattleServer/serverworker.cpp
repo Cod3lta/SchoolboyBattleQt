@@ -1,26 +1,28 @@
-#include "clientworker.h"
+#include "serverworker.h"
 
 #include <QDataStream>
 #include <QJsonDocument>
 #include <QJsonObject>
 
-ClientWorker::ClientWorker(QObject *parent) : QObject(parent) {
+ServerWorker::ServerWorker(QObject *parent) : QObject(parent) {
 
 }
 
-bool ClientWorker::setSocketDescriptor(qintptr socketDescriptor) {
-    return socket->setSocketDescriptor(socketDescriptor);
+bool ServerWorker::setSocketDescriptor(qintptr socketDescriptor) {
+    bool result = socket->setSocketDescriptor(socketDescriptor);
+    return result;
+
 }
 
-QString ClientWorker::getUsername() const {
+QString ServerWorker::getUsername() const {
     return username;
 }
 
-void ClientWorker::setUsername(const QString &username) {
+void ServerWorker::setUsername(const QString &username) {
     this->username = username;
 }
 
-void ClientWorker::sendJson(const QJsonObject &json) {
+void ServerWorker::sendJson(const QJsonObject &json) {
     const QByteArray jsonData = QJsonDocument(json).toJson(QJsonDocument::Compact);
     emit logMessage("Sending to " + getUsername() + " - " + QString::fromUtf8(jsonData));
     QDataStream socketStream(socket);
@@ -28,11 +30,11 @@ void ClientWorker::sendJson(const QJsonObject &json) {
     socketStream << jsonData;
 }
 
-void ClientWorker::disconnectFromClient() {
+void ServerWorker::disconnectFromClient() {
     socket->disconnectFromHost();
 }
 
-void ClientWorker::recieveJson() {
+void ServerWorker::recieveJson() {
     QByteArray jsonData;
     QDataStream socketStream(socket);
 

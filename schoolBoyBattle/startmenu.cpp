@@ -14,8 +14,8 @@ StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
 
     QPushButton *startGame = new QPushButton("Démarrer le jeu en local à 2 joueurs");
     QPushButton *connectToServer = new QPushButton("Se connecter à un serveur");
-    serverAddress = new QLineEdit(this);
-    serverPort = new QLineEdit(this);
+    serverAddress = new QLineEdit("127.0.0.1", this);
+    serverPort = new QLineEdit("1962", this);
     serverAddress->setPlaceholderText("Adresse du serveur");
     serverPort->setPlaceholderText("Port");
     QPushButton *btnQuit = new QPushButton("Quitter le jeu");
@@ -33,17 +33,17 @@ StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
     setLayout(vLayout);
 
     // Connexions
-    connect(startGame, &QPushButton::pressed, this, [=] () {
+    connect(startGame, &QPushButton::clicked, this, [=] () {
         emit setVisibleWidget(0);
         emit startLocalGame(2);
     });
-    connect(connectToServer, &QPushButton::pressed, this, [=] () {
+    connect(connectToServer, &QPushButton::clicked, this, [=] () {
         if(serverAddress->text() == "" || serverPort->text() == "")
             return;
         emit setVisibleWidget(2);
         emit startClient(QHostAddress(serverAddress->text()), serverPort->text().toInt());
     });
-    connect(btnQuit, &QPushButton::pressed, QApplication::instance(), &QApplication::quit);
+    connect(btnQuit, &QPushButton::clicked, QApplication::instance(), &QApplication::quit);
 }
 
 void StartMenu::setFieldsValidator() {

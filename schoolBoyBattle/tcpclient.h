@@ -23,6 +23,7 @@ public slots:
 
 private slots:
     void onReadyRead();
+    void error(QAbstractSocket::SocketError error);
 
 signals:
     void connected();
@@ -32,7 +33,7 @@ signals:
     void userJoined();
     void userLeft();
     void messageReceived(const QString &sender, const QString &text);
-    void error(QAbstractSocket::SocketError error);
+    void connectionError();
     void userJoined(const QString &username);
     void userLeft(const QString &username);
 
