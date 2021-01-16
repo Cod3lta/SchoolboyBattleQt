@@ -29,12 +29,12 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
         usersLayout[i]->addWidget(usersReady[i]);
     }
     users->addLayout(usersLayout.at(0), 0, 0);
-    users->addLayout(usersLayout.at(1), 0, 1);
-    users->addLayout(usersLayout.at(2), 1, 0);
-    users->addLayout(usersLayout.at(3), 1, 1);
-    users->addLayout(usersLayout.at(4), 2, 0);
-    users->addLayout(usersLayout.at(5), 2, 1);
-    users->addLayout(usersLayout.at(6), 3, 0);
+    users->addLayout(usersLayout.at(1), 1, 0);
+    users->addLayout(usersLayout.at(2), 2, 0);
+    users->addLayout(usersLayout.at(3), 3, 0);
+    users->addLayout(usersLayout.at(4), 0, 1);
+    users->addLayout(usersLayout.at(5), 1, 1);
+    users->addLayout(usersLayout.at(6), 2, 1);
     users->addLayout(usersLayout.at(7), 3, 1);
     vLayout->addWidget(mainLabel);
     vLayout->addWidget(labelInfos);
@@ -46,14 +46,14 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     setLayout(vLayout);
 
     // Connexions
+    connect(tcpClient, &TcpClient::userListRefresh, this, &WaitingRoom::userListRefresh);
+    connect(btnLeave, &QPushButton::clicked, tcpClient, &TcpClient::disconnectFromHost);
+    connect(btnReady, &QPushButton::clicked, tcpClient, &TcpClient::toggleReady);
+    connect(tcpClient, &TcpClient::connected, this, &WaitingRoom::connected);
+
+
     connect(tcpClient, &TcpClient::connectionError, this, [=] () {
         emit setVisibleWidget(1);
-    });
-
-    connect(tcpClient, &TcpClient::connected, this, [=] () {
-        mainLabel->setText("Connecté au serveur !");
-        btnReady->setEnabled(true);
-        btnLeave->setEnabled(true);
     });
 
     connect(tcpClient, &TcpClient::UserLoggedIn, this, [=] () {
@@ -64,8 +64,6 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
         //QMessageBox::critical(this, "Erreur", "Déconnecté du serveur");
         emit setVisibleWidget(1);
     });
-    connect(tcpClient, &TcpClient::userListRefresh, this, &WaitingRoom::userListRefresh);
-    connect(btnLeave, &QPushButton::clicked, tcpClient, &TcpClient::disconnectFromHost);
 }
 
 void WaitingRoom::userListRefresh(QList<QHash<QString, QString>> users) {
@@ -81,8 +79,9 @@ void WaitingRoom::userListRefresh(QList<QHash<QString, QString>> users) {
     for(int i = 0; i < MAX_USERS; i++) {
         if(i < users.length()) {
             usersName[i]->setText(users.at(i).value("username"));
-            usersReady[i]->setText(users.at(i).value("ready") == true ? "Prêt" : "Attente");
-            if(users.at(i).value("descriptor") == tcpClient->getDescriptor()) {
+            usersReady[i]->setText(users.at(i).value("ready") == "true" ? "Prêt" : "Attente");
+            qDebug() << "descriptor du serveur : " << users.at(i).value("socketDescriptor").toInt() << " / descriptor du client : " << tcpClient->getDescriptor();
+            if(users.at(i).value("socketDescriptor").toInt() == tcpClient->getDescriptor() && users.at(i).value("ready") == "true") {
                 btnReady->setText("Pas prêt");
             }
         }else{
@@ -90,6 +89,12 @@ void WaitingRoom::userListRefresh(QList<QHash<QString, QString>> users) {
             usersReady[i]->setText("...");
         }
     }
+}
+
+void WaitingRoom::connected() {
+    mainLabel->setText("Connecté au serveur !");
+    btnReady->setEnabled(true);
+    btnLeave->setEnabled(true);
 }
 
 void WaitingRoom::startWaitingRoom(QHostAddress address, qint16 port) {

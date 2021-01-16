@@ -24,6 +24,7 @@ public slots:
     void login(const QString &username);
     void disconnectFromHost();
     void sendMessage(const QString &text);
+    void toggleReady();
 private slots:
     void onReadyRead();
     void error(QAbstractSocket::SocketError error);

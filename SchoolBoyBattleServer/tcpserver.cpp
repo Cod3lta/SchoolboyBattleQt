@@ -75,7 +75,7 @@ void TcpServer::sendEveryone(const QJsonObject &message) {
 void TcpServer::jsonReceived(ServerWorker *sender, const QJsonObject &doc)
 {
     Q_ASSERT(sender);
-    emit logMessage(QLatin1String("JSON reçu ") + QString::fromUtf8(QJsonDocument(doc).toJson()));
+    emit logMessage(QLatin1String("JSON recu ") + QString::fromUtf8(QJsonDocument(doc).toJson()));
     if (sender->getUsername().isEmpty())
         // Si le message qu'on reçoit vient d'un utilisateur qui n'a pas de username
         return jsonFromLoggedOut(sender, doc);
@@ -150,7 +150,6 @@ void TcpServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docOb
     sendJson(sender, successMessage);
 
     // Envoyer à tout le monde la liste des clients connectés
-
     QJsonObject userListMessage;
     userListMessage.insert("type", QJsonValue("updateUsersList"));
     userListMessage.insert("users", QJsonValue(generateUserList()));
@@ -180,18 +179,24 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
     if (typeVal.isNull() || !typeVal.isString())
         return;
-    if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) != 0)
-        return;
-    const QJsonValue textVal = docObj.value(QLatin1String("text"));
-    if (textVal.isNull() || !textVal.isString())
-        return;
-    const QString text = textVal.toString().trimmed();
-    if (text.isEmpty())
-        return;
-    QJsonObject message;
-    message[QStringLiteral("type")] = QStringLiteral("message");
-    message[QStringLiteral("text")] = text;
-    message[QStringLiteral("sender")] = sender->getUsername();
-    broadcast(message, sender);
+    if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { // Message
+        const QJsonValue textVal = docObj.value(QLatin1String("text"));
+        if (textVal.isNull() || !textVal.isString())
+            return;
+        const QString text = textVal.toString().trimmed();
+        if (text.isEmpty())
+            return;
+        QJsonObject message;
+        message[QStringLiteral("type")] = QStringLiteral("message");
+        message[QStringLiteral("text")] = text;
+        message[QStringLiteral("sender")] = sender->getUsername();
+        broadcast(message, sender);
+    }else if(typeVal.toString().compare(QLatin1String("toggleReady"), Qt::CaseInsensitive) == 0) {  // Toggle ready
+        sender->setReady(!sender->getReady());
+        QJsonObject userListMessage;
+        userListMessage.insert("type", QJsonValue("updateUsersList"));
+        userListMessage.insert("users", QJsonValue(generateUserList()));
+        sendEveryone(userListMessage);
+    }
 }
 

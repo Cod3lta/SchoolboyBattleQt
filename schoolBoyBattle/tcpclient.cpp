@@ -54,12 +54,20 @@ void TcpClient::sendMessage(const QString &text)
     clientStream << QJsonDocument(message).toJson();
 }
 
+void TcpClient::toggleReady() {
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_9);
+    QJsonObject message;
+    message[QStringLiteral("type")] = QStringLiteral("toggleReady");
+    clientStream << QJsonDocument(message).toJson();
+}
+
 void TcpClient::jsonReceived(const QJsonObject &docObj) {
     // actions depend on the type of message
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
     if (typeVal.isNull() || !typeVal.isString())
         return; // a message with no type was received so we just ignore it
-    if (typeVal.toString().compare(QLatin1String("login"), Qt::CaseInsensitive) == 0) { //It's a login message
+    if (typeVal.toString().compare(QLatin1String("login"), Qt::CaseInsensitive) == 0) { // Message de login
         if (loggedIn)
             return; // if we are already logged in we ignore
         // the success field will contain the result of our attempt to login
@@ -83,7 +91,7 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         // and notify it via the loginError signal
         const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
         emit loginError(reasonVal.toString());
-    } else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { //It's a chat message
+    } else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { // Message de chat
         // we extract the text field containing the chat text
         const QJsonValue textVal = docObj.value(QLatin1String("text"));
         // we extract the sender field containing the username of the sender
@@ -109,7 +117,7 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
             usersList.append(hashTemp);
         }
         emit userListRefresh(usersList);
-    } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // A user left the chat
+    } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // Un utilisateur a quitté
          // we extract the username of the new user
         const QJsonValue usernameVal = docObj.value(QLatin1String("username"));
         if (usernameVal.isNull() || !usernameVal.isString())

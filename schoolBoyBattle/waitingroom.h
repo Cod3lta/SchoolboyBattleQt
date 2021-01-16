@@ -27,6 +27,7 @@ private:
 
 private slots:
     void userListRefresh(QList<QHash<QString, QString>>);
+    void connected();
 
 public slots:
     void startWaitingRoom(QHostAddress address, qint16 port);
