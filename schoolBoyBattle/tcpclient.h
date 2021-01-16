@@ -12,22 +12,22 @@ class TcpClient : public QObject
 
 public:
     explicit TcpClient(QObject *parent = nullptr);
+    int getDescriptor();
 
 private:
     QTcpSocket *socket;
     bool loggedIn;
+    int descriptor;
     void jsonReceived(const QJsonObject &doc);
-
 public slots:
     void connectToServer(const QHostAddress &address, quint16 port);
     void login(const QString &username);
     void disconnectFromHost();
     void sendMessage(const QString &text);
-
 private slots:
     void onReadyRead();
     void error(QAbstractSocket::SocketError error);
-
+    void askUsername();
 signals:
     void connected();
     void UserLoggedIn();
@@ -37,7 +37,9 @@ signals:
     void userLeft();
     void messageReceived(const QString &sender, const QString &text);
     void connectionError();
-    void userJoined(const QString &username);
+    //void userListRefresh(QList<QVariant>);
+    void userListRefresh(QList<QHash<QString, QString>>);
+    //void userJoined(const QString &username);
     void userLeft(const QString &username);
 
 };

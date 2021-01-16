@@ -5,21 +5,29 @@
 #include <QTcpSocket>
 #include <QJsonObject>
 #include <QMessageBox>
+#include <QInputDialog>
+#include <QJsonArray>
 
 TcpClient::TcpClient(QObject *parent) :
     QObject(parent),
     socket(new QTcpSocket(this)),
-    loggedIn(false)
+    loggedIn(false),
+    descriptor(-1)
 {
-    connect(socket, &QTcpSocket::connected, this, &TcpClient::connected);
-    connect(socket, &QTcpSocket::disconnected, this, &TcpClient::disconnected);
-    connect(socket, &QTcpSocket::readyRead, this, &TcpClient::onReadyRead);
-    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, &TcpClient::error);
+    connect(socket, &QTcpSocket::readyRead, this, &TcpClient::onReadyRead);         // Slot
+    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, &TcpClient::error); // Slot
+    connect(socket, &QTcpSocket::connected, this, &TcpClient::askUsername);           // Slot
+    connect(socket, &QTcpSocket::connected, this, &TcpClient::connected);           // Signal
+    connect(socket, &QTcpSocket::disconnected, this, &TcpClient::disconnected);     // Signal
     connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, [=] () {
         // Retourner au menu principal
         emit connectionError();
     });
     connect(socket, &QTcpSocket::disconnected, this, [=]() {loggedIn = false; });
+}
+
+int TcpClient::getDescriptor() {
+    return descriptor;
 }
 
 void TcpClient::login(const QString &username)
@@ -61,6 +69,8 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         const bool loginSuccess = resultVal.toBool();
         if (loginSuccess) {
             // we logged in succesfully and we notify it via the loggedIn signal
+            loggedIn = true;
+            descriptor = docObj.value("descriptor").toInt();
             emit UserLoggedIn();
             return;
         }
@@ -79,13 +89,21 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
             return; // the sender field was invalid so we ignore
         // we notify a new message was received via the messageReceived signal
         emit messageReceived(senderVal.toString(), textVal.toString());
-    } else if (typeVal.toString().compare(QLatin1String("newuser"), Qt::CaseInsensitive) == 0) { // A user joined the chat
-        // we extract the username of the new user
-        const QJsonValue usernameVal = docObj.value(QLatin1String("username"));
-        if (usernameVal.isNull() || !usernameVal.isString())
-            return; // the username was invalid so we ignore
-        // we notify of the new user via the userJoined signal
-        emit userJoined(usernameVal.toString());
+    } else if (typeVal.toString().compare(QLatin1String("updateUsersList"), Qt::CaseInsensitive) == 0) { // Refresh la liste des joueurs
+        // Transformer les données json en QList<QHash<QString, QString>>
+        QList<QVariant> users = docObj.value("users").toArray().toVariantList();
+        QList<QHash<QString, QString>> usersList;
+        for(int i = 0; i < users.size(); i++) {
+            QHash<QString, QString> hashTemp;
+            QHash<QString, QVariant> userHash = users.at(i).toHash();
+            QHashIterator<QString, QVariant> j(userHash);
+            while(j.hasNext()) {
+                j.next();
+                hashTemp.insert(j.key(), j.value().toString());
+            }
+            usersList.append(hashTemp);
+        }
+        emit userListRefresh(usersList);
     } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // A user left the chat
          // we extract the username of the new user
         const QJsonValue usernameVal = docObj.value(QLatin1String("username"));
@@ -123,6 +141,8 @@ void TcpClient::onReadyRead() {
         }
     }
 }
+
+
 
 void TcpClient::error(QAbstractSocket::SocketError error) {
     // show a message to the user that informs of what kind of error occurred
@@ -185,4 +205,15 @@ void TcpClient::error(QAbstractSocket::SocketError error) {
     ui->chatView->setEnabled(false);*/
     // reset the last printed username
     //m_lastUserName.clear();
+}
+
+void TcpClient::askUsername() {
+    // once we connected to the server we ask the user for what username they would like to use
+    const QString newUsername = QInputDialog::getText(nullptr, tr("Choisissez un nom d'utilisateur"), tr("Nom d'utilisateur"));
+    if (newUsername.isEmpty()){
+        // if the user clicked cancel or typed nothing, we just disconnect from the server
+        return socket->disconnectFromHost();
+    }
+    // try to login with the given username
+    login(newUsername);
 }

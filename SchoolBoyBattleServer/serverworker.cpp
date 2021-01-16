@@ -17,9 +17,13 @@ bool ServerWorker::setSocketDescriptor(qintptr socketDescriptor) {
     return socket->setSocketDescriptor(socketDescriptor);
 }
 
+qintptr ServerWorker::getSocketDescriptor() {
+    return socket->socketDescriptor();
+}
+
 void ServerWorker::sendJson(const QJsonObject &json) {
     const QByteArray jsonData = QJsonDocument(json).toJson(QJsonDocument::Compact);
-    emit logMessage("Envoi à " + getUsername() + " - " + QString::fromUtf8(jsonData));
+    emit logMessage("Envoi à " + QString::number(socket->socketDescriptor()) + " - " + QString::fromUtf8(jsonData));
     QDataStream socketStream(socket);
     socketStream.setVersion(QDataStream::Qt_5_9);
     socketStream << jsonData;
@@ -34,6 +38,19 @@ QString ServerWorker::getUsername() const {
     const QString result = username;
     usernameLock.unlock();
     return result;
+}
+
+bool ServerWorker::getReady() const {
+    readyLock.lockForRead();
+    const bool result = ready;
+    readyLock.unlock();
+    return result;
+}
+
+void ServerWorker::setReady(const bool ready) {
+    readyLock.lockForWrite();
+    this->ready = ready;
+    readyLock.unlock();
 }
 
 void ServerWorker::setUsername(const QString &username) {
