@@ -43,13 +43,13 @@ void MainWindow::toggleServer()
     if(server->isListening()) {
         server->stopServer();
         btnToggleServer->setText("Démarrer");
-        logMessage("Server stoppé");
+        logMessage("Server stoppé\n---------------------");
     }else {
         if(!server->listen(QHostAddress::Any, 1962)) {
             QMessageBox::critical(this, "Erreur", "Impossible de démarrer le serveur");
             return;
         }
-        logMessage("Server démarré");
+        logMessage("\nServer démarré");
         logMessage("Adresse du serveur : " + server->serverAddress().toString());
         logMessage("Port : " + QString::number(server->serverPort()));
         btnToggleServer->setText("Arrêter");

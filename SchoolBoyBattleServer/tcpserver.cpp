@@ -101,7 +101,7 @@ void TcpServer::userDisconnected(ServerWorker *sender, int threadIdx) {
 void TcpServer::userError(ServerWorker *sender)
 {
     Q_UNUSED(sender)
-    emit logMessage(QLatin1String("Erreur de ") + sender->getUsername());
+    emit logMessage(QLatin1String("Erreur de ") + sender->getSocketDescriptor());
 }
 
 void TcpServer::stopServer()
@@ -135,7 +135,7 @@ void TcpServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docOb
             QJsonObject message;
             message[QStringLiteral("type")] = QStringLiteral("login");
             message[QStringLiteral("success")] = false;
-            message[QStringLiteral("reason")] = QStringLiteral("duplicate username");
+            message[QStringLiteral("reason")] = QStringLiteral("duplicateUsername");
             sendJson(sender, message);
             return;
         }

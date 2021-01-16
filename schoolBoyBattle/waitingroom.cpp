@@ -80,7 +80,6 @@ void WaitingRoom::userListRefresh(QList<QHash<QString, QString>> users) {
         if(i < users.length()) {
             usersName[i]->setText(users.at(i).value("username"));
             usersReady[i]->setText(users.at(i).value("ready") == "true" ? "Prêt" : "Attente");
-            qDebug() << "descriptor du serveur : " << users.at(i).value("socketDescriptor").toInt() << " / descriptor du client : " << tcpClient->getDescriptor();
             if(users.at(i).value("socketDescriptor").toInt() == tcpClient->getDescriptor() && users.at(i).value("ready") == "true") {
                 btnReady->setText("Pas prêt");
             }

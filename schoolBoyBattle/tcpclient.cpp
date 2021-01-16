@@ -74,7 +74,7 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         const QJsonValue resultVal = docObj.value(QLatin1String("success"));
         if (resultVal.isNull() || !resultVal.isBool())
             return; // the message had no success field so we ignore
-        if(docObj.value("reason") == "duplicate username") {
+        if(docObj.value("reason") == "duplicateUsername") {
             QMessageBox::critical(nullptr, "Erreur", "Ce nom d'utilisateur est déjà pris");
             askUsername();
             return;
