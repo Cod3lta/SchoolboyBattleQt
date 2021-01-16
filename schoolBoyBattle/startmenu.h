@@ -2,6 +2,8 @@
 #define STARTMENU_H
 
 #include <QDialog>
+#include <QHostAddress>
+#include <QLineEdit>
 #include <QSignalMapper>
 
 class StartMenu : public QWidget
@@ -13,11 +15,14 @@ public:
 signals:
     void startLocalGame(int i);
     void startServer();
-    void startClient();
+    void startClient(QHostAddress address, int port);
     void setVisibleWidget(int i);
 
 private:
     QSignalMapper *signalMapper;
+    void setFieldsValidator();
+    QLineEdit *serverAddress;
+    QLineEdit *serverPort;
 
 };
 

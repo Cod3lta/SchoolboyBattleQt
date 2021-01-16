@@ -1,20 +1,23 @@
 #include "gamewidget.h"
-#include "stackedwidget.h"
+#include "mainwidget.h"
 #include "startmenu.h"
 
-StackedWidget::StackedWidget()
+MainWidget::MainWidget() :
+    tcpClient(new TcpClient(this))
 {
 
     gameWidget = new GameWidget(this);
     StartMenu *startMenu = new StartMenu(this);
-    QWidget *thirdPageWidget = new QWidget(this);
+    waitingRoom = new WaitingRoom(tcpClient, this);
 
     addWidget(gameWidget);
     addWidget(startMenu);
-    addWidget(thirdPageWidget);
+    addWidget(waitingRoom);
 
     setCurrentWidget(startMenu);
     connect(startMenu, &StartMenu::startLocalGame, gameWidget, &GameWidget::restartLocalGame);
     connect(startMenu, &StartMenu::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
+    connect(startMenu, &StartMenu::startClient, waitingRoom, &WaitingRoom::startClient);
+    connect(waitingRoom, &WaitingRoom::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
     setFocusPolicy(Qt::StrongFocus);
 }
