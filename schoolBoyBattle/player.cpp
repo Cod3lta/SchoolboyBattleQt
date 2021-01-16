@@ -75,7 +75,7 @@ void Player::keyMove(int playerId, int direction, bool value) {
     update();
 }
 
-void Player::refresh(int delta) {
+void Player::refresh(double delta) {
     /*
      * déterminer le vecteur mouvement
      * s'il y a une collision
@@ -83,8 +83,7 @@ void Player::refresh(int delta) {
      * déplacer le joueur en fonction du vecteur de mouvement
      */
 
-    double deltaMs = delta / 10e6;
-    QVector2D movingVector = calculateMovingVector(deltaMs);
+    QVector2D movingVector = calculateMovingVector(delta);
     if(collide(movingVector)) {
         movingVector = calculateAnswerVector(movingVector);
     }
@@ -97,7 +96,7 @@ void Player::refresh(int delta) {
     collideWithCandy();
 
     if(candiesTaken.length() > 0)
-        refreshTakenCandies(deltaMs);
+        refreshTakenCandies(delta);
 }
 
 void Player::refreshTakenCandies(double delta) {

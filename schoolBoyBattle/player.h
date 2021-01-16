@@ -28,7 +28,7 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void refresh(int delta);
+    void refresh(double delta);
     QList<Candy *> looseCandies(Candy *candy);
 
 private:

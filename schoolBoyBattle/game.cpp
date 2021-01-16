@@ -176,12 +176,13 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
 
 void Game::refreshEntities() {
     int delta=playerRefreshDelta->nsecsElapsed();
+    double deltaMs = delta/10e6;
     // Refresh le joueur
     playerRefreshDelta->restart();
     for(int i = 0; i < players.size(); i++) {
         Player *player = players.at(i);
-        player->refresh(delta);
-        qobject_cast<View *>(views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
+        player->refresh(deltaMs);
+        qobject_cast<View *>(views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT, deltaMs);
     }
 }
 
