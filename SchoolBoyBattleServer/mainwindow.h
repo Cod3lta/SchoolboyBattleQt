@@ -10,6 +10,7 @@
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    Q_DISABLE_COPY(MainWindow)
 
 public:
     MainWindow(QWidget *parent = nullptr);

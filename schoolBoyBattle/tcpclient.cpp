@@ -12,13 +12,38 @@ TcpClient::TcpClient(QObject *parent) :
     loggedIn(false)
 {
     connect(socket, &QTcpSocket::connected, this, &TcpClient::connected);
+    connect(socket, &QTcpSocket::disconnected, this, &TcpClient::disconnected);
     connect(socket, &QTcpSocket::readyRead, this, &TcpClient::onReadyRead);
     connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, &TcpClient::error);
     connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, [=] () {
+        // Retourner au menu principal
         emit connectionError();
     });
-    connect(socket, &QTcpSocket::disconnected, this, &TcpClient::disconnected);
     connect(socket, &QTcpSocket::disconnected, this, [=]() {loggedIn = false; });
+}
+
+void TcpClient::login(const QString &username)
+{
+    if (socket->state() == QAbstractSocket::ConnectedState) {
+        QDataStream clientStream(socket);
+        clientStream.setVersion(QDataStream::Qt_5_9);
+        QJsonObject message;
+        message[QStringLiteral("type")] = QStringLiteral("login");
+        message[QStringLiteral("username")] = username;
+        clientStream << QJsonDocument(message).toJson(QJsonDocument::Compact);
+    }
+}
+
+void TcpClient::sendMessage(const QString &text)
+{
+    if (text.isEmpty())
+        return;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_9);
+    QJsonObject message;
+    message[QStringLiteral("type")] = QStringLiteral("message");
+    message[QStringLiteral("text")] = text;
+    clientStream << QJsonDocument(message).toJson();
 }
 
 void TcpClient::jsonReceived(const QJsonObject &docObj) {
@@ -77,21 +102,6 @@ void TcpClient::connectToServer(const QHostAddress &address, quint16 port){
 
 void TcpClient::disconnectFromHost() {
     socket->disconnectFromHost();
-}
-
-void TcpClient::sendMessage(const QString &text) {
-    if (text.isEmpty())
-        return; // We don't send empty messages
-    // create a QDataStream operating on the socket
-    QDataStream clientStream(socket);
-    // set the version so that programs compiled with different versions of Qt can agree on how to serialise
-    clientStream.setVersion(QDataStream::Qt_5_7);
-    // Create the JSON we want to send
-    QJsonObject message;
-    message[QStringLiteral("type")] = QStringLiteral("message");
-    message[QStringLiteral("text")] = text;
-    // send the JSON using QDataStream
-    clientStream << QJsonDocument(message).toJson();
 }
 
 void TcpClient::onReadyRead() {

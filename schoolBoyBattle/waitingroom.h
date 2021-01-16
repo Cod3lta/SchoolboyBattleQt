@@ -4,6 +4,7 @@
 #include "tcpclient.h"
 
 #include <QHostAddress>
+#include <QLabel>
 #include <QWidget>
 
 class WaitingRoom : public QWidget
@@ -14,6 +15,7 @@ public:
 
 private:
     TcpClient* tcpClient;
+    QLabel *label;
 
 public slots:
     void startClient(QHostAddress address, qint16 port);

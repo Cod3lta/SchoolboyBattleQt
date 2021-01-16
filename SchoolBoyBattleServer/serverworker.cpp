@@ -4,27 +4,22 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-ServerWorker::ServerWorker(QObject *parent) : QObject(parent) {
-
+ServerWorker::ServerWorker(QObject *parent) :
+    QObject(parent),
+    socket(new QTcpSocket(this))
+{
+    connect(socket, &QTcpSocket::readyRead, this, &ServerWorker::receiveJson);
+    connect(socket, &QTcpSocket::disconnected, this, &ServerWorker::disconnectedFromClient);
+    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &ServerWorker::error);
 }
 
 bool ServerWorker::setSocketDescriptor(qintptr socketDescriptor) {
-    bool result = socket->setSocketDescriptor(socketDescriptor);
-    return result;
-
-}
-
-QString ServerWorker::getUsername() const {
-    return username;
-}
-
-void ServerWorker::setUsername(const QString &username) {
-    this->username = username;
+    return socket->setSocketDescriptor(socketDescriptor);
 }
 
 void ServerWorker::sendJson(const QJsonObject &json) {
     const QByteArray jsonData = QJsonDocument(json).toJson(QJsonDocument::Compact);
-    emit logMessage("Sending to " + getUsername() + " - " + QString::fromUtf8(jsonData));
+    emit logMessage("Envoi à " + getUsername() + " - " + QString::fromUtf8(jsonData));
     QDataStream socketStream(socket);
     socketStream.setVersion(QDataStream::Qt_5_9);
     socketStream << jsonData;
@@ -34,7 +29,20 @@ void ServerWorker::disconnectFromClient() {
     socket->disconnectFromHost();
 }
 
-void ServerWorker::recieveJson() {
+QString ServerWorker::getUsername() const {
+    usernameLock.lockForRead();
+    const QString result = username;
+    usernameLock.unlock();
+    return result;
+}
+
+void ServerWorker::setUsername(const QString &username) {
+    usernameLock.lockForWrite();
+    this->username = username;
+    usernameLock.unlock();
+}
+
+void ServerWorker::receiveJson() {
     QByteArray jsonData;
     QDataStream socketStream(socket);
 

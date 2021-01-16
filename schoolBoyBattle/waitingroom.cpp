@@ -8,11 +8,16 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     tcpClient(tcpClient)
 {
     QVBoxLayout *vLayout = new QVBoxLayout(this);
-    vLayout->addWidget(new QLabel("Chargement...", this));
+    label = new QLabel("Chargement...", this);
+    vLayout->addWidget(label);
     setLayout(vLayout);
 
     connect(tcpClient, &TcpClient::connectionError, this, [=] () {
         emit setVisibleWidget(1);
+    });
+
+    connect(tcpClient, &TcpClient::connected, this, [=] () {
+        label->setText("Connecté au serveur !");
     });
 }
 

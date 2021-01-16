@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     btnToggleServer->move(0, 350);
 
     connect(btnToggleServer, &QPushButton::clicked, this, &MainWindow::toggleServer);
+    connect(server, &TcpServer::logMessage, this, &MainWindow::logMessage);
 
     logMessage(QString("  _____________________________  _________\n") +
                " /   _____/\\______   \\______   \\/   _____/\n" +

@@ -8,6 +8,8 @@
 class TcpClient : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(TcpClient)
+
 public:
     explicit TcpClient(QObject *parent = nullptr);
 
@@ -18,6 +20,7 @@ private:
 
 public slots:
     void connectToServer(const QHostAddress &address, quint16 port);
+    void login(const QString &username);
     void disconnectFromHost();
     void sendMessage(const QString &text);
 

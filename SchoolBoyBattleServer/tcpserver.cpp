@@ -2,6 +2,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QTimer>
 
 TcpServer::TcpServer(QObject *parent) :
     QTcpServer(parent),
@@ -18,8 +19,7 @@ TcpServer::~TcpServer() {
     }
 }
 
-void TcpServer::incomingConnection(qintptr socketDescriptor)
-{
+void TcpServer::incomingConnection(qintptr socketDescriptor) {
     ServerWorker *worker = new ServerWorker(this);
     if(!worker->setSocketDescriptor(socketDescriptor)) {
         worker->deleteLater();
@@ -48,7 +48,9 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
 void TcpServer::sendJson(ServerWorker *destination, const QJsonObject &message)
 {
     Q_ASSERT(destination);
-    destination->sendJson(message);
+    // Faire un qtimer avec un temps de 0 exécutera le code au prochain
+    // instant de processeur disponible
+    QTimer::singleShot(0, destination, std::bind(&ServerWorker::sendJson, destination, message));
 }
 
 void TcpServer::broadcast(const QJsonObject &message, ServerWorker *exclude)
@@ -92,9 +94,7 @@ void TcpServer::userError(ServerWorker *sender)
 
 void TcpServer::stopServer()
 {
-    for (ServerWorker *worker : clients) {
-        worker->disconnectFromClient();
-    }
+    emit stopAllClients();
     close();
 }
 
