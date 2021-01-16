@@ -61,10 +61,11 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     });
 
     connect(tcpClient, &TcpClient::disconnected, this, [=] () {
-        QMessageBox::critical(this, "Erreur", "Déconnecté du serveur");
+        //QMessageBox::critical(this, "Erreur", "Déconnecté du serveur");
         emit setVisibleWidget(1);
     });
     connect(tcpClient, &TcpClient::userListRefresh, this, &WaitingRoom::userListRefresh);
+    connect(btnLeave, &QPushButton::clicked, tcpClient, &TcpClient::disconnectFromHost);
 }
 
 void WaitingRoom::userListRefresh(QList<QHash<QString, QString>> users) {
