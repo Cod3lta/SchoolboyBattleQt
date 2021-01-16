@@ -124,6 +124,11 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
             return; // the username was invalid so we ignore
         // we notify of the user disconnection the userLeft signal
         emit userLeft(usernameVal.toString());
+    } else if (typeVal.toString().compare(QLatin1String("startGame"), Qt::CaseInsensitive) == 0) {  // Démarrage du jeu
+        // On peut avoir des parties à min 4 mais jamais en dessous de 2 en serveur
+        if(docObj.value("nbUsers").toInt()  < 2)
+            return;
+        emit startGame(docObj.value("nbUsers").toInt(), 1);
     }
 }
 

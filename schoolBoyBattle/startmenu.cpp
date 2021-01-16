@@ -35,7 +35,7 @@ StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
     // Connexions
     connect(startGame, &QPushButton::clicked, this, [=] () {
         emit setVisibleWidget(0);
-        emit startLocalGame(2);
+        emit startLocalGame(2, 2);
     });
     connect(connectToServer, &QPushButton::clicked, this, [=] () {
         if(serverAddress->text() == "" || serverPort->text() == "")

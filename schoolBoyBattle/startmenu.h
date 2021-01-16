@@ -13,7 +13,7 @@ public:
     explicit StartMenu(QWidget *parent = nullptr);
 
 signals:
-    void startLocalGame(int i);
+    void startLocalGame(int nbPlayers, int nbViews);
     void startServer();
     void startClient(QHostAddress address, int port);
     void setVisibleWidget(int i);

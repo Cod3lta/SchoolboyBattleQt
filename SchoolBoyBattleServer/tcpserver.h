@@ -24,6 +24,8 @@ private:
     void jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &doc);
     void sendJson(ServerWorker *destination, const QJsonObject &message);
     QJsonArray generateUserList();
+    void checkEveryoneReady();
+    void startGame();
 
 protected:
     void incomingConnection(qintptr socketDescription) override;

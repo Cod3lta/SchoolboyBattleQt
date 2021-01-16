@@ -50,6 +50,9 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     connect(btnLeave, &QPushButton::clicked, tcpClient, &TcpClient::disconnectFromHost);
     connect(btnReady, &QPushButton::clicked, tcpClient, &TcpClient::toggleReady);
     connect(tcpClient, &TcpClient::connected, this, &WaitingRoom::connected);
+    connect(tcpClient, &TcpClient::startGame, this, [=] () {
+        emit setVisibleWidget(0);
+    });
 
 
     connect(tcpClient, &TcpClient::connectionError, this, [=] () {

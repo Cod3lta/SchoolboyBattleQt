@@ -31,6 +31,7 @@ private slots:
     void askUsername();
 signals:
     void connected();
+    void startGame(int nbPlayers, int nbViews);
     void UserLoggedIn();
     void loginError(const QString &reason);
     void disconnected();

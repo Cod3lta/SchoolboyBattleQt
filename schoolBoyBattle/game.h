@@ -21,7 +21,7 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
-    Game(QString terrainFileName, QGraphicsScene *parent = nullptr);
+    Game(QString terrainFileName, bool isMultiplayer, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
     void keyPress(QKeyEvent *event);
@@ -43,6 +43,7 @@ private:
     QPoint redSpawnpoint;
     QPoint blackSpawnpoint;
 
+    bool isMultiplayer;
     bool startBool;
     int tabScore[];
 

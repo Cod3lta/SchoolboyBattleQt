@@ -169,6 +169,21 @@ QJsonArray TcpServer::generateUserList() {
     return clientsList;
 }
 
+void TcpServer::checkEveryoneReady() {
+    for(int i = 0; i < clients.length(); i++) {
+        if(!clients.at(i)->getReady())
+            return;
+    }
+    startGame();
+}
+
+void TcpServer::startGame() {
+    QJsonObject startGameMessage;
+    startGameMessage.insert("type", QJsonValue("startGame"));
+    startGameMessage.insert("nbUsers", QJsonValue(clients.length()));
+    sendEveryone(startGameMessage);
+}
+
 
 /*
  * Si le message qu'on reçoit vient d'un utilisateur connecté (on traite le  message)
@@ -197,6 +212,7 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         userListMessage.insert("type", QJsonValue("updateUsersList"));
         userListMessage.insert("users", QJsonValue(generateUserList()));
         sendEveryone(userListMessage);
+        checkEveryoneReady();
     }
 }
 

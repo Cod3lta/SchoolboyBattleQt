@@ -20,8 +20,9 @@
 #define PLAYER_HEIGHT 150
 #define PLAYER_SPEED 8
 
-Game::Game(QString terrainFileName, QGraphicsScene *parent)
-    : QGraphicsScene(parent)
+Game::Game(QString terrainFileName, bool isMultiplayer, QGraphicsScene *parent)
+    : QGraphicsScene(parent),
+      isMultiplayer(isMultiplayer)
 {
 
     // Chargement des données
@@ -37,8 +38,7 @@ Game::Game(QString terrainFileName, QGraphicsScene *parent)
     startGame(2);
 }
 
-void Game::startGame(int nbPlayers)
-{
+void Game::startGame(int nbPlayers) {
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
@@ -183,8 +183,11 @@ void Game::refreshEntities() {
     for(int i = 0; i < players.size(); i++) {
         Player *player = players.at(i);
         player->refresh(delta);
-        qobject_cast<View *>(this->views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
+        if(!isMultiplayer)
+            qobject_cast<View *>(this->views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
+    if(isMultiplayer)
+        qobject_cast<View *>(this->views().at(0))->moveView(players.at(0), PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
 void Game::spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement) {
