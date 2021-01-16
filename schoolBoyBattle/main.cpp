@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     w.setWindowIcon(QIcon(":/Resources/schoolboybattle-icon.ico"));
     w.setCentralWidget(new StackedWidget);
 
-    w.showFullScreen();
-    //w.show();
+    //w.showFullScreen();
+    w.show();
     return a.exec();
 }
