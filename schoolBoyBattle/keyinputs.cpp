@@ -41,6 +41,9 @@ void KeyInputs::keyRelease(QKeyEvent *event) {
 }
 
 void KeyInputs::setPlayerKeys(int focusedPlayerId) {
+    if(focusedPlayerId == -1) {
+
+    }
     // La clé à presser, {l'id du joueur, la direction}
     playersKeys.insert(Qt::Key_W,       {focusedPlayerId, up});
     playersKeys.insert(Qt::Key_A,       {focusedPlayerId, left});

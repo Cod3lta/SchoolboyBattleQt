@@ -47,6 +47,7 @@ signals:
     void userListRefresh(QHash<int, QHash<QString, QString>>);
     //void userJoined(const QString &username);
     void userLeft(const QString &username);
+    void userMove(int direction, int playerDescriptor, bool value);
 
 };
 

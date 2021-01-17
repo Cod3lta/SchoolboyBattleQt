@@ -42,10 +42,6 @@ void Game::startGame(int nbPlayers) {
     for(int i = 0; i < tileCandyPlacements.length(); i++)
         connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
 
-    // Signal / slot du keyboard au serveur
-    if(isMultiplayer)
-        connect(keyboardInputs, &KeyInputs::playerKeyToggle, tcpClient, &TcpClient::keyMove);
-
     // Joueurs
     if(isMultiplayer) {
         // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
@@ -74,6 +70,12 @@ void Game::startGame(int nbPlayers) {
             }
             count++;
         }
+        // Signal / slot du keyboard au serveur
+        // Envoyer les mouvements de ce joueur au serveur
+        connect(keyboardInputs, &KeyInputs::playerKeyToggle, tcpClient, &TcpClient::keyMove);
+        // Traiter les mouvements reçus du serveur
+        for (int i = 0; i < players.size(); ++i)
+            connect(tcpClient, &TcpClient::userMove, players.at(i), &Player::keyMove);
     }else {
         // Créer chaque joueur
         for(int i = 0; i < nbPlayers; i++) {

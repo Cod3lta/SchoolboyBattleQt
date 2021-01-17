@@ -76,9 +76,11 @@ void TcpServer::jsonReceived(ServerWorker *sender, const QJsonObject &doc)
 {
     Q_ASSERT(sender);
     emit logMessage(QLatin1String("JSON recu ") + QString::fromUtf8(QJsonDocument(doc).toJson()));
-    if (sender->getUsername().isEmpty())
+    if (sender->getUsername().isEmpty()) {
         // Si le message qu'on reçoit vient d'un utilisateur qui n'a pas de username
-        return jsonFromLoggedOut(sender, doc);
+        jsonFromLoggedOut(sender, doc);
+        return;
+    }
     // Si le message vient d'un utilisateur connecté
     jsonFromLoggedIn(sender, doc);
 }
@@ -230,6 +232,14 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         userListMessage.insert("users", QJsonValue(generateUserList()));
         sendEveryone(userListMessage);
         checkEveryoneReady();
+    }else if(typeVal.toString().compare(QLatin1String("playerMove"), Qt::CaseInsensitive) == 0) {   // Déplacement d'un joueur
+        // On le bradcast à tous les autres
+        QJsonObject userListMessage;
+        userListMessage.insert("type", QJsonValue("playerMove"));
+        userListMessage.insert("direction", QJsonValue(docObj.value(QLatin1String("direction"))));
+        userListMessage.insert("playerDescriptor", QJsonValue(docObj.value(QLatin1String("playerDescriptor"))));
+        userListMessage.insert("value", QJsonValue(docObj.value(QLatin1String("value"))));
+        broadcast(userListMessage, sender);
     }
 }
 

@@ -70,7 +70,7 @@ void TcpClient::keyMove(int playerDescriptor, int direction, bool value) {
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_9);
     QJsonObject message;
-    message[QStringLiteral("type")] = QStringLiteral("message");
+    message[QStringLiteral("type")] = QStringLiteral("playerMove");
     message[QStringLiteral("playerDescriptor")] = playerDescriptor;
     message[QStringLiteral("direction")] = direction;
     message[QStringLiteral("value")] = value;
@@ -148,6 +148,11 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         if(docObj.value("nbUsers").toInt()  < 2)
             return;
         emit startGame(docObj.value("nbUsers").toInt(), 1);
+    } else if(typeVal.toString().compare(QLatin1String("playerMove"), Qt::CaseInsensitive) == 0) {  // Déplacement d'un joueur
+        emit userMove(
+                docObj["playerDescriptor"].toInt(),
+                docObj["direction"].toInt(),
+                docObj["value"].toBool());
     }
 }
 
