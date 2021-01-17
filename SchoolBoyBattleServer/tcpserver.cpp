@@ -158,12 +158,13 @@ void TcpServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docOb
 
 
 QJsonObject TcpServer::generateUserList() {
-    QJsonArray clientsList;
     QJsonObject clientsHash;
     for(int i = 0; i < clients.length(); i++) {
         QJsonObject userProps;
         userProps.insert("username", clients.at(i)->getUsername());
         userProps.insert("ready", clients.at(i)->getReady());
+        userProps.insert("gender", clients.at(i)->getGender());
+        userProps.insert("team", clients.at(i)->getTeam());
         clientsHash.insert(QString::number(clients.at(i)->getSocketDescriptor()), QJsonValue(userProps));
     }
     return clientsHash;
@@ -178,6 +179,22 @@ void TcpServer::checkEveryoneReady() {
 }
 
 void TcpServer::startGame() {
+    // Générer la team et le gender de chaque client
+    // On shuffle le vecteur des clients
+    std::random_shuffle(clients.begin(), clients.end());
+    bool teamSetter = 0;
+    for(int i = 0; i < clients.length(); i++) {
+        clients.at(i)->setTeam(teamSetter);
+        teamSetter = !teamSetter;
+        clients.at(i)->setGender(rand()%2);
+    }
+
+    // Envoyer à tout le monde la liste des clients avec les teams / genders
+    QJsonObject userListMessage;
+    userListMessage.insert("type", QJsonValue("updateUsersList"));
+    userListMessage.insert("users", QJsonValue(generateUserList()));
+    sendEveryone(userListMessage);
+
     QJsonObject startGameMessage;
     startGameMessage.insert("type", QJsonValue("startGame"));
     startGameMessage.insert("nbUsers", QJsonValue(clients.length()));

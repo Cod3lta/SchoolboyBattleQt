@@ -134,19 +134,6 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
 
             usersList.insert(i.key().toInt(), clientProps);
         }
-        /*for(int i = 0; i < users.size(); i++) {
-            // Pour chaque client
-            QHash<QString, QString> client;
-            QHash<QString, QVariant> userHash = users.at(i)
-            QHashIterator<QString, QVariant> j(userHash);
-            while(j.hasNext()) {
-                // Pour chaque prop du client
-                j.next();
-                QHash<QString, QVariant> propsHash = j.value().toHash();
-                client.insert(j.key().toInt(), propsHash);
-            }
-            usersList.insert(users.at(i)., hash);
-        }*/
         this->usersList = usersList;
         emit userListRefresh(usersList);
     } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // Un utilisateur a quitté

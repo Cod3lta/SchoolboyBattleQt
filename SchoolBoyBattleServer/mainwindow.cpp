@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-#include <QVBoxLayout>
+#include <QBoxLayout>
 #include <QPlainTextEdit>
 #include <QMessageBox>
 #include <QFont>
@@ -9,13 +9,21 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       server(new TcpServer(this))
 {
-    //QVBoxLayout *vLayout = new QVBoxLayout(this);
+    // Construction du widget
+    QWidget *mainWidget = new QWidget(this);
+    QVBoxLayout *vLayout = new QVBoxLayout(mainWidget);
+    QHBoxLayout *btnLayout = new QHBoxLayout(mainWidget);
 
-    editText = new QPlainTextEdit(this);
-    editText->resize(600, 300);
+    editText = new QPlainTextEdit;
     editText->setFont(*(new QFont("Courier New", 10, QFont::Bold)));
-    btnToggleServer = new QPushButton("Démarrer", this);
-    btnToggleServer->move(0, 350);
+    btnToggleServer = new QPushButton("Démarrer");
+
+    btnLayout->addStretch(1);
+    btnLayout->addWidget(btnToggleServer);
+    vLayout->addWidget(editText);
+    vLayout->addLayout(btnLayout);
+    mainWidget->setLayout(vLayout);
+    setCentralWidget(mainWidget);
 
     connect(btnToggleServer, &QPushButton::clicked, this, &MainWindow::toggleServer);
     connect(server, &TcpServer::logMessage, this, &MainWindow::logMessage);

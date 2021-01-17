@@ -85,26 +85,17 @@ void WaitingRoom::userListRefresh(QHash<int, QHash<QString, QString>> users) {
         i.next();
         usersName[count]->setText(i.value().value("username"));
         usersReady[count]->setText(i.value().value("ready") == "true" ? "Prêt" : "Attente");
-        if(i.key() == tcpClient->getDescriptor() && i.value().value("ready") == "true")
-            btnReady->setText("Pas prêt");
+        if(i.key() == tcpClient->getDescriptor()) {
+            mainLabel->setText("Connecté au serveur en tant que " + i.value().value("username") + " !");
+            if(i.value().value("ready") == "true")
+                btnReady->setText("Pas prêt");
+        }
         count++;
     }
     for(int i = users.size(); i < MAX_USERS; i++) {
         usersName[count]->setText("...");
         usersReady[count]->setText("...");
     }
-    /*for(int i = 0; i < MAX_USERS; i++) {
-        if(i < users.length()) {
-            usersName[i]->setText(users.at(i).value("username"));
-            usersReady[i]->setText(users.at(i).value("ready") == "true" ? "Prêt" : "Attente");
-            if(users.at(i).value("socketDescriptor").toInt() == tcpClient->getDescriptor() && users.at(i).value("ready") == "true") {
-                btnReady->setText("Pas prêt");
-            }
-        }else{
-            usersName[i]->setText("...");
-            usersReady[i]->setText("...");
-        }
-    }*/
 }
 
 void WaitingRoom::connected() {

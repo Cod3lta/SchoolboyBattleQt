@@ -59,7 +59,8 @@ void Game::startGame(int nbPlayers) {
             int socketDescriptor = tcpClient->getDescriptor();
             players.append(new Player(
                                i.key(),
-                               count%2,
+                               clientProps["team"].toInt(),
+                               clientProps["gender"].toInt(),
                                dataLoader,
                                &tiles["4-collision"],
                                PLAYER_WIDTH,
@@ -76,7 +77,7 @@ void Game::startGame(int nbPlayers) {
     }else {
         // Créer chaque joueur
         for(int i = 0; i < nbPlayers; i++) {
-            players.append(new Player(i, i%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+            players.append(new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
             addItem(players.at(i));
         }
         // Connecter les signaux de keyboardInputs aux slots des joueurs pour le clavier

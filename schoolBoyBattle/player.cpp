@@ -14,11 +14,14 @@
 Player::Player(
         int id,
         int team,
+        int gender,
         DataLoader *dataLoader,
         QList<Tile*> *collisionTiles,
         int playerWidth, int playerHeight, int playerSpeed,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
+      team(static_cast<Team>(team)),
+      gender(static_cast<Gender>(gender)),
       dataLoader(dataLoader),
       id(id),
       playerWidth(playerWidth),
@@ -26,14 +29,10 @@ Player::Player(
       playerSpeed(playerSpeed),
       collisionTiles(collisionTiles)
 {
-    this->team = static_cast<Team>(team);
-    gender = rand()%2 == 0 ? girl : boy;
     setPos(
-                dataLoader->getTeamSpawnpoint(team).x(),
-                dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
+        dataLoader->getTeamSpawnpoint(team).x(),
+        dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
 
-    // L'animation dépends de gender et team :
-    // Doit être après l'initialisation de ces variables !
     loadAnimations();
     setAnimation(idle);
     setZIndex();

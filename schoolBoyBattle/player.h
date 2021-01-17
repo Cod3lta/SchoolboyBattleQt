@@ -20,6 +20,7 @@ public:
     Player(
             int id,
             int team,
+            int gender,
             DataLoader *dataLoader,
             QList<Tile*> *collisionTiles,
             int playerWidth, int playerHeight, int playerSpeed,
