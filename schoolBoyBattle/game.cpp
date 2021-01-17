@@ -28,7 +28,6 @@ Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient
 
     // Chargement des données
     dataLoader = new DataLoader(terrainFileName);
-    QList<int> playersIds;
     //QHashIterator<QString, QString>
     keyboardInputs = new KeyInputs(tcpClient->getDescriptor());
     addItem(keyboardInputs);
@@ -68,10 +67,11 @@ void Game::startGame(int nbPlayers) {
                                PLAYER_SPEED));
             addItem(players.at(count));
             // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
-            qDebug() << "Client en construction : " << i.key() << " / ce client : " << socketDescriptor;
-            if(i.key() == socketDescriptor)
+            if(i.key() == socketDescriptor) {
+                playerIndexInMulti = count;
                 // On connecte la sortie du clavier à ce joueur
                 connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(count), &Player::keyMove);
+            }
             count++;
         }
     }else {
@@ -219,7 +219,7 @@ void Game::refreshEntities() {
             qobject_cast<View *>(this->views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
     if(isMultiplayer)
-        qobject_cast<View *>(this->views().at(0))->moveView(players.at(0), PLAYER_WIDTH, PLAYER_HEIGHT);
+        qobject_cast<View *>(this->views().at(0))->moveView(players.at(playerIndexInMulti), PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
 void Game::spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement) {
