@@ -9,10 +9,7 @@
 #include <QVector2D>
 #include "game.h"
 
-// Les textures sont étirées pour entrer dans le rectangle du joueur
-#define HITBOX_DEBUG false
-
-
+#define HITBOX_DEBUG true
 
 Player::Player(
         int id,
@@ -290,7 +287,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         // Debug rect
         painter->setPen(QPen(Qt::black));
         painter->drawRect(boundingRect());
-        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
+        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, "ID : " + QString::number(id));
         painter->setPen(QPen(Qt::red));
         painter->drawPath(shape());
     }

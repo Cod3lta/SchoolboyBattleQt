@@ -69,17 +69,31 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     });
 }
 
-void WaitingRoom::userListRefresh(QList<QHash<QString, QString>> users) {
+void WaitingRoom::userListRefresh(QHash<int, QHash<QString, QString>> users) {
     // Activer / désactiver le bouton "prêt" s'il n'y a pas assez de monde
-    if(users.length() >= MIN_USERS) {
+    if(users.size() >= MIN_USERS) {
         btnReady->setEnabled(true);
         btnReady->setText("Prêt");
     }else{
         btnReady->setEnabled(false);
-        btnReady->setText("Encore " + QString::number(MIN_USERS - users.length()) + " joueurs nécessaires");
+        btnReady->setText("Encore " + QString::number(MIN_USERS - users.size()) + " joueur nécessaire");
     }
     // Mettre à jour les labels des utilisateurs
-    for(int i = 0; i < MAX_USERS; i++) {
+    QHashIterator<int, QHash<QString, QString>> i(users);
+    int count = 0;
+    while(i.hasNext()) {
+        i.next();
+        usersName[count]->setText(i.value().value("username"));
+        usersReady[count]->setText(i.value().value("ready") == "true" ? "Prêt" : "Attente");
+        if(i.key() == tcpClient->getDescriptor() && i.value().value("ready") == "true")
+            btnReady->setText("Pas prêt");
+        count++;
+    }
+    for(int i = users.size(); i < MAX_USERS; i++) {
+        usersName[count]->setText("...");
+        usersReady[count]->setText("...");
+    }
+    /*for(int i = 0; i < MAX_USERS; i++) {
         if(i < users.length()) {
             usersName[i]->setText(users.at(i).value("username"));
             usersReady[i]->setText(users.at(i).value("ready") == "true" ? "Prêt" : "Attente");
@@ -90,7 +104,7 @@ void WaitingRoom::userListRefresh(QList<QHash<QString, QString>> users) {
             usersName[i]->setText("...");
             usersReady[i]->setText("...");
         }
-    }
+    }*/
 }
 
 void WaitingRoom::connected() {

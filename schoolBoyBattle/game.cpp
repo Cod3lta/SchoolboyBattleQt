@@ -20,22 +20,20 @@
 #define PLAYER_HEIGHT 150
 #define PLAYER_SPEED 8
 
-Game::Game(QString terrainFileName, bool isMultiplayer, QGraphicsScene *parent)
+Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient, QGraphicsScene *parent)
     : QGraphicsScene(parent),
+      tcpClient(tcpClient),
       isMultiplayer(isMultiplayer)
 {
 
     // Chargement des données
     dataLoader = new DataLoader(terrainFileName);
-
-
-
-    keyboardInputs = new KeyInputs();
-
-
+    QList<int> playersIds;
+    //QHashIterator<QString, QString>
+    keyboardInputs = new KeyInputs(tcpClient->getDescriptor());
     addItem(keyboardInputs);
 
-    startGame(2);
+    startGame(nbPlayers);
 }
 
 void Game::startGame(int nbPlayers) {
@@ -45,14 +43,47 @@ void Game::startGame(int nbPlayers) {
     for(int i = 0; i < tileCandyPlacements.length(); i++)
         connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
 
+    // Signal / slot du keyboard au serveur
+    if(isMultiplayer)
+        connect(keyboardInputs, &KeyInputs::playerKeyToggle, tcpClient, &TcpClient::keyMove);
+
     // Joueurs
-    for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, i%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
-        addItem(players.at(i));
+    if(isMultiplayer) {
+        // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
+        QHash<int, QHash<QString, QString>> clientsList = tcpClient->getUsersList();
+        QHashIterator<int, QHash<QString, QString>> i(clientsList);
+        int count = 0;
+        while(i.hasNext()) {
+            i.next();
+            QHash<QString, QString> clientProps = i.value();
+            int socketDescriptor = tcpClient->getDescriptor();
+            players.append(new Player(
+                               i.key(),
+                               count%2,
+                               dataLoader,
+                               &tiles["4-collision"],
+                               PLAYER_WIDTH,
+                               PLAYER_HEIGHT,
+                               PLAYER_SPEED));
+            addItem(players.at(count));
+            // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
+            qDebug() << "Client en construction : " << i.key() << " / ce client : " << socketDescriptor;
+            if(i.key() == socketDescriptor)
+                // On connecte la sortie du clavier à ce joueur
+                connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(count), &Player::keyMove);
+            count++;
+        }
+    }else {
+        // Créer chaque joueur
+        for(int i = 0; i < nbPlayers; i++) {
+            players.append(new Player(i, i%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+            addItem(players.at(i));
+        }
+        // Connecter les signaux de keyboardInputs aux slots des joueurs pour le clavier
+        for (int i = 0; i < players.size(); ++i)
+            connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(i), &Player::keyMove);
     }
-    // Connecter les signaux de keyboardInputs aux slots des joueurs pour le clavier
-    for (int i = 0; i < players.size(); ++i)
-        connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(i), &Player::keyMove);
+
 
     // Refresh du déplacement des joueurs
     playerRefreshDelta = new QElapsedTimer();

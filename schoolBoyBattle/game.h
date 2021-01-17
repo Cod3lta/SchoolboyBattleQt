@@ -14,6 +14,7 @@
 #include "dataloader.h"
 #include "tile.h"
 #include "tilecandyplacement.h"
+#include "tcpclient.h"
 #include <QElapsedTimer>
 
 class Game : public QGraphicsScene
@@ -21,7 +22,7 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
-    Game(QString terrainFileName, bool isMultiplayer, QGraphicsScene *parent = nullptr);
+    Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient = nullptr, QGraphicsScene *parent = nullptr);
     bool start();
     void exit();
     void keyPress(QKeyEvent *event);
@@ -30,6 +31,7 @@ public:
     QList<Candy *> candiesNearby(int x, int y);
 
 private:
+    TcpClient *tcpClient;
     QTimer *playerRefresh;
     QElapsedTimer *playerRefreshDelta;
     QList<Player*> players;
@@ -39,9 +41,6 @@ private:
     QHash<QString, QList<Tile*>> tiles;
     KeyInputs *keyboardInputs;
     DataLoader *dataLoader;
-
-    QPoint redSpawnpoint;
-    QPoint blackSpawnpoint;
 
     bool isMultiplayer;
     bool startBool;

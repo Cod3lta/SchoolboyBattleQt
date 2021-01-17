@@ -101,7 +101,7 @@ void TcpServer::userDisconnected(ServerWorker *sender, int threadIdx) {
 void TcpServer::userError(ServerWorker *sender)
 {
     Q_UNUSED(sender)
-    emit logMessage(QLatin1String("Erreur de ") + sender->getSocketDescriptor());
+    emit logMessage(QLatin1String("Erreur de ") + QString::number(sender->getSocketDescriptor()));
 }
 
 void TcpServer::stopServer()
@@ -157,16 +157,16 @@ void TcpServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docOb
 }
 
 
-QJsonArray TcpServer::generateUserList() {
+QJsonObject TcpServer::generateUserList() {
     QJsonArray clientsList;
+    QJsonObject clientsHash;
     for(int i = 0; i < clients.length(); i++) {
-        QJsonObject user;
-        user.insert("username", clients.at(i)->getUsername());
-        user.insert("ready", clients.at(i)->getReady());
-        user.insert("socketDescriptor", clients.at(i)->getSocketDescriptor());
-        clientsList.push_back(QJsonValue(user));
+        QJsonObject userProps;
+        userProps.insert("username", clients.at(i)->getUsername());
+        userProps.insert("ready", clients.at(i)->getReady());
+        clientsHash.insert(QString::number(clients.at(i)->getSocketDescriptor()), QJsonValue(userProps));
     }
-    return clientsList;
+    return clientsHash;
 }
 
 void TcpServer::checkEveryoneReady() {

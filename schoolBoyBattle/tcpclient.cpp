@@ -30,6 +30,10 @@ int TcpClient::getDescriptor() {
     return descriptor;
 }
 
+QHash<int, QHash<QString, QString>> TcpClient::getUsersList() {
+    return usersList;
+}
+
 void TcpClient::login(const QString &username)
 {
     if (socket->state() == QAbstractSocket::ConnectedState) {
@@ -59,6 +63,17 @@ void TcpClient::toggleReady() {
     clientStream.setVersion(QDataStream::Qt_5_9);
     QJsonObject message;
     message[QStringLiteral("type")] = QStringLiteral("toggleReady");
+    clientStream << QJsonDocument(message).toJson();
+}
+
+void TcpClient::keyMove(int playerDescriptor, int direction, bool value) {
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_9);
+    QJsonObject message;
+    message[QStringLiteral("type")] = QStringLiteral("message");
+    message[QStringLiteral("playerDescriptor")] = playerDescriptor;
+    message[QStringLiteral("direction")] = direction;
+    message[QStringLiteral("value")] = value;
     clientStream << QJsonDocument(message).toJson();
 }
 
@@ -103,19 +118,36 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         // we notify a new message was received via the messageReceived signal
         emit messageReceived(senderVal.toString(), textVal.toString());
     } else if (typeVal.toString().compare(QLatin1String("updateUsersList"), Qt::CaseInsensitive) == 0) { // Refresh la liste des joueurs
-        // Transformer les données json en QList<QHash<QString, QString>>
-        QList<QVariant> users = docObj.value("users").toArray().toVariantList();
-        QList<QHash<QString, QString>> usersList;
-        for(int i = 0; i < users.size(); i++) {
-            QHash<QString, QString> hashTemp;
-            QHash<QString, QVariant> userHash = users.at(i).toHash();
-            QHashIterator<QString, QVariant> j(userHash);
+        // Transformer les données json en QHash<int, QHash<QString, QString>>
+        QHash<int, QHash<QString, QString>> usersList;
+        QHash<QString, QVariant> users = docObj.value("users").toObject().toVariantHash();
+        QHashIterator<QString, QVariant> i(users);
+        while(i.hasNext()) {
+            i.next();
+            QHash<QString, QString> clientProps;
+            QHash<QString, QVariant> clientPropsVariant = i.value().toHash();
+            QHashIterator<QString, QVariant> j(clientPropsVariant);
             while(j.hasNext()) {
                 j.next();
-                hashTemp.insert(j.key(), j.value().toString());
+                clientProps.insert(j.key(), j.value().toString());
             }
-            usersList.append(hashTemp);
+
+            usersList.insert(i.key().toInt(), clientProps);
         }
+        /*for(int i = 0; i < users.size(); i++) {
+            // Pour chaque client
+            QHash<QString, QString> client;
+            QHash<QString, QVariant> userHash = users.at(i)
+            QHashIterator<QString, QVariant> j(userHash);
+            while(j.hasNext()) {
+                // Pour chaque prop du client
+                j.next();
+                QHash<QString, QVariant> propsHash = j.value().toHash();
+                client.insert(j.key().toInt(), propsHash);
+            }
+            usersList.insert(users.at(i)., hash);
+        }*/
+        this->usersList = usersList;
         emit userListRefresh(usersList);
     } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // Un utilisateur a quitté
          // we extract the username of the new user
@@ -214,15 +246,6 @@ void TcpClient::error(QAbstractSocket::SocketError error) {
     default:
         Q_UNREACHABLE();
     }
-    /*
-    // enable the button to connect to the server again
-    ui->connectButton->setEnabled(true);
-    // disable the ui to send and display messages
-    ui->sendButton->setEnabled(false);
-    ui->messageEdit->setEnabled(false);
-    ui->chatView->setEnabled(false);*/
-    // reset the last printed username
-    //m_lastUserName.clear();
 }
 
 void TcpClient::askUsername() {

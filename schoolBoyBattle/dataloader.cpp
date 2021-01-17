@@ -8,8 +8,7 @@
 
 #define PLAYER_AFTER_LAYER 1
 
-DataLoader::DataLoader(QString terrainFileName)
-{
+DataLoader::DataLoader(QString terrainFileName) {
     terrainXMLDoc = getFileContent(terrainFileName);
     loadPlayerAnimations();
     loadCandyAnimations();

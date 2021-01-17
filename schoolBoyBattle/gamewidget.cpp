@@ -6,9 +6,10 @@
 #include <QKeyEvent>
 #include <QDebug>
 
-GameWidget::GameWidget(QWidget *parent) : QWidget(parent)
-{
-}
+GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
+    QWidget(parent),
+    tcpClient(tcpClient)
+{}
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
     if(event->isAutoRepeat()) {
@@ -31,7 +32,7 @@ void GameWidget::restartGame(int nbPlayers, int nbViews) {
     // S'il y a autant de QGraphicsView que de joueurs -> splitscreen
     bool isMultiplayer = nbPlayers == nbViews ? false : true;
     QString terrainFileName = ":/Resources/debugTerrain.tmx";
-    game = new Game(terrainFileName, isMultiplayer);
+    game = new Game(terrainFileName, nbPlayers, isMultiplayer, tcpClient);
     QBoxLayout *hlayout = new QHBoxLayout(this);
 
     for(int i = 0; i < nbViews; i++) {

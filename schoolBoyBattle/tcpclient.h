@@ -13,8 +13,10 @@ class TcpClient : public QObject
 public:
     explicit TcpClient(QObject *parent = nullptr);
     int getDescriptor();
+    QHash<int, QHash<QString, QString>> getUsersList();
 
 private:
+    QHash<int, QHash<QString, QString>> usersList;
     QTcpSocket *socket;
     bool loggedIn;
     int descriptor;
@@ -25,6 +27,8 @@ public slots:
     void disconnectFromHost();
     void sendMessage(const QString &text);
     void toggleReady();
+    // Signaux du jeu
+    void keyMove(int playerId, int direction, bool value);
 private slots:
     void onReadyRead();
     void error(QAbstractSocket::SocketError error);
@@ -40,7 +44,7 @@ signals:
     void messageReceived(const QString &sender, const QString &text);
     void connectionError();
     //void userListRefresh(QList<QVariant>);
-    void userListRefresh(QList<QHash<QString, QString>>);
+    void userListRefresh(QHash<int, QHash<QString, QString>>);
     //void userJoined(const QString &username);
     void userLeft(const QString &username);
 

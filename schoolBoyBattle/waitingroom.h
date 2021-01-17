@@ -26,7 +26,7 @@ private:
 
 
 private slots:
-    void userListRefresh(QList<QHash<QString, QString>>);
+    void userListRefresh(QHash<int, QHash<QString, QString>>);
     void connected();
 
 public slots:

@@ -7,11 +7,11 @@
 #include <QRectF>
 #include <QDebug>
 
-KeyInputs::KeyInputs(QGraphicsObject *parent)
+KeyInputs::KeyInputs(int focusedPlayerId, QGraphicsObject *parent)
     : QGraphicsObject(parent)
 {
     setFlag(QGraphicsItem::ItemIsFocusable, true);
-    setPlayerKeys();
+    setPlayerKeys(focusedPlayerId);
 }
 
 void KeyInputs::keyPress(QKeyEvent * event) {
@@ -40,16 +40,19 @@ void KeyInputs::keyRelease(QKeyEvent *event) {
     }
 }
 
-void KeyInputs::setPlayerKeys() {
+void KeyInputs::setPlayerKeys(int focusedPlayerId) {
     // La clé à presser, {l'id du joueur, la direction}
-    playersKeys.insert(Qt::Key_W,       {0, up});
-    playersKeys.insert(Qt::Key_A,       {0, left});
-    playersKeys.insert(Qt::Key_S,       {0, down});
-    playersKeys.insert(Qt::Key_D,       {0, right});
-    playersKeys.insert(Qt::Key_Up,      {1, up});
-    playersKeys.insert(Qt::Key_Left,    {1, left});
-    playersKeys.insert(Qt::Key_Down,    {1, down});
-    playersKeys.insert(Qt::Key_Right,   {1, right});
+    playersKeys.insert(Qt::Key_W,       {focusedPlayerId, up});
+    playersKeys.insert(Qt::Key_A,       {focusedPlayerId, left});
+    playersKeys.insert(Qt::Key_S,       {focusedPlayerId, down});
+    playersKeys.insert(Qt::Key_D,       {focusedPlayerId, right});
+    if(focusedPlayerId == 0) {
+        // Si l'id du 1er joueur n'est pas un socketDescriptor
+        playersKeys.insert(Qt::Key_Up,      {1, up});
+        playersKeys.insert(Qt::Key_Left,    {1, left});
+        playersKeys.insert(Qt::Key_Down,    {1, down});
+        playersKeys.insert(Qt::Key_Right,   {1, right});
+    }
 }
 
 // OVERRIDE REQUIRED

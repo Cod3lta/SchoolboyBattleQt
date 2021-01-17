@@ -6,7 +6,7 @@ MainWidget::MainWidget() :
     tcpClient(new TcpClient(this))
 {
 
-    gameWidget = new GameWidget(this);
+    gameWidget = new GameWidget(tcpClient, this);
     StartMenu *startMenu = new StartMenu(this);
     waitingRoom = new WaitingRoom(tcpClient, this);
 

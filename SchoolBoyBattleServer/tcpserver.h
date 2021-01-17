@@ -23,7 +23,7 @@ private:
     void jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &doc);
     void jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &doc);
     void sendJson(ServerWorker *destination, const QJsonObject &message);
-    QJsonArray generateUserList();
+    QJsonObject generateUserList();
     void checkEveryoneReady();
     void startGame();
 
