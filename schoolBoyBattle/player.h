@@ -33,6 +33,7 @@ public:
     void refresh(int delta);
     QList<int> looseCandies(int candyStolenId);
     QList<int> getCandiesTaken();
+    void pickupCandyMulti(int candyId);
     int getId();
 
 private:

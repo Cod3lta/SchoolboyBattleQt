@@ -336,6 +336,10 @@ QList<int> Player::getCandiesTaken() {
     return IdsCandiesTaken;
 }
 
+void Player::pickupCandyMulti(int candyId) {
+    IdsCandiesTaken.prepend(candyId);
+}
+
 Player::~Player() {
 
 }

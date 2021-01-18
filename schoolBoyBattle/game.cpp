@@ -91,6 +91,8 @@ void Game::setupMultiplayerGame() {
     connect(this, &Game::rollbackToServer, tcpClient, &TcpClient::rollback);
     // Recevoir et traiter les rollbacks
     connect(tcpClient, &TcpClient::userRollback, this, &Game::receiveRollback);
+    // Recevoir les joueur qui prennent des candies libres
+    connect(tcpClient, &TcpClient::playerPickUpCandy, this, &Game::playerPickedUpCandyMulti);
 
     // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
     QHash<int, QHash<QString, QString>> clientsList = tcpClient->getUsersList();
@@ -322,13 +324,6 @@ void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int can
     candies.insert(candyId, candy);
 }
 
-void Game::playerTookCandy(int descriptor, int candyId) {
-    // Dire au candy qu'il a été ramassé par un joueur
-    //candyNearby->pickUp(this);
-    // Ajouter le candy à la liste des candies du joueur
-    //candiesTaken.prepend(candyNearby);
-}
-
 QList<int> Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
     Player *playerLosingCandies = players[candies[candyIdStartingFrom]->getCurrentPlayerId()];
     QList<int>candiesGained = playerLosingCandies->looseCandies(candyIdStartingFrom);
@@ -336,6 +331,17 @@ QList<int> Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningI
     for(int i = 0; i < candiesGained.length(); i++)
         candies[candiesGained.at(i)]->setCurrentPlayerId(playerWinningId);
     return candiesGained;
+}
+
+/*
+ * Slot qui n'est utilisé qu'en multijoueur, s'active quand un joueur ramasse
+ * un candy qui n'appartenait à personne jusque là
+ */
+void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
+    // Dire au candy qu'il a été ramassés par un joueur
+    candies[candyId]->pickUp(descriptor);
+    // Ajouter le candy à la liste des candies du joueur
+    players[descriptor]->pickupCandyMulti(candyId);
 }
 
 /*void Game::sendCandyToServer(int x, int y, int candyType, int candySize, int candyPlacementId) {

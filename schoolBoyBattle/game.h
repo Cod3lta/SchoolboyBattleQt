@@ -61,8 +61,8 @@ private slots:
     void sendRollback();
     void receiveRollback(int playerX, int playerY, int playerDescriptor);
     void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
-    void playerTookCandy(int descriptor, int candyId);
     QList<int> playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
+    void playerPickedUpCandyMulti(int descriptor, int candyId);
 
 public slots:
     void startGame(int nbPlayers);
