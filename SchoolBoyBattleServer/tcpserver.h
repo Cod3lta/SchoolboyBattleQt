@@ -18,10 +18,15 @@ private:
     const int idealThreadCount;
     QVector<QThread *> availableThreads;
     QVector<int> threadsLoaded;
+    int nbUsersConnected;
     QVector<ServerWorker *> clients;
     void jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &doc);
     void jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &doc);
     void sendJson(ServerWorker *destination, const QJsonObject &message);
+    QJsonObject generateUserList();
+    void checkEveryoneReady();
+    void startGame();
+    QList<int> freeCandies;
 
 protected:
     void incomingConnection(qintptr socketDescription) override;
@@ -39,6 +44,7 @@ private slots:
     void jsonReceived(ServerWorker *sender, const QJsonObject &doc);
     void userDisconnected(ServerWorker *client, int threadIdx);
     void userError(ServerWorker *sender);
+    void sendEveryone(const QJsonObject &message);
 };
 
 #endif // TCPSERVER_H

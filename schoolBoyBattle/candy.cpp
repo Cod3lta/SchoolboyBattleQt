@@ -12,14 +12,14 @@
 
 
 Candy::Candy(
-        int x,
-        int y,
         int candyType,
         int candySize,
         DataLoader *dataLoader,
         TileCandyPlacement *tilePlacement,
+        int id,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
+      id(id),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
       dataLoader(dataLoader),
@@ -28,7 +28,7 @@ Candy::Candy(
 {
     loadAnimations();
     setAnimation(idle);
-    setPos(x, y);
+    setPos(tilePlacement->pos());
     setZIndex();
     if(tilePlacement != nullptr) {
         connect(this, &Candy::pickedUp, tilePlacement, &TileCandyPlacement::candyPickedUp);

@@ -1,4 +1,4 @@
-#include "game.h"
+﻿#include "game.h"
 #include <QGraphicsItem>
 #include <QGraphicsView>
 #include <QGraphicsScene>
@@ -15,44 +15,51 @@
 
 #include "tilecandyplacement.h"
 #include "dataloader.h"
+
+#define SERVER_ROLLBACK_DELAY 1000
 #define REFRESH_DELAY 1/60*1000
 #define PLAYER_WIDTH 120
 #define PLAYER_HEIGHT 150
 #define PLAYER_SPEED 8
 
-Game::Game(QString terrainFileName, QGraphicsScene *parent)
-    : QGraphicsScene(parent)
+Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient, QGraphicsScene *parent)
+    : QGraphicsScene(parent),
+      tcpClient(tcpClient),
+      isMultiplayer(isMultiplayer)
 {
 
     // Chargement des données
     dataLoader = new DataLoader(terrainFileName);
-
-
-
-    keyboardInputs = new KeyInputs();
-
-
+    //QHashIterator<QString, QString>
+    keyboardInputs = new KeyInputs(tcpClient->getSocketDescriptor());
     addItem(keyboardInputs);
 
-    startGame(2);
+    startGame(nbPlayers);
 }
 
-void Game::startGame(int nbPlayers)
-{
+void Game::startGame(int nbPlayers) {
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
-    for(int i = 0; i < tileCandyPlacements.length(); i++)
-        connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
 
-    // Joueurs
-    for(int i = 0; i < nbPlayers; i++) {
-        players.append(new Player(i, i%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
-        addItem(players.at(i));
+    // Joueurs & clavier
+    if(isMultiplayer) {
+        setupMultiplayerGame();
+    }else {
+        // Connecter les signaux des placements de candy à la fonction qui les créé
+        for(int i = 0; i < tileCandyPlacements.length(); i++)
+            connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+
+        // Créer chaque joueur
+        for(int i = 0; i < nbPlayers; i++) {
+            players.append(new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+            addItem(players.at(i));
+        }
+        // Connecter les signaux de keyboardInputs aux slots des joueurs pour le clavier
+        for (int i = 0; i < players.size(); ++i)
+            connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(i), &Player::keyMove);
     }
-    // Connecter les signaux de keyboardInputs aux slots des joueurs pour le clavier
-    for (int i = 0; i < players.size(); ++i)
-        connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(i), &Player::keyMove);
+
 
     // Refresh du déplacement des joueurs
     playerRefreshDelta = new QElapsedTimer();
@@ -61,6 +68,85 @@ void Game::startGame(int nbPlayers)
     connect(playerRefresh, &QTimer::timeout, this, &Game::refreshEntities);
     playerRefresh->start();
     playerRefreshDelta->start();
+}
+
+void Game::setupMultiplayerGame() {
+    // Mettre en place le timer de rollback
+    serverRollback = new QTimer(this);
+    serverRollback->setInterval(SERVER_ROLLBACK_DELAY);
+    connect(serverRollback, &QTimer::timeout, this, &Game::sendRollback);
+    serverRollback->start();
+    connect(this, &Game::rollbackToServer, tcpClient, &TcpClient::rollback);
+    // Recevoir et traiter les rollbacks
+    connect(tcpClient, &TcpClient::userRollback, this, &Game::receiveRollback);
+
+    // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
+    QHash<int, QHash<QString, QString>> clientsList = tcpClient->getUsersList();
+    QHashIterator<int, QHash<QString, QString>> i(clientsList);
+    int count = 0;
+    while(i.hasNext()) {
+        i.next();
+        QHash<QString, QString> clientProps = i.value();
+        int socketDescriptor = tcpClient->getSocketDescriptor();
+        players.append(new Player(
+                           i.key(),
+                           clientProps["team"].toInt(),
+                           clientProps["gender"].toInt(),
+                           dataLoader,
+                           &tiles["4-collision"],
+                           PLAYER_WIDTH,
+                           PLAYER_HEIGHT,
+                           PLAYER_SPEED));
+        addItem(players.at(count));
+        // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
+        if(i.key() == socketDescriptor) {
+            playerIndexInMulti = count;
+            // On connecte la sortie du clavier à ce joueur
+            connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(count), &Player::keyMove);
+        }
+        count++;
+    }
+    // Signal / slot du keyboard au serveur
+    // Envoyer les mouvements de ce joueur au serveur
+    connect(keyboardInputs, &KeyInputs::playerKeyToggle, tcpClient, &TcpClient::keyMove);
+    // Traiter les mouvements reçus du serveur
+    for (int i = 0; i < players.size(); ++i)
+        connect(tcpClient, &TcpClient::userMove, players.at(i), &Player::keyMove);
+
+    // Si notre instance est le candy master
+    if(tcpClient->isCandyMaster()) {
+        for(int i = 0; i < tileCandyPlacements.length(); i++) {
+            // Connecter le signal de création de candy au slot de cette classe
+            connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+            // Envoyer les signaux de création des candy au serveur pour les broadcaster ensuite
+            connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, tcpClient, &TcpClient::sendNewCandy);
+        }
+    }else{
+        // Connecter les messages du serveur à la création des nouveaux candy
+        connect(tcpClient, &TcpClient::spawnNewCandy, this, &Game::spawnCandy);
+    }
+}
+
+/*
+ * Toutes les x milisecondes, envoie au serveur les infos
+ * de l'emplacement du joueur et des candy qu'il a ramassé
+ */
+void Game::sendRollback() {
+    int playerX = players.at(playerIndexInMulti)->x();
+    int playerY = players.at(playerIndexInMulti)->y();
+    emit rollbackToServer(playerX, playerY);
+}
+
+/*
+ * Traîte les rollbacks envoyés par les autres joueurs en
+ * déplaçant les items là où ils sont indiqués dans le message
+ */
+void Game::receiveRollback(int playerX, int playerY, int playerDescriptor) {
+    for(int i = 0; i < players.size(); i++) {
+        if(players.at(i)->getId() == playerDescriptor) {
+            players.at(i)->setPos(playerX, playerY);
+        }
+    }
 }
 
 void Game::keyPress(QKeyEvent *event) {
@@ -92,11 +178,13 @@ void Game::setCustomSceneRect() {
 void Game::placeTilesCandyPlacement() {
     DataLoader::TileLayerStruct* candyPlacementsLayer = dataLoader->tileLayers["6-candy-placements"];
 
+    int count = 0;
     for(int y = 0; y < candyPlacementsLayer->tiles.size(); y++) {
         for(int x = 0; x < candyPlacementsLayer->tiles.at(y).size(); x++) {
             int tileType = candyPlacementsLayer->tiles.at(y).at(x);
             if(tileType != 0) {
                 TileCandyPlacement *candyPlacement = new TileCandyPlacement(
+                            count,
                             dataLoader->getCandyRessources(tileType)->respawnDelayMs,
                             x,
                             y,
@@ -106,6 +194,7 @@ void Game::placeTilesCandyPlacement() {
                             dataLoader);
                 tileCandyPlacements.append(candyPlacement);
                 addItem(candyPlacement);
+                count++;
             }
         }
     }
@@ -114,7 +203,7 @@ void Game::placeTilesCandyPlacement() {
 /*
  * Va créer et placer sur la scène toutes les tiles de toutes les layers
  * sauf celles qui sont sur la layer "6-candy-placements"
- * Ces tiles seront placées dans la fonction placeCandyPlacements()
+ * Ces tiles seront placées dans la fonction placeTilesCandyPlacement()
  */
 void Game::placeTiles() {
     QMap<QString, DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;
@@ -159,8 +248,10 @@ QList<Tile*> Game::tilesNearby(QString layer, int x, int y) {
 
 QList<Candy*> Game::candiesNearby(int x, int y) {
     QList<Candy*> candiesNearby;
-    for(int i = 0; i < candies.size(); i++) {
-        Candy *candy = candies.at(i);
+    QHashIterator<int, Candy*> i(candies);
+    while(i.hasNext()) {
+        i.next();
+        Candy *candy = i.value();
         // Sélectionner les candy à proximité du point (x,y)
         int tileSize = dataLoader->getTileSize();
         if(
@@ -183,17 +274,29 @@ void Game::refreshEntities() {
     for(int i = 0; i < players.size(); i++) {
         Player *player = players.at(i);
         player->refresh(delta);
-        qobject_cast<View *>(this->views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
+        if(!isMultiplayer)
+            qobject_cast<View *>(this->views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
     }
+    if(isMultiplayer)
+        qobject_cast<View *>(this->views().at(0))->moveView(players.at(playerIndexInMulti), PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
-void Game::spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement) {
-    Candy *candy = new Candy(x, y, candyType, candySize, dataLoader, tilePlacement);
+void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
+    TileCandyPlacement* tileCandyPlacementToSpawn = tileCandyPlacements.at(tilePlacementId);
+    Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn, candyId);
     addItem(candy);
-    candies.append(candy);
+    candies.insert(candyId, candy);
 }
+
+/*void Game::sendCandyToServer(int x, int y, int candyType, int candySize, int candyPlacementId) {
+
+}*/
 
 
 void Game::reset() {
 
+}
+
+QList<TileCandyPlacement *> Game::getTileCandyPlacementList() {
+    return tileCandyPlacements;
 }

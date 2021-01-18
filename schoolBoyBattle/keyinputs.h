@@ -8,7 +8,7 @@ class KeyInputs : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    KeyInputs(QGraphicsObject *parent = nullptr);
+    KeyInputs(int focusedPlayerId = 0, QGraphicsObject *parent = nullptr);
     ~KeyInputs();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -23,7 +23,7 @@ private:
     QHash<int, QList<int>> playersKeys;
     // La même chose se trouve dans player.h
     enum PlayerMovesEnum : int {up = 0, right = 1, down = 2, left = 3};
-    void setPlayerKeys();
+    void setPlayerKeys(int focusedPlayerId);
 };
 
 #endif // KEYINPUTS_H

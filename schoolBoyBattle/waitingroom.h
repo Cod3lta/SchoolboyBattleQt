@@ -3,8 +3,10 @@
 
 #include "tcpclient.h"
 
+#include <QBoxLayout>
 #include <QHostAddress>
 #include <QLabel>
+#include <QPushButton>
 #include <QWidget>
 
 class WaitingRoom : public QWidget
@@ -15,10 +17,20 @@ public:
 
 private:
     TcpClient* tcpClient;
-    QLabel *label;
+    QLabel *mainLabel;
+    QList<QHBoxLayout *> usersLayout;
+    QList<QLabel *> usersName;
+    QList<QLabel *> usersReady;
+    QPushButton *btnReady;
+    QPushButton *btnLeave;
+
+
+private slots:
+    void userListRefresh(QHash<int, QHash<QString, QString>>);
+    void connected();
 
 public slots:
-    void startClient(QHostAddress address, qint16 port);
+    void startWaitingRoom(QHostAddress address, qint16 port);
 
 signals:
     void setVisibleWidget(int i);

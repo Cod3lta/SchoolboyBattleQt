@@ -6,7 +6,7 @@ MainWidget::MainWidget() :
     tcpClient(new TcpClient(this))
 {
 
-    gameWidget = new GameWidget(this);
+    gameWidget = new GameWidget(tcpClient, this);
     StartMenu *startMenu = new StartMenu(this);
     waitingRoom = new WaitingRoom(tcpClient, this);
 
@@ -15,9 +15,10 @@ MainWidget::MainWidget() :
     addWidget(waitingRoom);
 
     setCurrentWidget(startMenu);
-    connect(startMenu, &StartMenu::startLocalGame, gameWidget, &GameWidget::restartLocalGame);
+    connect(startMenu, &StartMenu::startLocalGame, gameWidget, &GameWidget::restartGame);
     connect(startMenu, &StartMenu::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
-    connect(startMenu, &StartMenu::startClient, waitingRoom, &WaitingRoom::startClient);
+    connect(startMenu, &StartMenu::startClient, waitingRoom, &WaitingRoom::startWaitingRoom);
     connect(waitingRoom, &WaitingRoom::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
+    connect(tcpClient, &TcpClient::startGame, gameWidget, &GameWidget::restartGame);
     setFocusPolicy(Qt::StrongFocus);
 }

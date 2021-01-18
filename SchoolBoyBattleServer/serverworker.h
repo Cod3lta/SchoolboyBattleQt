@@ -12,15 +12,33 @@ class ServerWorker : public QObject
 
 public:
     explicit ServerWorker(QObject *parent = nullptr);
+    void sendJson(const QJsonObject &jsonData);
+
+    // Getters / setters
+    qintptr getSocketDescriptor();
     virtual bool setSocketDescriptor(qintptr socketDescriptor);
     QString getUsername() const;
     void setUsername(const QString &username);
-    void sendJson(const QJsonObject &jsonData);
+    bool getReady() const;
+    void setReady(const bool ready);
+    int getGender();
+    void setGender(int gender);
+    int getTeam();
+    void setTeam(int gender);
 
 private:
-    QTcpSocket *socket;
-    QString username;
+    // Les  propriétés d'un client
+    QTcpSocket *socket;         // Son socket
+    QString username;           // Son nom d'utilisateur
+    bool ready;                 // S'il est prêt
+    int gender;                 // Son genre
+    int team;                   // Sa team
+
+    // Les mutable pour les threads
     mutable QReadWriteLock usernameLock;
+    mutable QReadWriteLock readyLock;
+    mutable QReadWriteLock genderLock;
+    mutable QReadWriteLock teamLock;
 
 signals:
     void jsonRecieved(const QJsonObject &jsonDoc);

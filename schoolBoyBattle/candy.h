@@ -10,12 +10,11 @@ class Candy : public QGraphicsObject
     Q_OBJECT
 public:
     Candy(
-            int x,
-            int y,
             int candyType,
             int candySize,
             DataLoader *dataLoader,
-            TileCandyPlacement *tilePlacement = nullptr,
+            TileCandyPlacement *tilePlacement,
+            int id,
             QGraphicsObject *parent = nullptr);
     ~Candy();
     QRectF boundingRect() const override;

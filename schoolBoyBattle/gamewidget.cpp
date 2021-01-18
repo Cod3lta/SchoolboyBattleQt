@@ -6,9 +6,10 @@
 #include <QKeyEvent>
 #include <QDebug>
 
-GameWidget::GameWidget(QWidget *parent) : QWidget(parent)
-{
-}
+GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
+    QWidget(parent),
+    tcpClient(tcpClient)
+{}
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
     if(event->isAutoRepeat()) {
@@ -26,23 +27,22 @@ void GameWidget::keyReleaseEvent(QKeyEvent *event) {
     game->keyRelease(event);
 }
 
-void GameWidget::restartLocalGame(int nbPlayers) {
+void GameWidget::restartGame(int nbPlayers, int nbViews) {
+    if(nbViews == 0) nbViews = nbPlayers;
+    // S'il y a autant de QGraphicsView que de joueurs -> splitscreen
+    bool isMultiplayer = nbPlayers == nbViews ? false : true;
     QString terrainFileName = ":/Resources/debugTerrain.tmx";
-    game = new Game(terrainFileName);
+    game = new Game(terrainFileName, nbPlayers, isMultiplayer, tcpClient);
     QBoxLayout *hlayout = new QHBoxLayout(this);
 
-    for(int i = 0; i < nbPlayers; i++) {
+    for(int i = 0; i < nbViews; i++) {
         View *v = new View(i);
         v->setScene(game);
         hlayout->addWidget(v);
         views.append(v);
     }
 
-    qDebug() << "Has focus ? " << hasFocus();
-
     setLayout(hlayout);
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
-
-    qDebug() << "Has focus ? " << hasFocus();
 }
