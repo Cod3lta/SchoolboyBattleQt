@@ -29,6 +29,7 @@ private:
     bool candySpawned;
     int respawnDelayMs;
     int id;
+    int candyId;
     QTimer *timer;
 
 public slots:
@@ -36,7 +37,7 @@ public slots:
     void candyPickedUp();
 
 signals:
-    void spawnCandy(int candyType, int candySize, int tilePlacementId);
+    void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
 
 };
 

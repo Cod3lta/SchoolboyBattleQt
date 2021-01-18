@@ -99,7 +99,7 @@ void TcpClient::rollback(int playerX, int playerY) {
 /*
  * Envoi du nouveau candy créé au serveur
  */
-void TcpClient::sendNewCandy(int candyType, int candySize, int tilePlacementId) {
+void TcpClient::sendNewCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_9);
     QJsonObject message;
@@ -108,6 +108,7 @@ void TcpClient::sendNewCandy(int candyType, int candySize, int tilePlacementId) 
     message[QStringLiteral("candyType")] = candyType;
     message[QStringLiteral("candySize")] = candySize;
     message[QStringLiteral("tilePlacementId")] = tilePlacementId;
+    message[QStringLiteral("candyId")] = candyId;
     clientStream << QJsonDocument(message).toJson();
 }
 
@@ -199,7 +200,8 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         emit spawnNewCandy(
                 docObj["candyType"].toInt(),
                 docObj["candySize"].toInt(),
-                docObj["tilePlacementId"].toInt());
+                docObj["tilePlacementId"].toInt(),
+                docObj["candyId"].toInt());
     }
 }
 

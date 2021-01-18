@@ -248,8 +248,10 @@ QList<Tile*> Game::tilesNearby(QString layer, int x, int y) {
 
 QList<Candy*> Game::candiesNearby(int x, int y) {
     QList<Candy*> candiesNearby;
-    for(int i = 0; i < candies.size(); i++) {
-        Candy *candy = candies.at(i);
+    QHashIterator<int, Candy*> i(candies);
+    while(i.hasNext()) {
+        i.next();
+        Candy *candy = i.value();
         // Sélectionner les candy à proximité du point (x,y)
         int tileSize = dataLoader->getTileSize();
         if(
@@ -279,11 +281,11 @@ void Game::refreshEntities() {
         qobject_cast<View *>(this->views().at(0))->moveView(players.at(playerIndexInMulti), PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
-void Game::spawnCandy(int candyType, int candySize, int tilePlacementId) {
+void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
     TileCandyPlacement* tileCandyPlacementToSpawn = tileCandyPlacements.at(tilePlacementId);
     Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn);
     addItem(candy);
-    candies.append(candy);
+    candies.insert(candyId, candy);
 }
 
 /*void Game::sendCandyToServer(int x, int y, int candyType, int candySize, int candyPlacementId) {

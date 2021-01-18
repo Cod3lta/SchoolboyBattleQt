@@ -19,7 +19,8 @@ TileCandyPlacement::TileCandyPlacement(
         QGraphicsItem* parent) :
     Tile(indexX, indexY, layerRessources, layer, tileType, dataLoader, parent),
     respawnDelayMs(respawnDelayMs),
-    id(id)
+    id(id),
+    candyId(0)
 {
     int min = 1000, max = 10000;
     int randomDelayFirstSpawnMs = min + (rand() % static_cast<int>(max - min + 1));
@@ -35,7 +36,9 @@ void TileCandyPlacement::spawnCandyTimer() {
     emit spawnCandy(
                 dataLoader->getCandyRessources(tileType)->candyType,
                 dataLoader->getCandyRessources(tileType)->candySize,
-                this->id);
+                this->id,
+                candyId);
+    candyId++;
     timer->stop();
 }
 

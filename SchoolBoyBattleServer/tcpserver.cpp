@@ -257,6 +257,7 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         newCandy.insert("candyType", QJsonValue(docObj.value(QLatin1String("candyType"))));
         newCandy.insert("candySize", QJsonValue(docObj.value(QLatin1String("candySize"))));
         newCandy.insert("tilePlacementId", QJsonValue(docObj.value(QLatin1String("tilePlacementId"))));
+        newCandy.insert("candyId", QJsonValue(docObj.value(QLatin1String("candyId"))));
         broadcast(newCandy, sender);
     }
 }

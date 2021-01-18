@@ -37,7 +37,7 @@ private:
     QElapsedTimer *playerRefreshDelta;
     QTimer *serverRollback;
     QList<Player*> players;
-    QList<Candy*> candies;
+    QHash<int, Candy*> candies;
     QList<TileCandyPlacement*> tileCandyPlacements;
     // la string est le nom des layers
     QHash<QString, QList<Tile*>> tiles;
@@ -60,7 +60,7 @@ private:
 private slots:
     void sendRollback();
     void receiveRollback(int playerX, int playerY, int playerDescriptor);
-    void spawnCandy(int candyType, int candySize, int tilePlacementId);
+    void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
 
 public slots:
     void startGame(int nbPlayers);
