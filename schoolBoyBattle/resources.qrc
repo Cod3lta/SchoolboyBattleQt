@@ -47,6 +47,8 @@
         <file>Resources/candy/idle/peanut-small-idle.png</file>
         <file>Resources/candy/idle/mandarin-big-idle.png</file>
         <file>Resources/candy/idle/peanut-big-idle.png</file>
-        <file>Resources/schoolboybattle-icon.ico</file>
+        <file>Resources/brand/logoJeu.PNG</file>
+        <file>Resources/brand/Personnage.png</file>
+        <file>Resources/brand/schoolboybattle-icon.ico</file>
     </qresource>
 </RCC>
