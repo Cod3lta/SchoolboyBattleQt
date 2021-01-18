@@ -14,6 +14,7 @@ public:
             int candySize,
             DataLoader *dataLoader,
             TileCandyPlacement *tilePlacement,
+            int id,
             QGraphicsObject *parent = nullptr);
     ~Candy();
     QRectF boundingRect() const override;

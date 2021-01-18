@@ -26,6 +26,7 @@ private:
     QJsonObject generateUserList();
     void checkEveryoneReady();
     void startGame();
+    QList<int> freeCandies;
 
 protected:
     void incomingConnection(qintptr socketDescription) override;

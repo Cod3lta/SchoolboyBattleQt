@@ -16,8 +16,10 @@ Candy::Candy(
         int candySize,
         DataLoader *dataLoader,
         TileCandyPlacement *tilePlacement,
+        int id,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
+      id(id),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
       dataLoader(dataLoader),

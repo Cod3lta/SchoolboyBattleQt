@@ -283,7 +283,7 @@ void Game::refreshEntities() {
 
 void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
     TileCandyPlacement* tileCandyPlacementToSpawn = tileCandyPlacements.at(tilePlacementId);
-    Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn);
+    Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn, candyId);
     addItem(candy);
     candies.insert(candyId, candy);
 }
