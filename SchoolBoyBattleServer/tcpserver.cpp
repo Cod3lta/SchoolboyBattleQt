@@ -261,6 +261,27 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         newCandy.insert("tilePlacementId", QJsonValue(docObj.value(QLatin1String("tilePlacementId"))));
         newCandy.insert("candyId", QJsonValue(docObj.value(QLatin1String("candyId"))));
         broadcast(newCandy, sender);
+    }else if(typeVal.toString().compare(QLatin1String("isCandyFree"), Qt::CaseInsensitive) == 0) {   // Est-ce q'un candy est libre
+        if(freeCandies.contains(docObj.value(QLatin1String("candyType")).toInt())) {
+            // Si l'id du candy qu'un joueur veut récupérer est présent dans la liste des candy libres
+            // On envoie à tout le monde que tel joueur a récupéré le candy
+            QJsonObject candyTaken;
+            candyTaken.insert("type", QJsonValue("candyTaken"));
+            candyTaken.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
+            candyTaken.insert("candyId", QJsonValue(docObj.value(QLatin1String("candyId"))));
+            sendEveryone(candyTaken);
+        }else{
+
+        }
+        freeCandies.append(docObj.value(QLatin1String("candyId")).toInt());
+        // On le bradcast à tous les autres
+        QJsonObject newCandy;
+        newCandy.insert("type", QJsonValue("newCandy"));
+        newCandy.insert("candyType", QJsonValue(docObj.value(QLatin1String("candyType"))));
+        newCandy.insert("candySize", QJsonValue(docObj.value(QLatin1String("candySize"))));
+        newCandy.insert("tilePlacementId", QJsonValue(docObj.value(QLatin1String("tilePlacementId"))));
+        newCandy.insert("candyId", QJsonValue(docObj.value(QLatin1String("candyId"))));
+        broadcast(newCandy, sender);
     }
 }
 

@@ -20,11 +20,12 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void pickUp(QGraphicsItem *player);
+    void pickUp(int playerId);
     void refresh(QPointF pos, int posInQueue);
     bool isTaken();
-    QGraphicsItem* getCurrentPlayer();
-    void setCurrentPlayer(QGraphicsItem *player);
+    int getId();
+    int getCurrentPlayerId();
+    void setCurrentPlayerId(int playerId);
 
 
     enum Type : int {peanut = 0, mandarin = 1};
@@ -45,7 +46,7 @@ private:
     Size candySize;
     DataLoader *dataLoader;
     TileCandyPlacement* tilePlacement;
-    QGraphicsItem *currentPlayer;
+    int currentPlayerId;
     bool taken;
 
 

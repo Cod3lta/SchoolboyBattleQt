@@ -103,11 +103,19 @@ void TcpClient::sendNewCandy(int candyType, int candySize, int tilePlacementId, 
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_9);
     QJsonObject message;
-    //QJsonArray candiesDatas;
     message[QStringLiteral("type")] = QStringLiteral("newCandy");
     message[QStringLiteral("candyType")] = candyType;
     message[QStringLiteral("candySize")] = candySize;
     message[QStringLiteral("tilePlacementId")] = tilePlacementId;
+    message[QStringLiteral("candyId")] = candyId;
+    clientStream << QJsonDocument(message).toJson();
+}
+
+void TcpClient::isCandyFree(int candyId) {
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_9);
+    QJsonObject message;
+    message[QStringLiteral("type")] = QStringLiteral("isCandyFree");
     message[QStringLiteral("candyId")] = candyId;
     clientStream << QJsonDocument(message).toJson();
 }
@@ -201,6 +209,10 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
                 docObj["candyType"].toInt(),
                 docObj["candySize"].toInt(),
                 docObj["tilePlacementId"].toInt(),
+                docObj["candyId"].toInt());
+    } else if(typeVal.toString().compare(QLatin1String("candyTaken"), Qt::CaseInsensitive) == 0) {  // Un joueur a pris un candy
+        emit playerPickUpCandy(
+                docObj["socketDescriptor"].toInt(),
                 docObj["candyId"].toInt());
     }
 }

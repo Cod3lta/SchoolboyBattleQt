@@ -33,6 +33,7 @@ public slots:
     void keyMove(int playerId, int direction, bool value);
     void rollback(int playerX, int playerY);
     void sendNewCandy(int candyType, int candySize, int tilePlacementId, int candyId);
+    void isCandyFree(int candyId);
 private slots:
     void onReadyRead();
     void error(QAbstractSocket::SocketError error);
@@ -54,6 +55,7 @@ signals:
     void userMove(int direction, int playerDescriptor, bool value);
     void userRollback(int playerX, int playerY, int playerDescriptor);
     void spawnNewCandy(int candyType, int candySize, int tilePlacementId, int candyId);
+    void playerPickUpCandy(int descriptor, int candyId);
 
 };
 

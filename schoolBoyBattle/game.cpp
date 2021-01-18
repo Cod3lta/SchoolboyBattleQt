@@ -29,7 +29,7 @@ Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient
 {
 
     // Chargement des données
-    dataLoader = new DataLoader(terrainFileName);
+    dataLoader = new DataLoader(terrainFileName, isMultiplayer);
     //QHashIterator<QString, QString>
     keyboardInputs = new KeyInputs(tcpClient->getSocketDescriptor());
     addItem(keyboardInputs);
@@ -43,7 +43,7 @@ void Game::startGame(int nbPlayers) {
     placeTilesCandyPlacement();
 
     // Joueurs & clavier
-    if(isMultiplayer) {
+    if(dataLoader->isMultiplayer()) {
         setupMultiplayerGame();
     }else {
         // Connecter les signaux des placements de candy à la fonction qui les créé
@@ -52,13 +52,25 @@ void Game::startGame(int nbPlayers) {
 
         // Créer chaque joueur
         for(int i = 0; i < nbPlayers; i++) {
-            players.append(new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
-            addItem(players.at(i));
+            players.insert(i, new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+            addItem(players.value(i));
         }
         // Connecter les signaux de keyboardInputs aux slots des joueurs pour le clavier
-        for (int i = 0; i < players.size(); ++i)
-            connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(i), &Player::keyMove);
+        QHashIterator<int, Player*> i(players);
+        while(i.hasNext()) {
+            i.next();
+            connect(keyboardInputs, &KeyInputs::playerKeyToggle, i.value(), &Player::keyMove);
+        }
     }
+
+    // Signaux slots quand un joueur vole le candy d'un autre joueur
+    QHashIterator<int, Player*> i(players);
+    while(i.hasNext()) {
+        i.next();
+        // Signal qui est émit quand ce joueur (i.value()) vole des candies à d'autres joueurs
+        connect(i.value(), &Player::stalsCandies, this, &Game::playerStealsCandies);
+    }
+
 
 
     // Refresh du déplacement des joueurs
@@ -84,11 +96,11 @@ void Game::setupMultiplayerGame() {
     QHash<int, QHash<QString, QString>> clientsList = tcpClient->getUsersList();
     QHashIterator<int, QHash<QString, QString>> i(clientsList);
     int count = 0;
+    int socketDescriptor = tcpClient->getSocketDescriptor();
     while(i.hasNext()) {
         i.next();
         QHash<QString, QString> clientProps = i.value();
-        int socketDescriptor = tcpClient->getSocketDescriptor();
-        players.append(new Player(
+        players.insert(i.key(), new Player(
                            i.key(),
                            clientProps["team"].toInt(),
                            clientProps["gender"].toInt(),
@@ -97,12 +109,14 @@ void Game::setupMultiplayerGame() {
                            PLAYER_WIDTH,
                            PLAYER_HEIGHT,
                            PLAYER_SPEED));
-        addItem(players.at(count));
+        addItem(players.value(i.key()));
         // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
         if(i.key() == socketDescriptor) {
-            playerIndexInMulti = count;
+            playerIndexInMulti = i.key();
             // On connecte la sortie du clavier à ce joueur
-            connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(count), &Player::keyMove);
+            connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.value(i.key()), &Player::keyMove);
+            // On connecte la détection des candy au serveur (demander au serveur si un candy est libre)
+            connect(players.value(i.key()), &Player::isCandyFree, tcpClient, &TcpClient::isCandyFree);
         }
         count++;
     }
@@ -110,8 +124,11 @@ void Game::setupMultiplayerGame() {
     // Envoyer les mouvements de ce joueur au serveur
     connect(keyboardInputs, &KeyInputs::playerKeyToggle, tcpClient, &TcpClient::keyMove);
     // Traiter les mouvements reçus du serveur
-    for (int i = 0; i < players.size(); ++i)
-        connect(tcpClient, &TcpClient::userMove, players.at(i), &Player::keyMove);
+    QHashIterator<int, Player*> j(players);
+    while(j.hasNext()) {
+        j.next();
+        connect(tcpClient, &TcpClient::userMove, j.value(), &Player::keyMove);
+    }
 
     // Si notre instance est le candy master
     if(tcpClient->isCandyMaster()) {
@@ -132,8 +149,8 @@ void Game::setupMultiplayerGame() {
  * de l'emplacement du joueur et des candy qu'il a ramassé
  */
 void Game::sendRollback() {
-    int playerX = players.at(playerIndexInMulti)->x();
-    int playerY = players.at(playerIndexInMulti)->y();
+    int playerX = players.value(playerIndexInMulti)->x();
+    int playerY = players.value(playerIndexInMulti)->y();
     emit rollbackToServer(playerX, playerY);
 }
 
@@ -142,11 +159,7 @@ void Game::sendRollback() {
  * déplaçant les items là où ils sont indiqués dans le message
  */
 void Game::receiveRollback(int playerX, int playerY, int playerDescriptor) {
-    for(int i = 0; i < players.size(); i++) {
-        if(players.at(i)->getId() == playerDescriptor) {
-            players.at(i)->setPos(playerX, playerY);
-        }
-    }
+    players.value(playerDescriptor)->setPos(playerX, playerY);
 }
 
 void Game::keyPress(QKeyEvent *event) {
@@ -266,19 +279,40 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
 }
 
 void Game::refreshEntities() {
-    if(views().length() == 0)
-        return;
-    int delta=playerRefreshDelta->nsecsElapsed();
+    if(views().length() == 0) return;
+    int delta = playerRefreshDelta->nsecsElapsed();
+
     // Refresh le joueur
     playerRefreshDelta->restart();
-    for(int i = 0; i < players.size(); i++) {
-        Player *player = players.at(i);
-        player->refresh(delta);
-        if(!isMultiplayer)
-            qobject_cast<View *>(this->views().at(i))->moveView(player, PLAYER_WIDTH, PLAYER_HEIGHT);
+    QHashIterator<int, Player*> i(players);
+    int count = 0;
+    while(i.hasNext()) {
+        i.next();
+        i.value()->refresh(delta);
+
+        if(!candies.isEmpty()) {
+            // Refresh les candies capturés par ce joueur
+            QList<int> candiesTaken = i.value()->getCandiesTaken();
+            if(!candiesTaken.isEmpty()) {
+                // le 1er candy de la liste suit le joueur
+                candies[candiesTaken.first()]->refresh(i.value()->pos(), 0);
+                Candy *previousCandy = candies[candiesTaken.first()];
+                for(int i = 0; i < candiesTaken.length(); i++) {
+                    candies[candiesTaken.at(i)]->refresh(previousCandy->pos(), i);
+                    previousCandy = candies[candiesTaken.at(i)];
+                }
+            }
+        }
+
+        // Refresh les vues de chaque joueur
+        if(!dataLoader->isMultiplayer())
+            qobject_cast<View *>(this->views().at(count))->moveView(i.value(), PLAYER_WIDTH, PLAYER_HEIGHT);
+        count++;
     }
-    if(isMultiplayer)
-        qobject_cast<View *>(this->views().at(0))->moveView(players.at(playerIndexInMulti), PLAYER_WIDTH, PLAYER_HEIGHT);
+
+    // Refresh la vue du programme
+    if(dataLoader->isMultiplayer())
+        qobject_cast<View *>(this->views().at(0))->moveView(players.value(playerIndexInMulti), PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
 void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
@@ -286,6 +320,22 @@ void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int can
     Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn, candyId);
     addItem(candy);
     candies.insert(candyId, candy);
+}
+
+void Game::playerTookCandy(int descriptor, int candyId) {
+    // Dire au candy qu'il a été ramassé par un joueur
+    //candyNearby->pickUp(this);
+    // Ajouter le candy à la liste des candies du joueur
+    //candiesTaken.prepend(candyNearby);
+}
+
+QList<int> Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
+    Player *playerLosingCandies = players[candies[candyIdStartingFrom]->getCurrentPlayerId()];
+    QList<int>candiesGained = playerLosingCandies->looseCandies(candyIdStartingFrom);
+    // définir le nouveau joueur pour chacun de ces candy
+    for(int i = 0; i < candiesGained.length(); i++)
+        candies[candiesGained.at(i)]->setCurrentPlayerId(playerWinningId);
+    return candiesGained;
 }
 
 /*void Game::sendCandyToServer(int x, int y, int candyType, int candySize, int candyPlacementId) {

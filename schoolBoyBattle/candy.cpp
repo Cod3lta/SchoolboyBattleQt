@@ -6,7 +6,7 @@
 
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 #define LERP_AMOUNT 30 // plus haut = distance parcourue plus petite
 #define LERP_ACCELERATION 50
 
@@ -24,6 +24,7 @@ Candy::Candy(
       candySize(static_cast<Size>(candySize)),
       dataLoader(dataLoader),
       tilePlacement(tilePlacement),
+      currentPlayerId(-1),
       taken(false)
 {
     loadAnimations();
@@ -88,22 +89,26 @@ void Candy::setZIndex() {
     setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
-void Candy::pickUp(QGraphicsItem *player) {
+void Candy::pickUp(int playerId) {
     taken = true;
     emit pickedUp();
-    currentPlayer = player;
+    currentPlayerId = playerId;
 }
 
 bool Candy::isTaken() {
     return taken;
 }
 
-void Candy::setCurrentPlayer(QGraphicsItem *player) {
-    currentPlayer = player;
+int Candy::getId() {
+    return id;
 }
 
-QGraphicsItem *Candy::getCurrentPlayer() {
-    return currentPlayer;
+void Candy::setCurrentPlayerId(int playerId) {
+    currentPlayerId = playerId;
+}
+
+int Candy::getCurrentPlayerId() {
+    return currentPlayerId;
 }
 
 void Candy::refresh(QPointF pos, int posInQueue) {
@@ -127,7 +132,8 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawRect(boundingRect());
         painter->setPen(QPen(Qt::red));
         painter->drawPath(shape());
-        painter->drawText(10, 10, QString::number(id));
+        painter->drawText(10, 10, "ID : " + QString::number(id));
+        painter->drawText(10, 30, "Player : " + QString::number(currentPlayerId));
     }
 
     AnimationsLocalStruct *candyToDraw = animationsLocal.value(animation);

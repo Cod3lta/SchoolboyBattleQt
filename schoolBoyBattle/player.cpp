@@ -89,17 +89,6 @@ void Player::refresh(int delta) {
     }
 
     collideWithCandy();
-
-    if(candiesTaken.length() > 0)
-        refreshTakenCandies();
-}
-
-void Player::refreshTakenCandies() {
-    // le 1er candy de la liste suit le joueur
-    candiesTaken.first()->refresh(pos(), 0);
-    for(int i = 1; i < candiesTaken.length(); i++) {
-        candiesTaken.at(i)->refresh(candiesTaken.at(i-1)->pos(), i);
-    }
 }
 
 // COLLISIONS ET DEPLACEMENTS ----------------------------------------------------------
@@ -155,20 +144,23 @@ void Player::collideWithCandy() {
                 if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
                     // si le candy qu'on touche est pris (pas par nous)
                     if(candyNearby->isTaken()) {
-                        if(static_cast<Player*>(candyNearby->getCurrentPlayer()) != this) {
+                        if(candyNearby->getCurrentPlayerId() != this->id) {
                             // Voler le candy
-                            QList<Candy *> candyGained = static_cast<Player *>(candyNearby->getCurrentPlayer())->looseCandies(candyNearby);
-                            for(int i = 0; i < candyGained.size(); i++)
-                                candyGained.at(i)->setCurrentPlayer(this);
-                            candiesTaken = candyGained + candiesTaken;
+                            QList<int> candyGained = emit stalsCandies(candyNearby->getId(), this->id);
+                            IdsCandiesTaken = candyGained + IdsCandiesTaken;
                         }
                     }else{
                         // Ramasser le candy
-                        // appeler une fonction publique de Candy au lieu d'un signal car utiliser
-                        // les signaux / slots demanderait de connecter au préalable tous les joueurs à
-                        // tous les candy
-                        candyNearby->pickUp(this);
-                        candiesTaken.prepend(candyNearby);
+                        if(dataLoader->isMultiplayer()) {
+                            // Demander au serveur si on peut prendre le candy
+                            emit isCandyFree(candyNearby->getId());
+                        }else{
+                            // appeler une fonction publique de Candy au lieu d'un signal car utiliser
+                            // les signaux / slots demanderait de connecter au préalable tous les joueurs à
+                            // tous les candy
+                            candyNearby->pickUp(id);
+                            IdsCandiesTaken.prepend(candyNearby->getId());
+                        }
                     }
                 }
             }
@@ -176,12 +168,12 @@ void Player::collideWithCandy() {
     }
 }
 
-QList<Candy *> Player::looseCandies(Candy *candyStolen) {
-    QList<Candy*> candiesStolen;
-    for(int i = 0; i < candiesTaken.length(); i++) {
-        if(candiesTaken.at(i) == candyStolen) {
-            candiesStolen = candiesTaken.mid(i);
-            candiesTaken = candiesTaken.mid(0, i);
+QList<int> Player::looseCandies(int candyStolenId) {
+    QList<int> candiesStolen;
+    for(int i = 0; i < IdsCandiesTaken.length(); i++) {
+        if(IdsCandiesTaken.at(i) == candyStolenId) {
+            candiesStolen = IdsCandiesTaken.mid(i);
+            IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
             return candiesStolen;
         }
     }
@@ -340,6 +332,9 @@ int Player::getId() {
     return this->id;
 }
 
+QList<int> Player::getCandiesTaken() {
+    return IdsCandiesTaken;
+}
 
 Player::~Player() {
 

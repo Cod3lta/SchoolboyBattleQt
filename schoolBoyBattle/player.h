@@ -16,6 +16,7 @@
 
 class Player : public QGraphicsObject
 {
+    Q_OBJECT
 public:
     Player(
             int id,
@@ -30,7 +31,8 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void refresh(int delta);
-    QList<Candy *> looseCandies(Candy *candy);
+    QList<int> looseCandies(int candyStolenId);
+    QList<int> getCandiesTaken();
     int getId();
 
 private:
@@ -52,7 +54,7 @@ private:
     Animations currentAnimation;
     Facing facing;
     DataLoader *dataLoader;
-    QList<Candy *> candiesTaken;
+    QList<int> IdsCandiesTaken;
     int id;                 // En solo : int incrémentatif
                             // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
@@ -62,7 +64,7 @@ private:
 
     QList<Tile*> *collisionTiles;
 
-    void refreshTakenCandies();
+    //void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);
     bool collide(QVector2D movingVector);
     void collideWithCandy();
@@ -82,6 +84,9 @@ private:
 public slots:
     void keyMove(int playerId, int direction, bool value);
 
+signals:
+    void isCandyFree(int candyId);
+    QList<int> stalsCandies(int candyIdStartingFrom, int playerWinningId);
 };
 
 #endif // PLAYER_H

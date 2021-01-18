@@ -9,7 +9,9 @@
 #define PLAYER_AFTER_LAYER 1    // Définit que les joueurs se trouvent entre
                                 // les layers x et x+1
 
-DataLoader::DataLoader(QString terrainFileName) {
+DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
+    multiplayer(isMultiplayer)
+{
     terrainXMLDoc = getFileContent(terrainFileName);
     loadPlayerAnimations();
     loadCandyAnimations();
@@ -36,6 +38,10 @@ int DataLoader::getTileSize() {
 
 QVector2D DataLoader::getPlayerSize() {
     return QVector2D(playerWidth, playerHeight);
+}
+
+bool DataLoader::isMultiplayer() {
+    return multiplayer;
 }
 
 // PLAYER SPAWNPOINTS -----------------------------------------------------------------------
