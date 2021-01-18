@@ -12,6 +12,7 @@ TcpClient::TcpClient(QObject *parent) :
     QObject(parent),
     socket(new QTcpSocket(this)),
     loggedIn(false),
+    isCandyMaster(false),
     descriptor(-1)
 {
     connect(socket, &QTcpSocket::readyRead, this, &TcpClient::onReadyRead);         // Slot
@@ -24,10 +25,6 @@ TcpClient::TcpClient(QObject *parent) :
         emit connectionError();
     });
     connect(socket, &QTcpSocket::disconnected, this, [=]() {loggedIn = false; });
-}
-
-int TcpClient::getDescriptor() {
-    return descriptor;
 }
 
 QHash<int, QHash<QString, QString>> TcpClient::getUsersList() {
@@ -153,8 +150,10 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
                 j.next();
                 clientProps.insert(j.key(), j.value().toString());
             }
-
             usersList.insert(i.key().toInt(), clientProps);
+            // mettre la variable isCandyMaster à true si c'est nous le candy master
+            if(docObj.value(QLatin1String("candyMasterDescriptor")).toInt() == getSocketDescriptor())
+                isCandyMaster = true;
         }
         this->usersList = usersList;
         emit userListRefresh(usersList);
@@ -276,4 +275,12 @@ void TcpClient::askUsername() {
     }
     // try to login with the given username
     login(newUsername);
+}
+
+int TcpClient::getSocketDescriptor() {
+    return descriptor;
+}
+
+bool TcpClient::getCandyMaster() {
+    return isCandyMaster;
 }

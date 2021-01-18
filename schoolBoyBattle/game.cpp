@@ -31,7 +31,7 @@ Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient
     // Chargement des données
     dataLoader = new DataLoader(terrainFileName);
     //QHashIterator<QString, QString>
-    keyboardInputs = new KeyInputs(tcpClient->getDescriptor());
+    keyboardInputs = new KeyInputs(tcpClient->getSocketDescriptor());
     addItem(keyboardInputs);
 
     startGame(nbPlayers);
@@ -85,7 +85,7 @@ void Game::setupMultiplayerGame() {
     while(i.hasNext()) {
         i.next();
         QHash<QString, QString> clientProps = i.value();
-        int socketDescriptor = tcpClient->getDescriptor();
+        int socketDescriptor = tcpClient->getSocketDescriptor();
         players.append(new Player(
                            i.key(),
                            clientProps["team"].toInt(),

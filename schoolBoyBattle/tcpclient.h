@@ -12,13 +12,15 @@ class TcpClient : public QObject
 
 public:
     explicit TcpClient(QObject *parent = nullptr);
-    int getDescriptor();
+    int getSocketDescriptor();
+    bool getCandyMaster();
     QHash<int, QHash<QString, QString>> getUsersList();
 
 private:
     QHash<int, QHash<QString, QString>> usersList;
     QTcpSocket *socket;
     bool loggedIn;
+    bool isCandyMaster;
     int descriptor;
     void jsonReceived(const QJsonObject &doc);
 public slots:

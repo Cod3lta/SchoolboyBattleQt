@@ -85,7 +85,7 @@ void WaitingRoom::userListRefresh(QHash<int, QHash<QString, QString>> users) {
         i.next();
         usersName[count]->setText(i.value().value("username"));
         usersReady[count]->setText(i.value().value("ready") == "true" ? "Prêt" : "Attente");
-        if(i.key() == tcpClient->getDescriptor()) {
+        if(i.key() == tcpClient->getSocketDescriptor()) {
             mainLabel->setText("Connecté au serveur en tant que " + i.value().value("username") + " !");
             if(i.value().value("ready") == "true")
                 btnReady->setText("Pas prêt");

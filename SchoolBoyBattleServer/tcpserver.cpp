@@ -192,8 +192,10 @@ void TcpServer::startGame() {
     }
 
     // Envoyer à tout le monde la liste des clients avec les teams / genders
+    // On envoie aussi le descriptor du candy master
     QJsonObject userListMessage;
     userListMessage.insert("type", QJsonValue("updateUsersList"));
+    userListMessage.insert("candyMasterDescriptor", QJsonValue(clients.at(0)->getSocketDescriptor()));
     userListMessage.insert("users", QJsonValue(generateUserList()));
     sendEveryone(userListMessage);
 
