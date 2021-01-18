@@ -29,7 +29,7 @@ private:
     bool candySpawned;
     int respawnDelayMs;
     int id;
-    int candyId;
+    static int candyId;
     QTimer *timer;
 
 public slots:

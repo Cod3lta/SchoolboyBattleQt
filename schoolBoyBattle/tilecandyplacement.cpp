@@ -7,6 +7,8 @@
 #define TILE_SIZE 130
 #define HITBOX_DEBUG false
 
+int TileCandyPlacement::candyId = 0;
+
 TileCandyPlacement::TileCandyPlacement(
         int id,
         int respawnDelayMs,
@@ -19,8 +21,7 @@ TileCandyPlacement::TileCandyPlacement(
         QGraphicsItem* parent) :
     Tile(indexX, indexY, layerRessources, layer, tileType, dataLoader, parent),
     respawnDelayMs(respawnDelayMs),
-    id(id),
-    candyId(0)
+    id(id)
 {
     int min = 1000, max = 10000;
     int randomDelayFirstSpawnMs = min + (rand() % static_cast<int>(max - min + 1));
