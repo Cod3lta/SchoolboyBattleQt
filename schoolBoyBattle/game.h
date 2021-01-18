@@ -29,6 +29,7 @@ public:
     void keyRelease(QKeyEvent *event);
     QList<Tile*> tilesNearby(QString layer, int x, int y);
     QList<Candy *> candiesNearby(int x, int y);
+    QList<TileCandyPlacement *> getTileCandyPlacementList();
 
 private:
     TcpClient *tcpClient;
@@ -59,10 +60,10 @@ private:
 private slots:
     void sendRollback();
     void receiveRollback(int playerX, int playerY, int playerDescriptor);
+    void spawnCandy(int candyType, int candySize, int tilePlacementId);
 
 public slots:
     void startGame(int nbPlayers);
-    void spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement);
 
 signals:
     void rollbackToServer(int playerX, int playerY);

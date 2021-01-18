@@ -8,6 +8,7 @@
 #define HITBOX_DEBUG false
 
 TileCandyPlacement::TileCandyPlacement(
+        int id,
         int respawnDelayMs,
         int indexX,
         int indexY,
@@ -17,7 +18,8 @@ TileCandyPlacement::TileCandyPlacement(
         DataLoader *dataLoader,
         QGraphicsItem* parent) :
     Tile(indexX, indexY, layerRessources, layer, tileType, dataLoader, parent),
-    respawnDelayMs(respawnDelayMs)
+    respawnDelayMs(respawnDelayMs),
+    id(id)
 {
     int min = 1000, max = 10000;
     int randomDelayFirstSpawnMs = min + (rand() % static_cast<int>(max - min + 1));
@@ -28,13 +30,12 @@ TileCandyPlacement::TileCandyPlacement(
 }
 
 void TileCandyPlacement::spawnCandyTimer() {
+    // Si le spawner ne se trouve dans la vue d'aucun joueur (peut-être todo)
     candySpawned = true;
     emit spawnCandy(
-                x(),
-                y(),
                 dataLoader->getCandyRessources(tileType)->candyType,
                 dataLoader->getCandyRessources(tileType)->candySize,
-                this);
+                this->id);
     timer->stop();
 }
 
@@ -72,13 +73,8 @@ QRectF TileCandyPlacement::boundingRect() const {
 
 // collisions detection
 QPainterPath TileCandyPlacement::shape() const {
-    double widthRatio = 0.6;
     QPainterPath path;
-    path.addRect(QRectF(
-                     boundingRect().x() + (1 - widthRatio) * boundingRect().width() / 2,
-                     boundingRect().y() + boundingRect().height() - boundingRect().height() * widthRatio,
-                     boundingRect().width() * widthRatio,
-                     boundingRect().height() * widthRatio * 2));
+    path.addRect(boundingRect());
     return path;
 }
 

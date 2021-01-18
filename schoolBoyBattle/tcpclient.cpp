@@ -12,7 +12,7 @@ TcpClient::TcpClient(QObject *parent) :
     QObject(parent),
     socket(new QTcpSocket(this)),
     loggedIn(false),
-    isCandyMaster(false),
+    candyMaster(false),
     descriptor(-1)
 {
     connect(socket, &QTcpSocket::readyRead, this, &TcpClient::onReadyRead);         // Slot
@@ -96,6 +96,21 @@ void TcpClient::rollback(int playerX, int playerY) {
     clientStream << QJsonDocument(message).toJson();
 }
 
+/*
+ * Envoi du nouveau candy créé au serveur
+ */
+void TcpClient::sendNewCandy(int candyType, int candySize, int tilePlacementId) {
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_9);
+    QJsonObject message;
+    //QJsonArray candiesDatas;
+    message[QStringLiteral("type")] = QStringLiteral("newCandy");
+    message[QStringLiteral("candyType")] = candyType;
+    message[QStringLiteral("candySize")] = candySize;
+    message[QStringLiteral("tilePlacementId")] = tilePlacementId;
+    clientStream << QJsonDocument(message).toJson();
+}
+
 void TcpClient::jsonReceived(const QJsonObject &docObj) {
     // actions depend on the type of message
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
@@ -153,9 +168,10 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
             usersList.insert(i.key().toInt(), clientProps);
             // mettre la variable isCandyMaster à true si c'est nous le candy master
             if(docObj.value(QLatin1String("candyMasterDescriptor")).toInt() == getSocketDescriptor())
-                isCandyMaster = true;
+                candyMaster = true;
         }
-        this->usersList = usersList;
+        this->usersList = usersList;        // On sauvegarde la liste des infos de chaque utilisateur dans l'objet pour
+                                            // reprendre les infos au démarrage du jeu
         emit userListRefresh(usersList);
     } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // Un utilisateur a quitté
          // we extract the username of the new user
@@ -179,6 +195,11 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
                 docObj["playerX"].toInt(),
                 docObj["playerY"].toInt(),
                 docObj["socketDescriptor"].toInt());
+    } else if(typeVal.toString().compare(QLatin1String("newCandy"), Qt::CaseInsensitive) == 0) {  // Nouveau candy a spawné
+        emit spawnNewCandy(
+                docObj["candyType"].toInt(),
+                docObj["candySize"].toInt(),
+                docObj["tilePlacementId"].toInt());
     }
 }
 
@@ -281,6 +302,6 @@ int TcpClient::getSocketDescriptor() {
     return descriptor;
 }
 
-bool TcpClient::getCandyMaster() {
-    return isCandyMaster;
+bool TcpClient::isCandyMaster() {
+    return candyMaster;
 }

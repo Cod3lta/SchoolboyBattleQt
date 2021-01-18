@@ -41,13 +41,15 @@ void Game::startGame(int nbPlayers) {
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
-    for(int i = 0; i < tileCandyPlacements.length(); i++)
-        connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
 
     // Joueurs & clavier
     if(isMultiplayer) {
         setupMultiplayerGame();
     }else {
+        // Connecter les signaux des placements de candy à la fonction qui les créé
+        for(int i = 0; i < tileCandyPlacements.length(); i++)
+            connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+
         // Créer chaque joueur
         for(int i = 0; i < nbPlayers; i++) {
             players.append(new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
@@ -110,15 +112,35 @@ void Game::setupMultiplayerGame() {
     // Traiter les mouvements reçus du serveur
     for (int i = 0; i < players.size(); ++i)
         connect(tcpClient, &TcpClient::userMove, players.at(i), &Player::keyMove);
+
+    // Si notre instance est le candy master
+    if(tcpClient->isCandyMaster()) {
+        for(int i = 0; i < tileCandyPlacements.length(); i++) {
+            // Connecter le signal de création de candy au slot de cette classe
+            connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+            // Envoyer les signaux de création des candy au serveur pour les broadcaster ensuite
+            connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, tcpClient, &TcpClient::sendNewCandy);
+        }
+    }else{
+        // Connecter les messages du serveur à la création des nouveaux candy
+        connect(tcpClient, &TcpClient::spawnNewCandy, this, &Game::spawnCandy);
+    }
 }
 
+/*
+ * Toutes les x milisecondes, envoie au serveur les infos
+ * de l'emplacement du joueur et des candy qu'il a ramassé
+ */
 void Game::sendRollback() {
-    qDebug() << "Send rollback to server";
     int playerX = players.at(playerIndexInMulti)->x();
     int playerY = players.at(playerIndexInMulti)->y();
     emit rollbackToServer(playerX, playerY);
 }
 
+/*
+ * Traîte les rollbacks envoyés par les autres joueurs en
+ * déplaçant les items là où ils sont indiqués dans le message
+ */
 void Game::receiveRollback(int playerX, int playerY, int playerDescriptor) {
     for(int i = 0; i < players.size(); i++) {
         if(players.at(i)->getId() == playerDescriptor) {
@@ -156,11 +178,13 @@ void Game::setCustomSceneRect() {
 void Game::placeTilesCandyPlacement() {
     DataLoader::TileLayerStruct* candyPlacementsLayer = dataLoader->tileLayers["6-candy-placements"];
 
+    int count = 0;
     for(int y = 0; y < candyPlacementsLayer->tiles.size(); y++) {
         for(int x = 0; x < candyPlacementsLayer->tiles.at(y).size(); x++) {
             int tileType = candyPlacementsLayer->tiles.at(y).at(x);
             if(tileType != 0) {
                 TileCandyPlacement *candyPlacement = new TileCandyPlacement(
+                            count,
                             dataLoader->getCandyRessources(tileType)->respawnDelayMs,
                             x,
                             y,
@@ -170,6 +194,7 @@ void Game::placeTilesCandyPlacement() {
                             dataLoader);
                 tileCandyPlacements.append(candyPlacement);
                 addItem(candyPlacement);
+                count++;
             }
         }
     }
@@ -178,7 +203,7 @@ void Game::placeTilesCandyPlacement() {
 /*
  * Va créer et placer sur la scène toutes les tiles de toutes les layers
  * sauf celles qui sont sur la layer "6-candy-placements"
- * Ces tiles seront placées dans la fonction placeCandyPlacements()
+ * Ces tiles seront placées dans la fonction placeTilesCandyPlacement()
  */
 void Game::placeTiles() {
     QMap<QString, DataLoader::TileLayerStruct*> layers = dataLoader->tileLayers;
@@ -254,13 +279,22 @@ void Game::refreshEntities() {
         qobject_cast<View *>(this->views().at(0))->moveView(players.at(playerIndexInMulti), PLAYER_WIDTH, PLAYER_HEIGHT);
 }
 
-void Game::spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement) {
-    Candy *candy = new Candy(x, y, candyType, candySize, dataLoader, tilePlacement);
+void Game::spawnCandy(int candyType, int candySize, int tilePlacementId) {
+    TileCandyPlacement* tileCandyPlacementToSpawn = tileCandyPlacements.at(tilePlacementId);
+    Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn);
     addItem(candy);
     candies.append(candy);
 }
 
+/*void Game::sendCandyToServer(int x, int y, int candyType, int candySize, int candyPlacementId) {
+
+}*/
+
 
 void Game::reset() {
 
+}
+
+QList<TileCandyPlacement *> Game::getTileCandyPlacementList() {
+    return tileCandyPlacements;
 }

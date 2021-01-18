@@ -12,8 +12,6 @@
 
 
 Candy::Candy(
-        int x,
-        int y,
         int candyType,
         int candySize,
         DataLoader *dataLoader,
@@ -28,7 +26,7 @@ Candy::Candy(
 {
     loadAnimations();
     setAnimation(idle);
-    setPos(x, y);
+    setPos(tilePlacement->pos());
     setZIndex();
     if(tilePlacement != nullptr) {
         connect(this, &Candy::pickedUp, tilePlacement, &TileCandyPlacement::candyPickedUp);

@@ -10,6 +10,8 @@ class TileCandyPlacement : public Tile
     Q_OBJECT
 public:
     TileCandyPlacement(
+            int id,                             // Utilisé quand une autre instance broadcast de
+                                                // créer un candy à un certain emplacement
             int respawnDelayMs,
             int indexX,                         // Données nécessaires pour créer un objet Tile
             int indexY,
@@ -26,6 +28,7 @@ public:
 private:
     bool candySpawned;
     int respawnDelayMs;
+    int id;
     QTimer *timer;
 
 public slots:
@@ -33,7 +36,7 @@ public slots:
     void candyPickedUp();
 
 signals:
-    void spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement);
+    void spawnCandy(int candyType, int candySize, int tilePlacementId);
 
 };
 

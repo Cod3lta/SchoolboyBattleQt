@@ -9,7 +9,7 @@
 #include <QVector2D>
 #include "game.h"
 
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 
 Player::Player(
         int id,

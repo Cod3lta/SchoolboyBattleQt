@@ -250,6 +250,14 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         userRollback.insert("playerY", QJsonValue(docObj.value(QLatin1String("playerY"))));
         userRollback.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
         broadcast(userRollback, sender);
+    }else if(typeVal.toString().compare(QLatin1String("newCandy"), Qt::CaseInsensitive) == 0) {   // Spawn d'un candy
+        // On le bradcast à tous les autres
+        QJsonObject newCandy;
+        newCandy.insert("type", QJsonValue("newCandy"));
+        newCandy.insert("candyType", QJsonValue(docObj.value(QLatin1String("candyType"))));
+        newCandy.insert("candySize", QJsonValue(docObj.value(QLatin1String("candySize"))));
+        newCandy.insert("tilePlacementId", QJsonValue(docObj.value(QLatin1String("tilePlacementId"))));
+        broadcast(newCandy, sender);
     }
 }
 
