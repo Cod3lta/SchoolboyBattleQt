@@ -34,6 +34,7 @@ private:
     TcpClient *tcpClient;
     QTimer *playerRefresh;
     QElapsedTimer *playerRefreshDelta;
+    QTimer *serverRollback;
     QList<Player*> players;
     QList<Candy*> candies;
     QList<TileCandyPlacement*> tileCandyPlacements;
@@ -53,12 +54,18 @@ private:
     void reset();
     void refreshEntities();
     void placeTilesCandyPlacement();
+    void setupMultiplayerGame();
 
-protected:
+private slots:
+    void sendRollback();
+    void receiveRollback(int playerX, int playerY, int playerDescriptor);
 
 public slots:
     void startGame(int nbPlayers);
     void spawnCandy(int x, int y, int candyType, int candySize, TileCandyPlacement* tilePlacement);
+
+signals:
+    void rollbackToServer(int playerX, int playerY);
 
 };
 #endif // MAINWINDOW_H

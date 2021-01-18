@@ -336,6 +336,10 @@ QPainterPath Player::shape() const {
     return path;
 }
 
+int Player::getId() {
+    return this->id;
+}
+
 
 Player::~Player() {
 

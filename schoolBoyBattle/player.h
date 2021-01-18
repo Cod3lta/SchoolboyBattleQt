@@ -31,6 +31,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void refresh(int delta);
     QList<Candy *> looseCandies(Candy *candy);
+    int getId();
 
 private:
     enum Team : int {red = 0, black = 1};
@@ -52,7 +53,8 @@ private:
     Facing facing;
     DataLoader *dataLoader;
     QList<Candy *> candiesTaken;
-    int id;
+    int id;                 // En solo : int incrémentatif
+                            // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
     const int playerWidth;
     const int playerHeight;

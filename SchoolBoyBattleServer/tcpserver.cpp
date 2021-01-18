@@ -75,7 +75,7 @@ void TcpServer::sendEveryone(const QJsonObject &message) {
 void TcpServer::jsonReceived(ServerWorker *sender, const QJsonObject &doc)
 {
     Q_ASSERT(sender);
-    emit logMessage(QLatin1String("JSON recu ") + QString::fromUtf8(QJsonDocument(doc).toJson()));
+    emit logMessage("JSON recu de " + QString::number(sender->getSocketDescriptor()) + " : " + QString::fromUtf8(QJsonDocument(doc).toJson()));
     if (sender->getUsername().isEmpty()) {
         // Si le message qu'on reçoit vient d'un utilisateur qui n'a pas de username
         jsonFromLoggedOut(sender, doc);
@@ -240,6 +240,14 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         userListMessage.insert("playerDescriptor", QJsonValue(docObj.value(QLatin1String("playerDescriptor"))));
         userListMessage.insert("value", QJsonValue(docObj.value(QLatin1String("value"))));
         broadcast(userListMessage, sender);
+    }else if(typeVal.toString().compare(QLatin1String("playerRollback"), Qt::CaseInsensitive) == 0) {   // Rollback d'un joueur
+        // On le bradcast à tous les autres
+        QJsonObject userRollback;
+        userRollback.insert("type", QJsonValue("playerRollback"));
+        userRollback.insert("playerX", QJsonValue(docObj.value(QLatin1String("playerX"))));
+        userRollback.insert("playerY", QJsonValue(docObj.value(QLatin1String("playerY"))));
+        userRollback.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
+        broadcast(userRollback, sender);
     }
 }
 

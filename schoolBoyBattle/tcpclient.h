@@ -29,6 +29,7 @@ public slots:
     void toggleReady();
     // Signaux du jeu
     void keyMove(int playerId, int direction, bool value);
+    void rollback(int playerX, int playerY);
 private slots:
     void onReadyRead();
     void error(QAbstractSocket::SocketError error);
@@ -48,6 +49,7 @@ signals:
     //void userJoined(const QString &username);
     void userLeft(const QString &username);
     void userMove(int direction, int playerDescriptor, bool value);
+    void userRollback(int playerX, int playerY, int playerDescriptor);
 
 };
 

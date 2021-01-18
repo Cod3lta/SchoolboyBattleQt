@@ -58,6 +58,9 @@ void TcpClient::sendMessage(const QString &text)
     clientStream << QJsonDocument(message).toJson();
 }
 
+/*
+ * Quand le joueur clique sur "prêt" dans la salle d'attente
+ */
 void TcpClient::toggleReady() {
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_9);
@@ -66,6 +69,10 @@ void TcpClient::toggleReady() {
     clientStream << QJsonDocument(message).toJson();
 }
 
+/*
+ * Quand le joueur appuie ou relache une touche de déplacement
+ * du clavier
+ */
 void TcpClient::keyMove(int playerDescriptor, int direction, bool value) {
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_9);
@@ -74,6 +81,21 @@ void TcpClient::keyMove(int playerDescriptor, int direction, bool value) {
     message[QStringLiteral("playerDescriptor")] = playerDescriptor;
     message[QStringLiteral("direction")] = direction;
     message[QStringLiteral("value")] = value;
+    clientStream << QJsonDocument(message).toJson();
+}
+
+/*
+ * Envoi du rollback au serveur
+ * Infos à envoyer : la position du joueur et de ses candies
+ */
+void TcpClient::rollback(int playerX, int playerY) {
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_9);
+    QJsonObject message;
+    //QJsonArray candiesDatas;
+    message[QStringLiteral("type")] = QStringLiteral("playerRollback");
+    message[QStringLiteral("playerX")] = playerX;
+    message[QStringLiteral("playerY")] = playerY;
     clientStream << QJsonDocument(message).toJson();
 }
 
@@ -153,6 +175,11 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
                 docObj["playerDescriptor"].toInt(),
                 docObj["direction"].toInt(),
                 docObj["value"].toBool());
+    } else if(typeVal.toString().compare(QLatin1String("playerRollback"), Qt::CaseInsensitive) == 0) {  // Rollback d'un joueur
+        emit userRollback(
+                docObj["playerX"].toInt(),
+                docObj["playerY"].toInt(),
+                docObj["socketDescriptor"].toInt());
     }
 }
 

@@ -1,4 +1,4 @@
-#include "game.h"
+﻿#include "game.h"
 #include <QGraphicsItem>
 #include <QGraphicsView>
 #include <QGraphicsScene>
@@ -15,6 +15,8 @@
 
 #include "tilecandyplacement.h"
 #include "dataloader.h"
+
+#define SERVER_ROLLBACK_DELAY 1000
 #define REFRESH_DELAY 1/60*1000
 #define PLAYER_WIDTH 120
 #define PLAYER_HEIGHT 150
@@ -42,40 +44,9 @@ void Game::startGame(int nbPlayers) {
     for(int i = 0; i < tileCandyPlacements.length(); i++)
         connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
 
-    // Joueurs
+    // Joueurs & clavier
     if(isMultiplayer) {
-        // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
-        QHash<int, QHash<QString, QString>> clientsList = tcpClient->getUsersList();
-        QHashIterator<int, QHash<QString, QString>> i(clientsList);
-        int count = 0;
-        while(i.hasNext()) {
-            i.next();
-            QHash<QString, QString> clientProps = i.value();
-            int socketDescriptor = tcpClient->getDescriptor();
-            players.append(new Player(
-                               i.key(),
-                               clientProps["team"].toInt(),
-                               clientProps["gender"].toInt(),
-                               dataLoader,
-                               &tiles["4-collision"],
-                               PLAYER_WIDTH,
-                               PLAYER_HEIGHT,
-                               PLAYER_SPEED));
-            addItem(players.at(count));
-            // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
-            if(i.key() == socketDescriptor) {
-                playerIndexInMulti = count;
-                // On connecte la sortie du clavier à ce joueur
-                connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(count), &Player::keyMove);
-            }
-            count++;
-        }
-        // Signal / slot du keyboard au serveur
-        // Envoyer les mouvements de ce joueur au serveur
-        connect(keyboardInputs, &KeyInputs::playerKeyToggle, tcpClient, &TcpClient::keyMove);
-        // Traiter les mouvements reçus du serveur
-        for (int i = 0; i < players.size(); ++i)
-            connect(tcpClient, &TcpClient::userMove, players.at(i), &Player::keyMove);
+        setupMultiplayerGame();
     }else {
         // Créer chaque joueur
         for(int i = 0; i < nbPlayers; i++) {
@@ -95,6 +66,65 @@ void Game::startGame(int nbPlayers) {
     connect(playerRefresh, &QTimer::timeout, this, &Game::refreshEntities);
     playerRefresh->start();
     playerRefreshDelta->start();
+}
+
+void Game::setupMultiplayerGame() {
+    // Mettre en place le timer de rollback
+    serverRollback = new QTimer(this);
+    serverRollback->setInterval(SERVER_ROLLBACK_DELAY);
+    connect(serverRollback, &QTimer::timeout, this, &Game::sendRollback);
+    serverRollback->start();
+    connect(this, &Game::rollbackToServer, tcpClient, &TcpClient::rollback);
+    // Recevoir et traiter les rollbacks
+    connect(tcpClient, &TcpClient::userRollback, this, &Game::receiveRollback);
+
+    // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
+    QHash<int, QHash<QString, QString>> clientsList = tcpClient->getUsersList();
+    QHashIterator<int, QHash<QString, QString>> i(clientsList);
+    int count = 0;
+    while(i.hasNext()) {
+        i.next();
+        QHash<QString, QString> clientProps = i.value();
+        int socketDescriptor = tcpClient->getDescriptor();
+        players.append(new Player(
+                           i.key(),
+                           clientProps["team"].toInt(),
+                           clientProps["gender"].toInt(),
+                           dataLoader,
+                           &tiles["4-collision"],
+                           PLAYER_WIDTH,
+                           PLAYER_HEIGHT,
+                           PLAYER_SPEED));
+        addItem(players.at(count));
+        // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
+        if(i.key() == socketDescriptor) {
+            playerIndexInMulti = count;
+            // On connecte la sortie du clavier à ce joueur
+            connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.at(count), &Player::keyMove);
+        }
+        count++;
+    }
+    // Signal / slot du keyboard au serveur
+    // Envoyer les mouvements de ce joueur au serveur
+    connect(keyboardInputs, &KeyInputs::playerKeyToggle, tcpClient, &TcpClient::keyMove);
+    // Traiter les mouvements reçus du serveur
+    for (int i = 0; i < players.size(); ++i)
+        connect(tcpClient, &TcpClient::userMove, players.at(i), &Player::keyMove);
+}
+
+void Game::sendRollback() {
+    qDebug() << "Send rollback to server";
+    int playerX = players.at(playerIndexInMulti)->x();
+    int playerY = players.at(playerIndexInMulti)->y();
+    emit rollbackToServer(playerX, playerY);
+}
+
+void Game::receiveRollback(int playerX, int playerY, int playerDescriptor) {
+    for(int i = 0; i < players.size(); i++) {
+        if(players.at(i)->getId() == playerDescriptor) {
+            players.at(i)->setPos(playerX, playerY);
+        }
+    }
 }
 
 void Game::keyPress(QKeyEvent *event) {
