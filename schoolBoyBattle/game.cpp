@@ -151,17 +151,28 @@ void Game::setupMultiplayerGame() {
  * de l'emplacement du joueur et des candy qu'il a ramassé
  */
 void Game::sendRollback() {
-    int playerX = players.value(playerIndexInMulti)->x();
-    int playerY = players.value(playerIndexInMulti)->y();
-    emit rollbackToServer(playerX, playerY);
+    Player *player = players.value(playerIndexInMulti);
+    QHash<int, QPointF> candiesTakenToSend;
+    QList<int> candiesTaken = players[playerIndexInMulti]->getCandiesTaken();
+    for(int i = 0; i < candiesTaken.length(); i++) {
+        candiesTakenToSend.insert(
+                    candiesTaken.at(i),
+                    candies[candiesTaken.at(i)]->pos());
+    }
+    emit rollbackToServer(player->pos(), candiesTakenToSend);
 }
 
 /*
  * Traîte les rollbacks envoyés par les autres joueurs en
  * déplaçant les items là où ils sont indiqués dans le message
  */
-void Game::receiveRollback(int playerX, int playerY, int playerDescriptor) {
+void Game::receiveRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor) {
     players.value(playerDescriptor)->setPos(playerX, playerY);
+    QHashIterator<int, QPointF> i(candies);
+    while(i.hasNext()) {
+        i.next();
+        this->candies[i.key()]->setPos(i.value());
+    }
 }
 
 void Game::keyPress(QKeyEvent *event) {

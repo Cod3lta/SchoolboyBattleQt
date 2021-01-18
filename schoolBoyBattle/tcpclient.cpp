@@ -85,15 +85,27 @@ void TcpClient::keyMove(int playerDescriptor, int direction, bool value) {
  * Envoi du rollback au serveur
  * Infos à envoyer : la position du joueur et de ses candies
  */
-void TcpClient::rollback(int playerX, int playerY) {
+void TcpClient::rollback(QPointF playerPos, QHash<int, QPointF> candiesTaken) {
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_9);
-    QJsonObject message;
+
+    QJsonObject candies;
+    QHashIterator<int, QPointF> i(candiesTaken);
+    while(i.hasNext()) {
+        i.next();
+        QJsonObject candyCoordinates;
+        candyCoordinates.insert("x", i.value().x());
+        candyCoordinates.insert("y", i.value().y());
+        candies.insert(QString::number(i.key()), candyCoordinates);
+    }
+
+    QJsonObject rollback;
     //QJsonArray candiesDatas;
-    message[QStringLiteral("type")] = QStringLiteral("playerRollback");
-    message[QStringLiteral("playerX")] = playerX;
-    message[QStringLiteral("playerY")] = playerY;
-    clientStream << QJsonDocument(message).toJson();
+    rollback[QStringLiteral("type")] = QStringLiteral("playerRollback");
+    rollback[QStringLiteral("playerX")] = playerPos.x();
+    rollback[QStringLiteral("playerY")] = playerPos.y();
+    rollback[QStringLiteral("candies")] = candies;
+    clientStream << QJsonDocument(rollback).toJson();
 }
 
 /*
@@ -200,9 +212,23 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
                 docObj["direction"].toInt(),
                 docObj["value"].toBool());
     } else if(typeVal.toString().compare(QLatin1String("playerRollback"), Qt::CaseInsensitive) == 0) {  // Rollback d'un joueur
+        QHash<QString, QVariant> candiesVariant = docObj["candies"].toObject().toVariantHash();
+        QHash<int, QPointF> candiesTaken;
+        QHashIterator<QString, QVariant> i(candiesVariant);
+        while(i.hasNext()) {
+            i.next();
+            QJsonObject test = i.value().toJsonObject();
+            candiesTaken.insert(
+                        i.key().toInt(),
+                        QPointF(
+                            test.value("x").toDouble(),
+                            test.value("y").toDouble()));
+        }
+
         emit userRollback(
-                docObj["playerX"].toInt(),
-                docObj["playerY"].toInt(),
+                docObj["playerX"].toDouble(),
+                docObj["playerY"].toDouble(),
+                candiesTaken,
                 docObj["socketDescriptor"].toInt());
     } else if(typeVal.toString().compare(QLatin1String("newCandy"), Qt::CaseInsensitive) == 0) {  // Nouveau candy a spawné
         emit spawnNewCandy(

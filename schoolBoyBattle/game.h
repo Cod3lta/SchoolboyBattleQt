@@ -59,7 +59,7 @@ private:
 
 private slots:
     void sendRollback();
-    void receiveRollback(int playerX, int playerY, int playerDescriptor);
+    void receiveRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor);
     void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
     QList<int> playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
     void playerPickedUpCandyMulti(int descriptor, int candyId);
@@ -68,7 +68,7 @@ public slots:
     void startGame(int nbPlayers);
 
 signals:
-    void rollbackToServer(int playerX, int playerY);
+    void rollbackToServer(QPointF playerPos, QHash<int, QPointF> candiesTaken);
 
 };
 #endif // MAINWINDOW_H
