@@ -7,8 +7,8 @@
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
 #define HITBOX_DEBUG false
-#define LERP_AMOUNT 50 // plus haut = distance parcourue plus petite
-#define LERP_ACCELERATION 40
+#define LERP_AMOUNT 1e7
+#define LERP_ACCELERATION 20
 
 
 Candy::Candy(

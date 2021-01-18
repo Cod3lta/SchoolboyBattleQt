@@ -1,10 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>Resources/background/terrain.png</file>
-        <file>Resources/player/idle/boy-black-idle.png</file>
-        <file>Resources/player/idle/boy-red-idle.png</file>
-        <file>Resources/player/idle/girl-black-idle.png</file>
-        <file>Resources/player/idle/girl-red-idle.png</file>
         <file>Resources/player/run/boy-black-run.png</file>
         <file>Resources/player/run/boy-red-run.png</file>
         <file>Resources/player/run/girl-black-run.png</file>
@@ -55,5 +51,9 @@
         <file>Resources/candy/idle/hovers/peanut-big-idle-red.png</file>
         <file>Resources/candy/idle/hovers/peanut-small-idle-black.png</file>
         <file>Resources/candy/idle/hovers/peanut-small-idle-red.png</file>
+        <file>Resources/player/idle/boy-black-idle.png</file>
+        <file>Resources/player/idle/boy-red-idle.png</file>
+        <file>Resources/player/idle/girl-black-idle.png</file>
+        <file>Resources/player/idle/girl-red-idle.png</file>
     </qresource>
 </RCC>
