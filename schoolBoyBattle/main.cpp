@@ -1,15 +1,21 @@
-#include "viewscontainer.h"
+
+#include "mainwidget.h"
 
 #include <QApplication>
+#include <QMainWindow>
 
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
-    int nbPlayers = 2;
     QApplication a(argc, argv);
 
-    ViewsContainer v(nbPlayers);
-    //v.showFullScreen();
-    v.show();
+    QMainWindow w;
+    w.setFocusPolicy(Qt::FocusPolicy::StrongFocus);
+    w.setWindowTitle("SchoolBoyBattle");
+    w.setWindowIcon(QIcon(":/Resources/schoolboybattle-icon.ico"));
+    w.setCentralWidget(new MainWidget);
+
+    //w.showFullScreen();
+    w.show();
     return a.exec();
 }

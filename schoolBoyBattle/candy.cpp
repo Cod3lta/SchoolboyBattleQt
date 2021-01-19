@@ -12,25 +12,24 @@
 
 
 Candy::Candy(
-        int x,
-        int y,
         int candyType,
         int candySize,
         DataLoader *dataLoader,
         TileCandyPlacement *tilePlacement,
+        int id,
         QGraphicsObject *parent)
-    :
-      QGraphicsObject(parent),
-      idTeam(-1),
+    : QGraphicsObject(parent),
+      id(id),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
       dataLoader(dataLoader),
       tilePlacement(tilePlacement),
+      currentPlayerId(-1),
       taken(false)
 {
     loadAnimations();
     setAnimation(idle);
-    setPos(x, y);
+    setPos(tilePlacement->pos());
     setZIndex();
     if(tilePlacement != nullptr) {
         connect(this, &Candy::pickedUp, tilePlacement, &TileCandyPlacement::candyPickedUp);
@@ -90,24 +89,26 @@ void Candy::setZIndex() {
     setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
-void Candy::pickUp(QGraphicsItem *player, int team) {
+void Candy::pickUp(int playerId) {
     taken = true;
     emit pickedUp();
-    currentPlayer = player;
-    idTeam = team;
+    currentPlayerId = playerId;
 }
 
 bool Candy::isTaken() {
     return taken;
 }
 
-void Candy::setCurrentPlayer(QGraphicsItem *player, int team) {
-    currentPlayer = player;
-    idTeam = team;
+int Candy::getId() {
+    return id;
 }
 
-QGraphicsItem *Candy::getCurrentPlayer() {
-    return currentPlayer;
+void Candy::setCurrentPlayerId(int playerId) {
+    currentPlayerId = playerId;
+}
+
+int Candy::getCurrentPlayerId() {
+    return currentPlayerId;
 }
 
 void Candy::refresh(QPointF pos, int posInQueue, double delta) {
@@ -131,7 +132,8 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawRect(boundingRect());
         painter->setPen(QPen(Qt::red));
         painter->drawPath(shape());
-        painter->drawText(10, 10, QString::number(id));
+        painter->drawText(10, 10, "ID : " + QString::number(id));
+        painter->drawText(10, 30, "Player : " + QString::number(currentPlayerId));
     }
 
     AnimationsLocalStruct *candyToDraw = animationsLocal.value(animation);

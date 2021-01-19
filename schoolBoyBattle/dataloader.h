@@ -21,14 +21,20 @@
 class DataLoader
 {
 public:
-    DataLoader(QString terrainFileName);
+    DataLoader(QString terrainFileName, bool isMultiplayer);
     int getTileSize();
     QVector2D getPlayerSize();
+    bool isMultiplayer();
+    void setPlayerIndexInMulti(int id);
+    int getPlayerIndexInMulti();
 
 private:
     int const tileSize = 130, playerHeight = 150, playerWidth = tileSize;
     QDomDocument terrainXMLDoc;
     QDomDocument getFileContent(QString fileName);
+    bool multiplayer;
+    int playerIndexInMulti;         // position du joueur actuel dans la liste "players" si
+                                    // on est en multijoueur
 
     // PLAYER SPAWNPOINTS ----------------------------------------------------------------
 

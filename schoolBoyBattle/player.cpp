@@ -9,19 +9,19 @@
 #include <QVector2D>
 #include "game.h"
 
-// Les textures sont étirées pour entrer dans le rectangle du joueur
 #define HITBOX_DEBUG false
-
-
 
 Player::Player(
         int id,
         int team,
+        int gender,
         DataLoader *dataLoader,
         QList<Tile*> *collisionTiles,
         int playerWidth, int playerHeight, int playerSpeed,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
+      team(static_cast<Team>(team)),
+      gender(static_cast<Gender>(gender)),
       dataLoader(dataLoader),
       id(id),
       playerWidth(playerWidth),
@@ -29,14 +29,10 @@ Player::Player(
       playerSpeed(playerSpeed),
       collisionTiles(collisionTiles)
 {
-    this->team = static_cast<Team>(team);
-    gender = rand()%2 == 0 ? girl : boy;
     setPos(
-                dataLoader->getTeamSpawnpoint(team).x(),
-                dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
+        dataLoader->getTeamSpawnpoint(team).x(),
+        dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
 
-    // L'animation dépends de gender et team :
-    // Doit être après l'initialisation de ces variables !
     loadAnimations();
     setAnimation(idle);
     setZIndex();
@@ -75,7 +71,7 @@ void Player::keyMove(int playerId, int direction, bool value) {
     update();
 }
 
-void Player::refresh(double delta) {
+void Player::refresh(double delta, int socketDescriptor) {
     /*
      * déterminer le vecteur mouvement
      * s'il y a une collision
@@ -93,18 +89,18 @@ void Player::refresh(double delta) {
         setZIndex();
     }
 
-    collideWithCandy();
+    // On ne calcule la collision avec les candy que dans 2 conditions
+    // - Si on est en local
+    // - Si on est en multi et ce joueur est celui qui est joué
+    if(dataLoader->isMultiplayer()) {
 
-    if(candiesTaken.length() > 0)
-        refreshTakenCandies(delta);
-}
-
-void Player::refreshTakenCandies(double delta) {
-    // le 1er candy de la liste suit le joueur
-    candiesTaken.first()->refresh(pos(), 0, delta);
-    for(int i = 1; i < candiesTaken.length(); i++) {
-        candiesTaken.at(i)->refresh(candiesTaken.at(i-1)->pos(), i, delta);
+        if(id == socketDescriptor)
+            collideWithCandy();
+    }else {
+        collideWithCandy();
     }
+
+
 }
 
 // COLLISIONS ET DEPLACEMENTS ----------------------------------------------------------
@@ -160,20 +156,22 @@ void Player::collideWithCandy() {
                 if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
                     // si le candy qu'on touche est pris (pas par nous)
                     if(candyNearby->isTaken()) {
-                        if(static_cast<Player*>(candyNearby->getCurrentPlayer()) != this) {
+                        if(candyNearby->getCurrentPlayerId() != this->id) {
                             // Voler le candy
-                            QList<Candy *> candyGained = static_cast<Player *>(candyNearby->getCurrentPlayer())->looseCandies(candyNearby);
-                            for(int i = 0; i < candyGained.size(); i++)
-                                candyGained.at(i)->setCurrentPlayer(this, team);
-                            candiesTaken = candyGained + candiesTaken;
+                            emit stealCandies(candyNearby->getId(), this->id);
                         }
                     }else{
                         // Ramasser le candy
-                        // appeler une fonction publique de Candy au lieu d'un signal car utiliser
-                        // les signaux / slots demanderait de connecter au préalable tous les joueurs à
-                        // tous les candy
-                        candyNearby->pickUp(this, team);
-                        candiesTaken.prepend(candyNearby);
+                        if(dataLoader->isMultiplayer()) {
+                            // Demander au serveur si on peut prendre le candy
+                            emit isCandyFree(candyNearby->getId());
+                        }else{
+                            // appeler une fonction publique de Candy au lieu d'un signal car utiliser
+                            // les signaux / slots demanderait de connecter au préalable tous les joueurs à
+                            // tous les candy
+                            candyNearby->pickUp(id);
+                            IdsCandiesTaken.prepend(candyNearby->getId());
+                        }
                     }
                 }
             }
@@ -181,12 +179,19 @@ void Player::collideWithCandy() {
     }
 }
 
-QList<Candy *> Player::looseCandies(Candy *candyStolen) {
-    QList<Candy*> candiesStolen;
-    for(int i = 0; i < candiesTaken.length(); i++) {
-        if(candiesTaken.at(i) == candyStolen) {
-            candiesStolen = candiesTaken.mid(i);
-            candiesTaken = candiesTaken.mid(0, i);
+void Player::prependCandiesTaken(QList<int> candiesGained) {
+    IdsCandiesTaken = candiesGained + IdsCandiesTaken;
+}
+
+QList<int> Player::looseCandies(int candyStolenId) {
+    QList<int> candiesStolen;
+    if(!IdsCandiesTaken.contains(candyStolenId))
+        // Si le joueur ne contient pas ce candy, on retourne rien
+        return candiesStolen;
+    for(int i = 0; i < IdsCandiesTaken.length(); i++) {
+        if(IdsCandiesTaken.at(i) == candyStolenId) {
+            candiesStolen = IdsCandiesTaken.mid(i);
+            IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
             return candiesStolen;
         }
     }
@@ -290,7 +295,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         // Debug rect
         painter->setPen(QPen(Qt::black));
         painter->drawRect(boundingRect());
-        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
+        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, "ID : " + QString::number(id));
         painter->setPen(QPen(Qt::red));
         painter->drawPath(shape());
     }
@@ -340,6 +345,17 @@ QPainterPath Player::shape() const {
     return path;
 }
 
+int Player::getId() {
+    return this->id;
+}
+
+QList<int> Player::getCandiesTaken() {
+    return IdsCandiesTaken;
+}
+
+void Player::pickupCandyMulti(int candyId) {
+    IdsCandiesTaken.prepend(candyId);
+}
 
 Player::~Player() {
 

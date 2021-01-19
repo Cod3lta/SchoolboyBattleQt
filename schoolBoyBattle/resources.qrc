@@ -55,5 +55,6 @@
         <file>Resources/player/idle/boy-red-idle.png</file>
         <file>Resources/player/idle/girl-black-idle.png</file>
         <file>Resources/player/idle/girl-red-idle.png</file>
+        <file>Resources/schoolboybattle-icon.ico</file>
     </qresource>
 </RCC>
