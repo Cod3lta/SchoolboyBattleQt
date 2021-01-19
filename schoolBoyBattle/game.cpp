@@ -298,6 +298,7 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
 void Game::refreshEntities() {
     if(views().length() == 0) return;
     int delta = playerRefreshDelta->nsecsElapsed();
+    double deltaMs = delta/10e6;
 
     // Refresh le joueur
     playerRefreshDelta->restart();
@@ -305,17 +306,17 @@ void Game::refreshEntities() {
     int count = 0;
     while(i.hasNext()) {
         i.next();
-        i.value()->refresh(delta, tcpClient->getSocketDescriptor());
+        i.value()->refresh(deltaMs, tcpClient->getSocketDescriptor());
 
         if(!candies.isEmpty()) {
             // Refresh les candies capturés par ce joueur
             QList<int> candiesTaken = i.value()->getCandiesTaken();
             if(!candiesTaken.isEmpty()) {
                 // le 1er candy de la liste suit le joueur
-                candies[candiesTaken.first()]->refresh(i.value()->pos(), 0);
+                candies[candiesTaken.first()]->refresh(i.value()->pos(), 0, deltaMs);
                 Candy *previousCandy = candies[candiesTaken.first()];
                 for(int i = 0; i < candiesTaken.length(); i++) {
-                    candies[candiesTaken.at(i)]->refresh(previousCandy->pos(), i);
+                    candies[candiesTaken.at(i)]->refresh(previousCandy->pos(), i, deltaMs);
                     previousCandy = candies[candiesTaken.at(i)];
                 }
             }

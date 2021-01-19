@@ -21,7 +21,7 @@ public:
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void pickUp(int playerId);
-    void refresh(QPointF pos, int posInQueue);
+    void refresh(QPointF pos, int posInQueue, double delta);
     bool isTaken();
     int getId();
     int getCurrentPlayerId();
@@ -42,6 +42,7 @@ private:
 
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     int id;
+    int idTeam;
     Type candyType;
     Size candySize;
     DataLoader *dataLoader;

@@ -71,13 +71,14 @@ void Player::keyMove(int playerId, int direction, bool value) {
     update();
 }
 
-void Player::refresh(int delta, int socketDescriptor) {
+void Player::refresh(double delta, int socketDescriptor) {
     /*
      * déterminer le vecteur mouvement
      * s'il y a une collision
      *      vecteur de mouvement = déterminer le vecteur de réponse
      * déplacer le joueur en fonction du vecteur de mouvement
      */
+
     QVector2D movingVector = calculateMovingVector(delta);
     if(collide(movingVector)) {
         movingVector = calculateAnswerVector(movingVector);
@@ -201,13 +202,12 @@ QList<int> Player::looseCandies(int candyStolenId) {
 
 }*/
 
-QVector2D Player::calculateMovingVector(int delta) {
+QVector2D Player::calculateMovingVector(double delta) {
     QVector2D v;
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
     v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
-    double deltaMinified = delta / 10e6;
-    v *= deltaMinified * playerSpeed;
+    v *= delta * playerSpeed;
     return v;
 }
 

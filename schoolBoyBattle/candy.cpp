@@ -7,8 +7,8 @@
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
 #define HITBOX_DEBUG false
-#define LERP_AMOUNT 30 // plus haut = distance parcourue plus petite
-#define LERP_ACCELERATION 50
+#define LERP_AMOUNT 1e7
+#define LERP_ACCELERATION 20
 
 
 Candy::Candy(
@@ -111,13 +111,13 @@ int Candy::getCurrentPlayerId() {
     return currentPlayerId;
 }
 
-void Candy::refresh(QPointF pos, int posInQueue) {
+void Candy::refresh(QPointF pos, int posInQueue, double delta) {
     if(!taken) return;
     int yOffset = 0;
-    int trucmuche = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
+    int lerpFactor = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
     if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
-    setX(this->x() + (pos.x() - this->x()          ) / trucmuche);
-    setY(this->y() + (pos.y() - this->y() + yOffset) / trucmuche);
+    setX(this->x() + (pos.x() - this->x()          ) / lerpFactor * delta);
+    setY(this->y() + (pos.y() - this->y() + yOffset) / lerpFactor * delta);
 
     setZIndex();
 }
@@ -138,11 +138,18 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     AnimationsLocalStruct *candyToDraw = animationsLocal.value(animation);
     QPixmap *imageToDraw = candyToDraw->sharedDatas->image;
+    QPixmap *imageHover = candyToDraw->sharedDatas->image;
+    if(idTeam == 0)
+         imageHover = candyToDraw->sharedDatas->imageRed;
+    else if(idTeam == 1)
+         imageHover = candyToDraw->sharedDatas->imageBlack;
 
     QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->sharedDatas->nbFrame * candyToDraw->frameIndex, 0,
                                imageToDraw->width() / candyToDraw->sharedDatas->nbFrame, imageToDraw->height());
     QRectF targetRect = boundingRect();
+
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
+    if(idTeam != -1) painter->drawPixmap(targetRect, *imageHover, sourceRect);
 
     // Lignes pour le compilateur
     Q_UNUSED(option)

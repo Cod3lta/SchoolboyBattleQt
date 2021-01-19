@@ -30,7 +30,7 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void refresh(int delta, int socketDescriptor);
+    void refresh(double delta, int socketDescriptor);
     QList<int> looseCandies(int candyStolenId);
     QList<int> getCandiesTaken();
     void pickupCandyMulti(int candyId);
@@ -71,7 +71,7 @@ private:
     bool collide(QVector2D movingVector);
     void collideWithCandy();
 
-    QVector2D calculateMovingVector(int delta);
+    QVector2D calculateMovingVector(double delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
     void validate_candies();
     void takeCandy();
