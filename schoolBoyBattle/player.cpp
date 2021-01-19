@@ -194,7 +194,7 @@ QList<int> Player::looseCandies(int candyStolenId) {
     if(!IdsCandiesTaken.contains(candyStolenId))
         return candiesStolen;
     // Si la queue du joueur est encore protégée
-    if(queueProtected->isActive())
+    if(queueProtected->isActive() && !dataLoader->isMultiplayer())
         return candiesStolen;
     for(int i = 0; i < IdsCandiesTaken.length(); i++) {
         if(IdsCandiesTaken.at(i) == candyStolenId) {
