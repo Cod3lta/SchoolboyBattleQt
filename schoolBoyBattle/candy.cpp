@@ -6,7 +6,7 @@
 
 #define CANDY_WIDTH 130
 #define CANDY_HEIGHT 130
-#define HITBOX_DEBUG true
+#define HITBOX_DEBUG false
 #define LERP_AMOUNT 30 // plus haut = distance parcourue plus petite
 #define LERP_ACCELERATION 50
 

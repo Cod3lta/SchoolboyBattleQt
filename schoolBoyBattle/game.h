@@ -56,13 +56,15 @@ private:
     void refreshEntities();
     void placeTilesCandyPlacement();
     void setupMultiplayerGame();
+    void setupLocalGame(int nbPlayers);
 
 private slots:
     void sendRollback();
     void receiveRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor);
     void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
-    QList<int> playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
+    void playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
     void playerPickedUpCandyMulti(int descriptor, int candyId);
+    //void playerStealCandyMulti(int candyIdStartingFrom, int winnerDescriptor);
 
 public slots:
     void startGame(int nbPlayers);

@@ -30,10 +30,11 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void refresh(int delta);
+    void refresh(int delta, int socketDescriptor);
     QList<int> looseCandies(int candyStolenId);
     QList<int> getCandiesTaken();
     void pickupCandyMulti(int candyId);
+    void prependCandiesTaken(QList<int> candiesGained);
     int getId();
 
 private:
@@ -69,6 +70,7 @@ private:
     void move(QVector2D vector, bool inverted = false);
     bool collide(QVector2D movingVector);
     void collideWithCandy();
+
     QVector2D calculateMovingVector(int delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
     void validate_candies();
@@ -87,7 +89,7 @@ public slots:
 
 signals:
     void isCandyFree(int candyId);
-    QList<int> stalsCandies(int candyIdStartingFrom, int playerWinningId);
+    QList<int> stealCandies(int candyIdStartingFrom, int playerWinningId);
 };
 
 #endif // PLAYER_H

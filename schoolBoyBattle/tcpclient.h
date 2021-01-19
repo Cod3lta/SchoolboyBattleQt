@@ -35,6 +35,7 @@ public slots:
     void rollback(QPointF playerPos, QHash<int, QPointF> candiesTaken);
     void sendNewCandy(int candyType, int candySize, int tilePlacementId, int candyId);
     void isCandyFree(int candyId);
+    void playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
 private slots:
     void onReadyRead();
     void error(QAbstractSocket::SocketError error);
@@ -57,6 +58,7 @@ signals:
     void userRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor);
     void spawnNewCandy(int candyType, int candySize, int tilePlacementId, int candyId);
     void playerPickUpCandy(int descriptor, int candyId);
+    void playerStealCandy(int candyIdStartingFrom, int winnerDescriptor);
 
 };
 

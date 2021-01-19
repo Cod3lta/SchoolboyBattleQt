@@ -9,7 +9,7 @@
 #include <QVector2D>
 #include "game.h"
 
-#define HITBOX_DEBUG true
+#define HITBOX_DEBUG false
 
 Player::Player(
         int id,
@@ -71,7 +71,7 @@ void Player::keyMove(int playerId, int direction, bool value) {
     update();
 }
 
-void Player::refresh(int delta) {
+void Player::refresh(int delta, int socketDescriptor) {
     /*
      * déterminer le vecteur mouvement
      * s'il y a une collision
@@ -88,7 +88,18 @@ void Player::refresh(int delta) {
         setZIndex();
     }
 
-    collideWithCandy();
+    // On ne calcule la collision avec les candy que dans 2 conditions
+    // - Si on est en local
+    // - Si on est en multi et ce joueur est celui qui est joué
+    if(dataLoader->isMultiplayer()) {
+
+        if(id == socketDescriptor)
+            collideWithCandy();
+    }else {
+        collideWithCandy();
+    }
+
+
 }
 
 // COLLISIONS ET DEPLACEMENTS ----------------------------------------------------------
@@ -146,8 +157,7 @@ void Player::collideWithCandy() {
                     if(candyNearby->isTaken()) {
                         if(candyNearby->getCurrentPlayerId() != this->id) {
                             // Voler le candy
-                            QList<int> candyGained = emit stalsCandies(candyNearby->getId(), this->id);
-                            IdsCandiesTaken = candyGained + IdsCandiesTaken;
+                            emit stealCandies(candyNearby->getId(), this->id);
                         }
                     }else{
                         // Ramasser le candy
@@ -168,8 +178,15 @@ void Player::collideWithCandy() {
     }
 }
 
+void Player::prependCandiesTaken(QList<int> candiesGained) {
+    IdsCandiesTaken = candiesGained + IdsCandiesTaken;
+}
+
 QList<int> Player::looseCandies(int candyStolenId) {
     QList<int> candiesStolen;
+    if(!IdsCandiesTaken.contains(candyStolenId))
+        // Si le joueur ne contient pas ce candy, on retourne rien
+        return candiesStolen;
     for(int i = 0; i < IdsCandiesTaken.length(); i++) {
         if(IdsCandiesTaken.at(i) == candyStolenId) {
             candiesStolen = IdsCandiesTaken.mid(i);

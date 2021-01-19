@@ -132,6 +132,16 @@ void TcpClient::isCandyFree(int candyId) {
     clientStream << QJsonDocument(message).toJson();
 }
 
+void TcpClient::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
+    Q_UNUSED(playerWinningId)
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_9);
+    QJsonObject message;
+    message[QStringLiteral("type")] = QStringLiteral("stealCandies");
+    message[QStringLiteral("candyIdStartingFrom")] = candyIdStartingFrom;
+    clientStream << QJsonDocument(message).toJson();
+}
+
 void TcpClient::jsonReceived(const QJsonObject &docObj) {
     // actions depend on the type of message
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
@@ -218,13 +228,11 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         while(i.hasNext()) {
             i.next();
             QJsonObject test = i.value().toJsonObject();
-            candiesTaken.insert(
-                        i.key().toInt(),
-                        QPointF(
-                            test.value("x").toDouble(),
-                            test.value("y").toDouble()));
+            candiesTaken.insert(i.key().toInt(),
+                                QPointF(
+                                    test.value("x").toDouble(),
+                                    test.value("y").toDouble()));
         }
-
         emit userRollback(
                 docObj["playerX"].toDouble(),
                 docObj["playerY"].toDouble(),
@@ -240,6 +248,10 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         emit playerPickUpCandy(
                 docObj["socketDescriptor"].toInt(),
                 docObj["candyId"].toInt());
+    } else if(typeVal.toString().compare(QLatin1String("stealCandies"), Qt::CaseInsensitive) == 0) {  // Un joueur a volé un candy
+        emit playerStealCandy(
+                docObj["candyIdStartingFrom"].toInt(),
+                docObj["socketDescriptor"].toInt());
     }
 }
 

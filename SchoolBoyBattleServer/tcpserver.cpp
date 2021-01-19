@@ -274,6 +274,13 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
             candyTaken.insert("candyId", QJsonValue(docObj.value(QLatin1String("candyId"))));
             sendEveryone(candyTaken);
         }
+    }else if(typeVal.toString().compare(QLatin1String("stealCandies"), Qt::CaseInsensitive) == 0) {   // Vol d'un candy
+        // On envoie à tout le monde que tel joueur a volé tel candy
+        QJsonObject candyTaken;
+        candyTaken.insert("type", QJsonValue("stealCandies"));
+        candyTaken.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
+        candyTaken.insert("candyIdStartingFrom", QJsonValue(docObj.value(QLatin1String("candyIdStartingFrom"))));
+        broadcast(candyTaken, sender);
     }
 }
 

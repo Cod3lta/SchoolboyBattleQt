@@ -44,6 +44,14 @@ bool DataLoader::isMultiplayer() {
     return multiplayer;
 }
 
+void DataLoader::setPlayerIndexInMulti(int id) {
+    playerIndexInMulti = id;
+}
+
+int DataLoader::getPlayerIndexInMulti() {
+    return playerIndexInMulti;
+}
+
 // PLAYER SPAWNPOINTS -----------------------------------------------------------------------
 
 
