@@ -37,6 +37,7 @@ public:
     void prependCandiesTaken(QList<int> candiesGained);
     int getId();
     int getTeam();
+    void protectQueue();
 
 private:
     enum Team : int {red = 0, black = 1};
@@ -58,6 +59,7 @@ private:
     Facing facing;
     DataLoader *dataLoader;
     QList<int> IdsCandiesTaken;
+    QTimer *queueProtected;
     int id;                 // En solo : int incrémentatif
                             // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
@@ -87,6 +89,9 @@ private:
 
 public slots:
     void keyMove(int playerId, int direction, bool value);
+
+private slots:
+    void queueProtectedTimeout();
 
 signals:
     void isCandyFree(int candyId);

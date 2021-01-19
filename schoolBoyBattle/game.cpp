@@ -348,12 +348,21 @@ void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
     Player *victim = players[candies[candyIdStartingFrom]->getCurrentPlayerId()];
     Player *stealer = players[playerWinningId];
     QList<int>candiesGained = victim->looseCandies(candyIdStartingFrom);
+
+    // S'il n'y a pas de candy volé, on s'arrête là
+    if(candiesGained.length() <= 0) return;
+
     // définir le nouveau joueur pour chacun de ces candy
     for(int i = 0; i < candiesGained.length(); i++) {
         candies[candiesGained.at(i)]->setCurrentPlayerId(playerWinningId);
         candies[candiesGained.at(i)]->setTeamId(stealer->getTeam());
     }
+
+    // Ajouter tous les candies volés dans la queue du joueur
     stealer->prependCandiesTaken(candiesGained);
+
+    // Protéger la queue du joueur
+    stealer->protectQueue();
 }
 
 /*

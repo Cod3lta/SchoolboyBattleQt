@@ -190,6 +190,8 @@ void TcpServer::startGame() {
         teamSetter = !teamSetter;
         clients.at(i)->setGender(rand()%2);
     }
+    // Vider la liste des candies libres
+    freeCandies.empty();
 
     // Envoyer à tout le monde la liste des clients avec les teams / genders
     // On envoie aussi le descriptor du candy master

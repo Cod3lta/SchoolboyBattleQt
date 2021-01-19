@@ -10,6 +10,7 @@
 #include "game.h"
 
 #define HITBOX_DEBUG false
+#define QUEUE_PROTECTED_TIME_MS 750
 
 Player::Player(
         int id,
@@ -36,6 +37,10 @@ Player::Player(
     loadAnimations();
     setAnimation(idle);
     setZIndex();
+    queueProtected = new QTimer(this);
+    queueProtected->setSingleShot(true);
+    queueProtected->setInterval(QUEUE_PROTECTED_TIME_MS);
+    queueProtected->stop();
 }
 
 void Player::loadAnimations() {
@@ -185,8 +190,11 @@ void Player::prependCandiesTaken(QList<int> candiesGained) {
 
 QList<int> Player::looseCandies(int candyStolenId) {
     QList<int> candiesStolen;
+    // Si le joueur ne contient pas ce candy, on retourne rien
     if(!IdsCandiesTaken.contains(candyStolenId))
-        // Si le joueur ne contient pas ce candy, on retourne rien
+        return candiesStolen;
+    // Si la queue du joueur est encore protégée
+    if(queueProtected->isActive())
         return candiesStolen;
     for(int i = 0; i < IdsCandiesTaken.length(); i++) {
         if(IdsCandiesTaken.at(i) == candyStolenId) {
@@ -285,6 +293,14 @@ Player::Facing Player::getFacing() {
     return facing;
 }
 
+void Player::protectQueue() {
+    queueProtected->start();
+}
+
+void Player::queueProtectedTimeout() {
+
+}
+
 // OVERRIDE REQUIRED
 
 // Paints contents of item in local coordinates
@@ -295,8 +311,13 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         // Debug rect
         painter->setPen(QPen(Qt::black));
         painter->drawRect(boundingRect());
-        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, "ID : " + QString::number(id));
+        painter->drawText(10, 10, "ID : " + QString::number(id));
         painter->setPen(QPen(Qt::red));
+        painter->drawPath(shape());
+    }
+
+    if(queueProtected->isActive()) {
+        painter->setBrush(Qt::red);
         painter->drawPath(shape());
     }
 
