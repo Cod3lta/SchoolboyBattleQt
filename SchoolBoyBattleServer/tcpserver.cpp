@@ -213,20 +213,8 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
 {
     Q_ASSERT(sender);
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
-    if (typeVal.isNull() || !typeVal.isString())
+    if (typeVal.isNull() || !typeVal.isString()) {
         return;
-    if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { // Message
-        const QJsonValue textVal = docObj.value(QLatin1String("text"));
-        if (textVal.isNull() || !textVal.isString())
-            return;
-        const QString text = textVal.toString().trimmed();
-        if (text.isEmpty())
-            return;
-        QJsonObject message;
-        message[QStringLiteral("type")] = QStringLiteral("message");
-        message[QStringLiteral("text")] = text;
-        message[QStringLiteral("sender")] = sender->getUsername();
-        broadcast(message, sender);
     }else if(typeVal.toString().compare(QLatin1String("toggleReady"), Qt::CaseInsensitive) == 0) {  // Toggle ready
         sender->setReady(!sender->getReady());
         QJsonObject userListMessage;
