@@ -169,7 +169,7 @@ void Player::collideWithCandy() {
                             // appeler une fonction publique de Candy au lieu d'un signal car utiliser
                             // les signaux / slots demanderait de connecter au préalable tous les joueurs à
                             // tous les candy
-                            candyNearby->pickUp(id);
+                            candyNearby->pickUp(id, team);
                             IdsCandiesTaken.prepend(candyNearby->getId());
                         }
                     }
@@ -347,6 +347,10 @@ QPainterPath Player::shape() const {
 
 int Player::getId() {
     return this->id;
+}
+
+int Player::getTeam() {
+    return this->team;
 }
 
 QList<int> Player::getCandiesTaken() {

@@ -20,12 +20,13 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void pickUp(int playerId);
+    void pickUp(int playerId, int idTeam);
     void refresh(QPointF pos, int posInQueue, double delta);
     bool isTaken();
     int getId();
     int getCurrentPlayerId();
     void setCurrentPlayerId(int playerId);
+    void setTeamId(int idTeam);
 
 
     enum Type : int {peanut = 0, mandarin = 1};
