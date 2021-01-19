@@ -15,12 +15,10 @@
 
 #include "tilecandyplacement.h"
 #include "dataloader.h"
+#include "boss.h"
 
 #define SERVER_ROLLBACK_DELAY 1000
 #define REFRESH_DELAY 1/60*1000
-#define PLAYER_WIDTH 120
-#define PLAYER_HEIGHT 150
-#define PLAYER_SPEED 8
 
 Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient, QGraphicsScene *parent)
     : QGraphicsScene(parent),
@@ -41,6 +39,7 @@ void Game::startGame(int nbPlayers) {
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
+    placeBosses();
 
     // Faire un setup spécifique à chaque mode de jeu
     if(dataLoader->isMultiplayer())
@@ -64,7 +63,7 @@ void Game::setupLocalGame(int nbPlayers) {
 
     // Créer chaque joueur
     for(int i = 0; i < nbPlayers; i++) {
-        players.insert(i, new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+        players.insert(i, new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"]));
         addItem(players.value(i));
     }
 
@@ -106,10 +105,7 @@ void Game::setupMultiplayerGame() {
                            clientProps["team"].toInt(),
                            clientProps["gender"].toInt(),
                            dataLoader,
-                           &tiles["4-collision"],
-                           PLAYER_WIDTH,
-                           PLAYER_HEIGHT,
-                           PLAYER_SPEED));
+                           &tiles["4-collision"]));
         addItem(players.value(i.key()));
         // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
         if(i.key() == socketDescriptor) {
@@ -203,6 +199,22 @@ void Game::setCustomSceneRect() {
         }
     }
     setSceneRect(customSceneRect);
+}
+
+void Game::placeBosses() {
+    for(int i = 0; i < tiles.value("5-config").size(); i++) {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->tileType)->name == "world/config/boss-black.png") {
+            // Créer le père fouettard
+            addItem(new Boss(1, tiles["5-config"].at(i)->x(), tiles["5-config"].at(i)->y(), dataLoader));
+            continue;
+        }
+
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->tileType)->name == "world/config/boss-red.png") {
+            // Créer le st-nicholas
+            addItem(new Boss(0, tiles["5-config"].at(i)->x(), tiles["5-config"].at(i)->y(), dataLoader));
+            continue;
+        }
+    }
 }
 
 void Game::placeTilesCandyPlacement() {
@@ -324,7 +336,11 @@ void Game::refreshEntities() {
 
         // Refresh les vues de chaque joueur
         if(!dataLoader->isMultiplayer())
-            qobject_cast<View *>(this->views().at(count))->moveView(i.value(), PLAYER_WIDTH, PLAYER_HEIGHT, deltaMs);
+            qobject_cast<View *>(this->views().at(count))->moveView(
+                        i.value(),
+                        dataLoader->getPlayerSize().x(),
+                        dataLoader->getPlayerSize().y(),
+                        deltaMs);
         count++;
     }
 
@@ -332,8 +348,8 @@ void Game::refreshEntities() {
     if(dataLoader->isMultiplayer())
         qobject_cast<View *>(this->views().at(0))->moveView(
                     players.value(dataLoader->getPlayerIndexInMulti()),
-                    PLAYER_WIDTH,
-                    PLAYER_HEIGHT,
+                    dataLoader->getPlayerSize().x(),
+                    dataLoader->getPlayerSize().y(),
                     deltaMs);
 }
 

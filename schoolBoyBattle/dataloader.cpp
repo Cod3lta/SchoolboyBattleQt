@@ -6,7 +6,7 @@
 #include <QDomDocument>
 #include <QVector2D>
 
-#define PLAYER_AFTER_LAYER 1    // Définit que les joueurs se trouvent entre
+#define PLAYER_AFTER_LAYER 2    // Définit que les joueurs se trouvent entre
                                 // les layers x et x+1
 
 DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
@@ -34,6 +34,10 @@ QDomDocument DataLoader::getFileContent(QString fileName) {
 
 int DataLoader::getTileSize() {
     return tileSize;
+}
+
+int DataLoader::getPlayerSpeed() {
+    return playerSpeed;
 }
 
 QVector2D DataLoader::getPlayerSize() {
@@ -92,6 +96,9 @@ void DataLoader::loadPlayerAnimations() {
     playerAnimations.insert(5, setupPlayerAnimation(10, 50, ":/Resources/player/run/girl-black-run.png"));
     playerAnimations.insert(6, setupPlayerAnimation(10, 50, ":/Resources/player/run/boy-red-run.png"));
     playerAnimations.insert(7, setupPlayerAnimation(10, 50, ":/Resources/player/run/girl-red-run.png"));
+    // Dans le jeu, un boss est comme un joueur (ils partagent les animations)
+    playerAnimations.insert(8, setupPlayerAnimation(6, 150, ":/Resources/bosses/idle/boss-black-idle.png"));
+    playerAnimations.insert(9, setupPlayerAnimation(6, 150, ":/Resources/bosses/idle/boss-red-idle.png"));
 }
 
 DataLoader::PlayerAnimationsStruct* DataLoader::setupPlayerAnimation(int nbFrame, int framerate, QString fileName) {
@@ -112,6 +119,12 @@ int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
     if(gender == 1 && team == 0 && animation == 1) return 6;
     if(gender == 0 && team == 1 && animation == 1) return 5;
     if(gender == 1 && team == 1 && animation == 1) return 4;
+    return -1;
+}
+
+int DataLoader::getBossAnimationId(int team) {
+    if(team == 0) return 9;
+    if(team == 1) return 8;
     return -1;
 }
 
