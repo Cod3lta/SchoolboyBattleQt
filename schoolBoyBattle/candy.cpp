@@ -20,6 +20,7 @@ Candy::Candy(
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       id(id),
+      idTeam(-1),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
       dataLoader(dataLoader),
@@ -89,10 +90,13 @@ void Candy::setZIndex() {
     setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
-void Candy::pickUp(int playerId) {
+void Candy::pickUp(int playerId, int idTeam) {
     taken = true;
+    // Envoyer un msg au slot du TileCandyPlacement qu'il
+    // peut en placer un nouveau
     emit pickedUp();
     currentPlayerId = playerId;
+    this->idTeam = idTeam;
 }
 
 bool Candy::isTaken() {
@@ -105,6 +109,10 @@ int Candy::getId() {
 
 void Candy::setCurrentPlayerId(int playerId) {
     currentPlayerId = playerId;
+}
+
+void Candy::setTeamId(int idTeam) {
+    this->idTeam = idTeam;
 }
 
 int Candy::getCurrentPlayerId() {

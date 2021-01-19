@@ -324,7 +324,7 @@ void Game::refreshEntities() {
 
         // Refresh les vues de chaque joueur
         if(!dataLoader->isMultiplayer())
-            qobject_cast<View *>(this->views().at(count))->moveView(i.value(), PLAYER_WIDTH, PLAYER_HEIGHT);
+            qobject_cast<View *>(this->views().at(count))->moveView(i.value(), PLAYER_WIDTH, PLAYER_HEIGHT, deltaMs);
         count++;
     }
 
@@ -333,7 +333,8 @@ void Game::refreshEntities() {
         qobject_cast<View *>(this->views().at(0))->moveView(
                     players.value(dataLoader->getPlayerIndexInMulti()),
                     PLAYER_WIDTH,
-                    PLAYER_HEIGHT);
+                    PLAYER_HEIGHT,
+                    deltaMs);
 }
 
 void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
@@ -348,8 +349,10 @@ void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
     Player *stealer = players[playerWinningId];
     QList<int>candiesGained = victim->looseCandies(candyIdStartingFrom);
     // définir le nouveau joueur pour chacun de ces candy
-    for(int i = 0; i < candiesGained.length(); i++)
+    for(int i = 0; i < candiesGained.length(); i++) {
         candies[candiesGained.at(i)]->setCurrentPlayerId(playerWinningId);
+        candies[candiesGained.at(i)]->setTeamId(stealer->getTeam());
+    }
     stealer->prependCandiesTaken(candiesGained);
 }
 
@@ -359,7 +362,7 @@ void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
  */
 void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
     // Dire au candy qu'il a été ramassés par un joueur
-    candies[candyId]->pickUp(descriptor);
+    candies[candyId]->pickUp(descriptor, players[descriptor]->getTeam());
     // Ajouter le candy à la liste des candies du joueur
     players[descriptor]->pickupCandyMulti(candyId);
 }

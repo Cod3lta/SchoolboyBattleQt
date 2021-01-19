@@ -36,6 +36,7 @@ public:
     void pickupCandyMulti(int candyId);
     void prependCandiesTaken(QList<int> candiesGained);
     int getId();
+    int getTeam();
 
 private:
     enum Team : int {red = 0, black = 1};
