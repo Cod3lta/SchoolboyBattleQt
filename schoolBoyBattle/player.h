@@ -16,10 +16,12 @@
 
 class Player : public QGraphicsObject
 {
+    Q_OBJECT
 public:
     Player(
             int id,
             int team,
+            int gender,
             DataLoader *dataLoader,
             QList<Tile*> *collisionTiles,
             int playerWidth, int playerHeight, int playerSpeed,
@@ -28,8 +30,12 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    void refresh(int delta);
-    QList<Candy *> looseCandies(Candy *candy);
+    void refresh(int delta, int socketDescriptor);
+    QList<int> looseCandies(int candyStolenId);
+    QList<int> getCandiesTaken();
+    void pickupCandyMulti(int candyId);
+    void prependCandiesTaken(QList<int> candiesGained);
+    int getId();
 
 private:
     enum Team : int {red = 0, black = 1};
@@ -50,8 +56,9 @@ private:
     Animations currentAnimation;
     Facing facing;
     DataLoader *dataLoader;
-    QList<Candy *> candiesTaken;
-    int id;
+    QList<int> IdsCandiesTaken;
+    int id;                 // En solo : int incrémentatif
+                            // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
     const int playerWidth;
     const int playerHeight;
@@ -59,10 +66,11 @@ private:
 
     QList<Tile*> *collisionTiles;
 
-    void refreshTakenCandies();
+    //void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);
     bool collide(QVector2D movingVector);
     void collideWithCandy();
+
     QVector2D calculateMovingVector(int delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
     void validate_candies();
@@ -79,6 +87,9 @@ private:
 public slots:
     void keyMove(int playerId, int direction, bool value);
 
+signals:
+    void isCandyFree(int candyId);
+    QList<int> stealCandies(int candyIdStartingFrom, int playerWinningId);
 };
 
 #endif // PLAYER_H

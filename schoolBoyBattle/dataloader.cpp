@@ -6,9 +6,11 @@
 #include <QDomDocument>
 #include <QVector2D>
 
-#define PLAYER_AFTER_LAYER 1
+#define PLAYER_AFTER_LAYER 1    // Définit que les joueurs se trouvent entre
+                                // les layers x et x+1
 
-DataLoader::DataLoader(QString terrainFileName)
+DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
+    multiplayer(isMultiplayer)
 {
     terrainXMLDoc = getFileContent(terrainFileName);
     loadPlayerAnimations();
@@ -36,6 +38,18 @@ int DataLoader::getTileSize() {
 
 QVector2D DataLoader::getPlayerSize() {
     return QVector2D(playerWidth, playerHeight);
+}
+
+bool DataLoader::isMultiplayer() {
+    return multiplayer;
+}
+
+void DataLoader::setPlayerIndexInMulti(int id) {
+    playerIndexInMulti = id;
+}
+
+int DataLoader::getPlayerIndexInMulti() {
+    return playerIndexInMulti;
 }
 
 // PLAYER SPAWNPOINTS -----------------------------------------------------------------------
@@ -104,10 +118,10 @@ int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
 // CANDY RESSOURCES -------------------------------------------------------------------------
 
 void DataLoader::loadCandyRessources() {
-    candiesRessources.insert(getTileType("candy/peanut-small.png"), setupCandyRessources(1, 0, 0, 3000));
-    candiesRessources.insert(getTileType("candy/mandarin-small.png"), setupCandyRessources(3, 1, 0, 5000));
-    candiesRessources.insert(getTileType("candy/peanut-big.png"), setupCandyRessources(5, 0, 1, 10000));
-    candiesRessources.insert(getTileType("candy/mandarin-big.png"), setupCandyRessources(10, 1, 1, 20000));
+    candiesRessources.insert(getTileType("candy/peanut-small.png"), setupCandyRessources(1, 0, 0, 7000));
+    candiesRessources.insert(getTileType("candy/mandarin-small.png"), setupCandyRessources(3, 1, 0, 10000));
+    candiesRessources.insert(getTileType("candy/peanut-big.png"), setupCandyRessources(5, 0, 1, 20000));
+    candiesRessources.insert(getTileType("candy/mandarin-big.png"), setupCandyRessources(10, 1, 1, 30000));
 }
 
 DataLoader::CandyRessourcesStruct* DataLoader::setupCandyRessources(int nbPoints, int candyType, int candySize, int delayRespawnMs) {
