@@ -93,6 +93,7 @@ void Game::setupMultiplayerGame() {
     connect(tcpClient, &TcpClient::playerPickUpCandy, this, &Game::playerPickedUpCandyMulti);
     // Recevoir les candy que tel joueur vol
     connect(tcpClient, &TcpClient::playerStealCandy, this, &Game::playerStealsCandies);
+    // Recevoir les candy que tel joueur valide
     connect(tcpClient, &TcpClient::playerValidateCandy, this, &Game::playerValidateCandies);
 
     // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
@@ -119,7 +120,8 @@ void Game::setupMultiplayerGame() {
             connect(players.value(i.key()), &Player::isCandyFree, tcpClient, &TcpClient::isCandyFree);
             // Signal qui est émit quand ce joueur (i.value()) vole des candies à d'autres joueurs
             // Envoyer l'info aux autres joueurs
-            connect(players.value(i.key()), &Player::stealCandies, tcpClient, &TcpClient::playerStealsCandies);
+            // A FAIRE QUAND ON A LA CONFIRMATION (QUEUEPROTECTED) QUE LES CANDIES PEUVENT ETRE VOLES
+            connect(this, &Game::playerStealCandies, tcpClient, &TcpClient::playerStealsCandies);
             // Voler le candy pour cette instance
             connect(players.value(i.key()), &Player::stealCandies, this, &Game::playerStealsCandies);
             // Pour qu'un player puisse demander si tous ses candies sont déjà validés
@@ -396,6 +398,10 @@ void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
 
     // S'il n'y a pas de candy volé, on s'arrête là
     if(candiesGained.length() <= 0) return;
+
+    // Si on est en multijoueur, confirmer aux autres clients que des candies
+    // ont été volés
+    emit playerStealCandies(candyIdStartingFrom, playerWinningId);
 
     // définir le nouveau joueur pour chacun de ces candy
     for(int i = 0; i < candiesGained.length(); i++) {

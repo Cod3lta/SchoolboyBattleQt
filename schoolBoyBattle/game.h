@@ -74,6 +74,7 @@ public slots:
 
 signals:
     void rollbackToServer(QPointF playerPos, QHash<int, QPointF> candiesTaken);
+    void playerStealCandies(int candyIdStartingFrom, int playerWinningId);
 
 };
 #endif // MAINWINDOW_H
