@@ -247,10 +247,6 @@ QList<int> Player::looseCandies(int candyStolenId) {
     return candiesStolen;
 }
 
-/*void Player::updateQueuePos() {
-
-}*/
-
 QVector2D Player::calculateMovingVector(double delta) {
     QVector2D v;
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
@@ -348,13 +344,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         painter->setPen(QPen(Qt::red));
         painter->drawPath(shape());
     }
-
-    /*if(queueProtected->isActive()) {
-        painter->setBrush(Qt::red);
-        painter->drawPath(shape());
-    }*/
-
-
+    
     AnimationsLocalStruct *animToDraw = animationsLocal.value(currentAnimation);
     QPixmap *imageToDraw = animToDraw->sharedDatas->image;
     if(facing == facingLeft) {
