@@ -10,6 +10,7 @@
 #include "game.h"
 
 #define HITBOX_DEBUG false
+#define CANDY_MAX 15
 
 Player::Player(
         int id,
@@ -29,6 +30,7 @@ Player::Player(
       playerSpeed(playerSpeed),
       collisionTiles(collisionTiles)
 {
+    nb_candy = 0;
     setPos(
         dataLoader->getTeamSpawnpoint(team).x(),
         dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
@@ -158,19 +160,28 @@ void Player::collideWithCandy() {
                     if(candyNearby->isTaken()) {
                         if(candyNearby->getCurrentPlayerId() != this->id) {
                             // Voler le candy
-                            emit stealCandies(candyNearby->getId(), this->id);
+                            if (nb_candy+1 <= CANDY_MAX)
+                            {
+                                nb_candy++;
+                                qDebug() << "voler candy, nb candy équipe " << this->id << " : " << nb_candy;
+                                emit stealCandies(candyNearby->getId(), this->id);
+                            }
                         }
                     }else{
-                        // Ramasser le candy
-                        if(dataLoader->isMultiplayer()) {
-                            // Demander au serveur si on peut prendre le candy
-                            emit isCandyFree(candyNearby->getId());
-                        }else{
-                            // appeler une fonction publique de Candy au lieu d'un signal car utiliser
-                            // les signaux / slots demanderait de connecter au préalable tous les joueurs à
-                            // tous les candy
-                            candyNearby->pickUp(id, team);
-                            IdsCandiesTaken.prepend(candyNearby->getId());
+                        if (nb_candy+1 <= CANDY_MAX) {
+                            nb_candy++;
+                            qDebug() << "ramasser candy, nb candy équipe " << this->id << " : " << nb_candy;
+                            // Ramasser le candy
+                            if(dataLoader->isMultiplayer()) {
+                                // Demander au serveur si on peut prendre le candy
+                                emit isCandyFree(candyNearby->getId());
+                            }else{
+                                // appeler une fonction publique de Candy au lieu d'un signal car utiliser
+                                // les signaux / slots demanderait de connecter au préalable tous les joueurs à
+                                // tous les candy
+                                candyNearby->pickUp(id, team);
+                                IdsCandiesTaken.prepend(candyNearby->getId());
+                            }
                         }
                     }
                 }
@@ -190,6 +201,8 @@ QList<int> Player::looseCandies(int candyStolenId) {
         return candiesStolen;
     for(int i = 0; i < IdsCandiesTaken.length(); i++) {
         if(IdsCandiesTaken.at(i) == candyStolenId) {
+            nb_candy--;
+            qDebug() << "perdu candy, nb candy équipe " << this->id << " : " << nb_candy;
             candiesStolen = IdsCandiesTaken.mid(i);
             IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
             return candiesStolen;
@@ -236,14 +249,6 @@ void Player::move(QVector2D vector, bool inverted) {
 
 void Player::setZIndex() {
     setZValue(y() + playerHeight);
-}
-
-void Player::validate_candies() {
-
-}
-
-void Player::takeCandy() {
-
 }
 
 void Player::setAnimation(Animations a) {
