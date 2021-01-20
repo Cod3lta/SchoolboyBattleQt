@@ -15,12 +15,10 @@
 
 #include "tilecandyplacement.h"
 #include "dataloader.h"
+#include "boss.h"
 
 #define SERVER_ROLLBACK_DELAY 1000
 #define REFRESH_DELAY 1/60*1000
-#define PLAYER_WIDTH 120
-#define PLAYER_HEIGHT 150
-#define PLAYER_SPEED 8
 
 Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient, QGraphicsScene *parent)
     : QGraphicsScene(parent),
@@ -41,6 +39,7 @@ void Game::startGame(int nbPlayers) {
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
+    placeBosses();
 
     // Faire un setup spécifique à chaque mode de jeu
     if(dataLoader->isMultiplayer())
@@ -64,7 +63,7 @@ void Game::setupLocalGame(int nbPlayers) {
 
     // Créer chaque joueur
     for(int i = 0; i < nbPlayers; i++) {
-        players.insert(i, new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"], PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED));
+        players.insert(i, new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"]));
         addItem(players.value(i));
     }
 
@@ -76,6 +75,8 @@ void Game::setupLocalGame(int nbPlayers) {
         connect(keyboardInputs, &KeyInputs::playerKeyToggle, i.value(), &Player::keyMove);
         // Signal qui est émit quand ce joueur (i.value()) vole des candies à d'autres joueurs
         connect(i.value(), &Player::stealCandies, this, &Game::playerStealsCandies);
+        // Signal qui est émit quand ce joueur valide ses candies
+        connect(i.value(), &Player::validateCandies, this, &Game::playerValidateCandies);
     }
 }
 
@@ -92,6 +93,8 @@ void Game::setupMultiplayerGame() {
     connect(tcpClient, &TcpClient::playerPickUpCandy, this, &Game::playerPickedUpCandyMulti);
     // Recevoir les candy que tel joueur vol
     connect(tcpClient, &TcpClient::playerStealCandy, this, &Game::playerStealsCandies);
+    // Recevoir les candy que tel joueur valide
+    connect(tcpClient, &TcpClient::playerValidateCandy, this, &Game::playerValidateCandies);
 
     // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
     QHash<int, QHash<QString, QString>> clientsList = tcpClient->getUsersList();
@@ -106,10 +109,7 @@ void Game::setupMultiplayerGame() {
                            clientProps["team"].toInt(),
                            clientProps["gender"].toInt(),
                            dataLoader,
-                           &tiles["4-collision"],
-                           PLAYER_WIDTH,
-                           PLAYER_HEIGHT,
-                           PLAYER_SPEED));
+                           &tiles["4-collision"]));
         addItem(players.value(i.key()));
         // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
         if(i.key() == socketDescriptor) {
@@ -120,9 +120,16 @@ void Game::setupMultiplayerGame() {
             connect(players.value(i.key()), &Player::isCandyFree, tcpClient, &TcpClient::isCandyFree);
             // Signal qui est émit quand ce joueur (i.value()) vole des candies à d'autres joueurs
             // Envoyer l'info aux autres joueurs
-            connect(players.value(i.key()), &Player::stealCandies, tcpClient, &TcpClient::playerStealsCandies);
+            // A FAIRE QUAND ON A LA CONFIRMATION (QUEUEPROTECTED) QUE LES CANDIES PEUVENT ETRE VOLES
+            connect(this, &Game::playerStealCandies, tcpClient, &TcpClient::playerStealsCandies);
             // Voler le candy pour cette instance
             connect(players.value(i.key()), &Player::stealCandies, this, &Game::playerStealsCandies);
+            // Pour qu'un player puisse demander si tous ses candies sont déjà validés
+            connect(players.value(i.key()), &Player::arePlayerTakenCandiesValidated, this, &Game::arePlayerTakenCandiesValidated);
+            // Envoyer l'info au serveur que ce joueur a validé ses candies
+            connect(players.value(i.key()), &Player::validateCandies, tcpClient, &TcpClient::playerValidateCandies);
+            // Signal qui est émit quand ce joueur valide ses candies
+            connect(players.value(i.key()), &Player::validateCandies, this, &Game::playerValidateCandies);
         }
         count++;
     }
@@ -175,7 +182,8 @@ void Game::receiveRollback(double playerX, double playerY, QHash<int, QPointF> c
     QHashIterator<int, QPointF> i(candies);
     while(i.hasNext()) {
         i.next();
-        this->candies[i.key()]->setPos(i.value());
+        if(candies.contains(i.key()))
+            this->candies[i.key()]->setPos(i.value());
     }
 }
 
@@ -190,19 +198,35 @@ void Game::keyRelease(QKeyEvent *event) {
 void Game::setCustomSceneRect() {
     QRectF customSceneRect;
     for(int i = 0; i < tiles.value("5-config").size(); i++) {
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->tileType)->name == "world/config/scene-rect-top-left.png") {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->getTileType())->name == "world/config/scene-rect-top-left.png") {
             customSceneRect.setX(tiles["5-config"].at(i)->x());
             customSceneRect.setY(tiles["5-config"].at(i)->y());
             continue;
         }
 
-        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->tileType)->name == "world/config/scene-rect-bottom-right.png") {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->getTileType())->name == "world/config/scene-rect-bottom-right.png") {
             customSceneRect.setWidth(tiles["5-config"].at(i)->x() - customSceneRect.x());
             customSceneRect.setHeight(tiles["5-config"].at(i)->y() - customSceneRect.y());
             break;
         }
     }
     setSceneRect(customSceneRect);
+}
+
+void Game::placeBosses() {
+    for(int i = 0; i < tiles.value("5-config").size(); i++) {
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->getTileType())->name == "world/config/boss-black.png") {
+            // Créer le père fouettard
+            addItem(new Boss(1, tiles["5-config"].at(i)->x(), tiles["5-config"].at(i)->y(), dataLoader));
+            continue;
+        }
+
+        if(dataLoader->getTileRessource(tiles["5-config"].at(i)->getTileType())->name == "world/config/boss-red.png") {
+            // Créer le st-nicholas
+            addItem(new Boss(0, tiles["5-config"].at(i)->x(), tiles["5-config"].at(i)->y(), dataLoader));
+            continue;
+        }
+    }
 }
 
 void Game::placeTilesCandyPlacement() {
@@ -289,6 +313,7 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
                 candy->x() < x + 2 * tileSize &&
                 candy->y() > y - 2 * tileSize &&
                 candy->y() < y + 2 * tileSize) {
+            if(candy->isValidated()) continue;
             candiesNearby.append(candy);
         }
     }
@@ -296,6 +321,7 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
 }
 
 void Game::refreshEntities() {
+    qDebug() << "Nombre d'items : " << items().count();
     if(views().length() == 0) return;
     int delta = playerRefreshDelta->nsecsElapsed();
     double deltaMs = delta/10e6;
@@ -312,19 +338,32 @@ void Game::refreshEntities() {
             // Refresh les candies capturés par ce joueur
             QList<int> candiesTaken = i.value()->getCandiesTaken();
             if(!candiesTaken.isEmpty()) {
-                // le 1er candy de la liste suit le joueur
                 candies[candiesTaken.first()]->refresh(i.value()->pos(), 0, deltaMs);
                 Candy *previousCandy = candies[candiesTaken.first()];
+                // pour chaque bonbon pris par ce joueur
                 for(int i = 0; i < candiesTaken.length(); i++) {
-                    candies[candiesTaken.at(i)]->refresh(previousCandy->pos(), i, deltaMs);
-                    previousCandy = candies[candiesTaken.at(i)];
+                    // Si le candy n'existe pas (plus), on passe au prochain
+                    if(!candies.contains(candiesTaken.at(i))) continue;
+                    if(candies[candiesTaken.at(i)]->isValidated()) {
+                        // Animation des candy vers le point de spawn
+                        candies[candiesTaken.at(i)]->capture(deltaMs);
+                    }else{
+                        // On déplace les candy
+                        // le 1er candy de la liste suit le joueur
+                        candies[candiesTaken.at(i)]->refresh(previousCandy->pos(), i, deltaMs);
+                        previousCandy = candies[candiesTaken.at(i)];
+                    }
                 }
             }
         }
 
         // Refresh les vues de chaque joueur
         if(!dataLoader->isMultiplayer())
-            qobject_cast<View *>(this->views().at(count))->moveView(i.value(), PLAYER_WIDTH, PLAYER_HEIGHT, deltaMs);
+            qobject_cast<View *>(this->views().at(count))->moveView(
+                        i.value(),
+                        dataLoader->getPlayerSize().x(),
+                        dataLoader->getPlayerSize().y(),
+                        deltaMs);
         count++;
     }
 
@@ -332,28 +371,58 @@ void Game::refreshEntities() {
     if(dataLoader->isMultiplayer())
         qobject_cast<View *>(this->views().at(0))->moveView(
                     players.value(dataLoader->getPlayerIndexInMulti()),
-                    PLAYER_WIDTH,
-                    PLAYER_HEIGHT,
+                    dataLoader->getPlayerSize().x(),
+                    dataLoader->getPlayerSize().y(),
                     deltaMs);
 }
 
 void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
     TileCandyPlacement* tileCandyPlacementToSpawn = tileCandyPlacements.at(tilePlacementId);
     Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn, candyId);
+    connect(candy, &Candy::validated, this, &Game::deleteCandy);
     addItem(candy);
     candies.insert(candyId, candy);
 }
 
 void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
+    // Si le candy n'existe plus, on annule
+    if(!candies.contains(candyIdStartingFrom)) return;
     Player *victim = players[candies[candyIdStartingFrom]->getCurrentPlayerId()];
     Player *stealer = players[playerWinningId];
+    // S'ils sont de la même équipe, on annule
+    if(victim->getTeam() == stealer->getTeam()) return;
     QList<int>candiesGained = victim->looseCandies(candyIdStartingFrom);
+
+    // Si le candy est déjà validé dans une équipe, on annule
+    if(candies[candyIdStartingFrom]->isValidated()) return;
+
+    // S'il n'y a pas de candy volé, on s'arrête là
+    if(candiesGained.length() <= 0) return;
+
+    // Si on est en multijoueur, confirmer aux autres clients que des candies
+    // ont été volés
+    emit playerStealCandies(candyIdStartingFrom, playerWinningId);
+
     // définir le nouveau joueur pour chacun de ces candy
     for(int i = 0; i < candiesGained.length(); i++) {
         candies[candiesGained.at(i)]->setCurrentPlayerId(playerWinningId);
         candies[candiesGained.at(i)]->setTeamId(stealer->getTeam());
     }
+
+    // Ajouter tous les candies volés dans la queue du joueur
     stealer->prependCandiesTaken(candiesGained);
+
+    // Protéger la queue du joueur
+    stealer->protectQueue();
+}
+
+void Game::playerValidateCandies(int playerId) {
+    QList<int> candiesToValidate = players[playerId]->getCandiesTaken();
+    // Valider chacun des candies de ce player
+    for(int i = 0; i < candiesToValidate.length(); i++) {
+        if(!candies[candiesToValidate.at(i)]->isValidated())
+            candies[candiesToValidate.at(i)]->validate();
+    }
 }
 
 /*
@@ -365,6 +434,25 @@ void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
     candies[candyId]->pickUp(descriptor, players[descriptor]->getTeam());
     // Ajouter le candy à la liste des candies du joueur
     players[descriptor]->pickupCandyMulti(candyId);
+}
+
+void Game::deleteCandy(int id, int playerId) {
+    players[playerId]->deleteCandy(id);
+    candies.remove(id);
+
+}
+
+bool Game::arePlayerTakenCandiesValidated(int playerId) {
+    QList<int> playerCandies = players[playerId]->getCandiesTaken();
+    for(int i = 0; i < playerCandies.length(); i++)
+        // Si au moins un candy n'est pas validé, on retourne false
+        if(!candies[playerCandies.at(i)]->isValidated())
+            return false;
+    return true;
+}
+
+void Game::reset() {
+
 }
 
 QList<TileCandyPlacement *> Game::getTileCandyPlacementList() {

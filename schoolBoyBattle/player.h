@@ -18,13 +18,13 @@ class Player : public QGraphicsObject
 {
     Q_OBJECT
 public:
+    Player(int team, DataLoader *dataLoader);
     Player(
             int id,
             int team,
             int gender,
             DataLoader *dataLoader,
             QList<Tile*> *collisionTiles,
-            int playerWidth, int playerHeight, int playerSpeed,
             QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
@@ -37,51 +37,53 @@ public:
     void prependCandiesTaken(QList<int> candiesGained);
     int getId();
     int getTeam();
+    void protectQueue();
+    void deleteCandy(int candyId);
 
-private:
+    // En protected se trouve les variables et
+    // fonctions nécessaires pour la classe Boss
+protected:
     enum Team : int {red = 0, black = 1};
-    enum Gender : int {girl = 0, boy = 1};
-    enum Facing {facingLeft, facingRight};
-    enum PlayerMoves {moveUp, moveRight, moveDown, moveLeft};
     enum Animations : int {idle = 0, run = 1};
-
+    enum Facing {facingLeft, facingRight};
+    Team team;
+    Facing facing;
     typedef struct Animations_s {
         QTimer *timer;
         int frameIndex;
         DataLoader::PlayerAnimationsStruct *sharedDatas;
     } AnimationsLocalStruct;
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
+    DataLoader *dataLoader;
+    void setZIndex(int yToAdd);
+    void animationNextFrame();
+    void setAnimation(Animations a);
+    QTimer *queueProtected;
 
-    Team team;
+private:
+    enum Gender : int {girl = 0, boy = 1};
+    enum PlayerMoves {moveUp, moveRight, moveDown, moveLeft};
+
     Gender gender;
     Animations currentAnimation;
-    Facing facing;
-    DataLoader *dataLoader;
     QList<int> IdsCandiesTaken;
     int id;                 // En solo : int incrémentatif
                             // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
-    const int playerWidth;
-    const int playerHeight;
-    const int playerSpeed;
 
     QList<Tile*> *collisionTiles;
 
     //void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);
-    bool collide(QVector2D movingVector);
+    bool collideWithWalls(QVector2D movingVector);
     void collideWithCandy();
+    void collideWithSpawn();
 
     QVector2D calculateMovingVector(double delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
-    void validate_candies();
-    void takeCandy();
-    void animationNextFrame();
-    void setAnimation(Animations a);
     QPixmap *getAnimationByTeamAndGender(QString name);
     Animations getAnimationType();
     Player::Facing getFacing();
-    void setZIndex();
     void loadAnimations();
     Player::AnimationsLocalStruct *setupAnimation(DataLoader::PlayerAnimationsStruct* sharedDatas);
 
@@ -91,6 +93,8 @@ public slots:
 signals:
     void isCandyFree(int candyId);
     QList<int> stealCandies(int candyIdStartingFrom, int playerWinningId);
+    void validateCandies(int id);
+    bool arePlayerTakenCandiesValidated(int id);
 };
 
 #endif // PLAYER_H
