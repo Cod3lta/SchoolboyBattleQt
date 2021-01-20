@@ -129,7 +129,7 @@ int Candy::getCurrentPlayerId() {
 }
 
 void Candy::refresh(QPointF pos, int posInQueue, double delta) {
-    if(!taken) return;
+    if(!taken || valid) return;
     int yOffset = 0;
     int lerpFactor = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
     if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
@@ -180,11 +180,6 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
     if(idTeam != -1) painter->drawPixmap(targetRect, *imageHover, sourceRect);
-
-    if(valid) {
-        painter->setBrush(Qt::red);
-        painter->drawRect(boundingRect());
-    }
 
     // Lignes pour le compilateur
     Q_UNUSED(option)
