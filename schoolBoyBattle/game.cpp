@@ -311,6 +311,7 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
                 candy->x() < x + 2 * tileSize &&
                 candy->y() > y - 2 * tileSize &&
                 candy->y() < y + 2 * tileSize) {
+            if(candy->isValidated()) continue;
             candiesNearby.append(candy);
         }
     }

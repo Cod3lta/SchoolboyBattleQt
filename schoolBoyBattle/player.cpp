@@ -9,7 +9,7 @@
 #include <QVector2D>
 #include "game.h"
 
-#define HITBOX_DEBUG true
+#define HITBOX_DEBUG false
 #define QUEUE_PROTECTED_TIME_MS 750
 
 // Constructeur utilisé pour créer les boss
