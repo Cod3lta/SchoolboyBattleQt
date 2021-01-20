@@ -57,6 +57,7 @@ protected:
     void setZIndex(int yToAdd);
     void animationNextFrame();
     void setAnimation(Animations a);
+    QTimer *queueProtected;
 
 private:
     enum Gender : int {girl = 0, boy = 1};
@@ -65,7 +66,6 @@ private:
     Gender gender;
     Animations currentAnimation;
     QList<int> IdsCandiesTaken;
-    QTimer *queueProtected;
     int id;                 // En solo : int incrémentatif
                             // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};

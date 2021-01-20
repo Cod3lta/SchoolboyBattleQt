@@ -191,23 +191,24 @@ void DataLoader::loadTileLayers() {
         // Chaque layer
 
         TileLayerStruct *tileLayer = new TileLayerStruct();
+        int topLeftX = 0, topLeftY = 0;
 
         // Prendre chaque chunk de la layer
         QDomNodeList chunks = layer.firstChild().childNodes();
-        tileLayer->tiles = setupTileLayer(chunks);
+        tileLayer->tiles = setupTileLayer(chunks, &topLeftX, &topLeftY);
 
         tileLayer->height = tileLayer->tiles.size();
         if(tileLayer->height != 0)
             tileLayer->width = tileLayer->tiles.at(0).size();
         QDomElement firstChunk = layers.at(i).firstChild().firstChild().toElement();
         tileLayer->zIndex = i;
-        tileLayer->topLeftX = firstChunk.attributes().namedItem("x").nodeValue().toInt();
-        tileLayer->topLeftY = firstChunk.attributes().namedItem("y").nodeValue().toInt();
+        tileLayer->topLeftX = topLeftX;
+        tileLayer->topLeftY = topLeftY;
         tileLayers.insert(layer.attribute("name"), tileLayer);
     }
 }
 
-QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
+QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX, int *topLeftY) {
 
     QList<QList<int>> dimLevel;
 
@@ -215,7 +216,7 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
     int chunkMinX = 0, chunkMinY = 0, layerWidth = 0, layerHeight = 0;
 
     // Déterminer la taille de la layer
-    getLayerPlacement(&layerWidth, &layerHeight, &chunkMinX, &chunkMinY, chunkSize, chunks);
+    getLayerPlacement(&layerWidth, &layerHeight, topLeftX, topLeftY, chunkSize, chunks);
 
     // Initialiser la liste
     for(int i = 0; i < layerHeight; i++) {
@@ -238,8 +239,8 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
         }
         for(int y = 0; y < chunkSize; y++) {
             for(int x = 0; x < chunkSize; x++) {
-                int insertYList = chunk.attribute("y").toInt() + y - chunkMinY;
-                int insertXList = chunk.attribute("x").toInt() + x - chunkMinX;
+                int insertYList = chunk.attribute("y").toInt() + y - *topLeftX;
+                int insertXList = chunk.attribute("x").toInt() + x - *topLeftY;
                 QList<int> subList = dimLevel.value(insertYList);
                 subList.replace(insertXList, intList.at(y*chunkSize + x));
                 dimLevel.replace(insertYList, subList);

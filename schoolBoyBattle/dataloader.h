@@ -114,7 +114,7 @@ public:
 
 private:
     void loadTileLayers();
-    QList<QList<int>> setupTileLayer(QDomNodeList chunks);
+    QList<QList<int>> setupTileLayer(QDomNodeList chunks, int *topLeftX, int *topLeftY);
     void getLayerPlacement(int *layerWidth, int *layerHeight, int *chunkMinX, int *chunkMinY, int size, QDomNodeList chunks);
     QHash<QString, int> highestLowestPointsOfMap();
     void updateTileLayersZIndex();

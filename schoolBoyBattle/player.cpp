@@ -318,10 +318,10 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         painter->drawPath(shape());
     }
 
-    if(queueProtected->isActive()) {
+    /*if(queueProtected->isActive()) {
         painter->setBrush(Qt::red);
         painter->drawPath(shape());
-    }
+    }*/
 
 
     AnimationsLocalStruct *animToDraw = animationsLocal.value(currentAnimation);
