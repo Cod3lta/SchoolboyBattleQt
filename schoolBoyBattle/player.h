@@ -90,9 +90,6 @@ private:
 public slots:
     void keyMove(int playerId, int direction, bool value);
 
-private slots:
-    void queueProtectedTimeout();
-
 signals:
     void isCandyFree(int candyId);
     QList<int> stealCandies(int candyIdStartingFrom, int playerWinningId);

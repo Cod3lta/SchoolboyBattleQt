@@ -334,10 +334,6 @@ void Player::deleteCandy(int candyId) {
     IdsCandiesTaken.removeAll(candyId);
 }
 
-void Player::queueProtectedTimeout() {
-
-}
-
 // OVERRIDE REQUIRED
 
 // Paints contents of item in local coordinates
