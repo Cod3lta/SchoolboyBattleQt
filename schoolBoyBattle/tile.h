@@ -23,8 +23,7 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-
-    int tileType;
+    int getTileType();
     DataLoader::TileLayerStruct* layerRessources;
 
 private:
@@ -32,6 +31,8 @@ private:
     QPixmap* image;
 
 protected:
+    // Pour les tiles de type TileCandyPlacement
+    int tileType;
     DataLoader *dataLoader;
 
 };

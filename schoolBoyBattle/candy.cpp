@@ -26,7 +26,8 @@ Candy::Candy(
       dataLoader(dataLoader),
       tilePlacement(tilePlacement),
       currentPlayerId(-1),
-      taken(false)
+      taken(false),
+      valid(false)
 {
     loadAnimations();
     setAnimation(idle);
@@ -115,6 +116,14 @@ void Candy::setTeamId(int idTeam) {
     this->idTeam = idTeam;
 }
 
+void Candy::validate() {
+    valid = true;
+}
+
+bool Candy::isValidated() {
+    return valid;
+}
+
 int Candy::getCurrentPlayerId() {
     return currentPlayerId;
 }
@@ -128,6 +137,19 @@ void Candy::refresh(QPointF pos, int posInQueue, double delta) {
     setY(this->y() + (pos.y() - this->y() + yOffset) / lerpFactor * delta);
 
     setZIndex();
+}
+
+void Candy::capture(double deltaMs) {
+    QPoint objective = dataLoader->getTeamSpawnpoint(idTeam);
+    setX(x() + (objective.x() - x()) / 20 * deltaMs);
+    setY(y() + (objective.y() - y()) / 20 * deltaMs);
+    // Si le candy est suffisamment proche du point de spawn
+    if(x() - 50 < objective.x() && x() + 50 > objective.x() &&
+       y() - 50 < objective.y() && y() + 50 > objective.y()) {
+        emit validated(id, currentPlayerId);
+        deleteLater();
+    }
+
 }
 
 // OVERRIDE REQUIRED ------------------------------------------------------------------------
@@ -158,6 +180,11 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
     if(idTeam != -1) painter->drawPixmap(targetRect, *imageHover, sourceRect);
+
+    if(valid) {
+        painter->setBrush(Qt::red);
+        painter->drawRect(boundingRect());
+    }
 
     // Lignes pour le compilateur
     Q_UNUSED(option)

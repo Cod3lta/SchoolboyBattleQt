@@ -64,8 +64,9 @@ private slots:
     void receiveRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor);
     void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
     void playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
+    void playerValidateCandies(int playerId);
     void playerPickedUpCandyMulti(int descriptor, int candyId);
-    //void playerStealCandyMulti(int candyIdStartingFrom, int winnerDescriptor);
+    void deleteCandy(int id, int playerId);
 
 public slots:
     void startGame(int nbPlayers);

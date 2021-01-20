@@ -38,6 +38,7 @@ public:
     int getId();
     int getTeam();
     void protectQueue();
+    void deleteCandy(int candyId);
 
     // En protected se trouve les variables et
     // fonctions nécessaires pour la classe Boss
@@ -74,13 +75,12 @@ private:
 
     //void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);
-    bool collide(QVector2D movingVector);
+    bool collideWithWalls(QVector2D movingVector);
     void collideWithCandy();
+    void collideWithSpawn();
 
     QVector2D calculateMovingVector(double delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
-    void validate_candies();
-    void takeCandy();
     QPixmap *getAnimationByTeamAndGender(QString name);
     Animations getAnimationType();
     Player::Facing getFacing();
@@ -96,6 +96,7 @@ private slots:
 signals:
     void isCandyFree(int candyId);
     QList<int> stealCandies(int candyIdStartingFrom, int playerWinningId);
+    void validateCandies(int id);
 };
 
 #endif // PLAYER_H

@@ -65,13 +65,13 @@ void DataLoader::setPlayersSpawnpoint() {
             int tileType = tileLayers["5-config"]->tiles.at(y).at(x);
             if(tileType == 0)
                 continue;
-            if(getTileRessource(tileType)->name == "world/config/spawn-red.png")
+            if(getTileRessource(tileType)->name == "world/config/spawn-player-red.png")
                 teamsSpawnpoints.insert(0,
                                         QPoint(
                                             getTileSize() * (x + tileLayers["5-config"]->topLeftX),
                                             getTileSize() * (y + tileLayers["5-config"]->topLeftY)
                         ));
-            if(getTileRessource(tileType)->name == "world/config/spawn-black.png")
+            if(getTileRessource(tileType)->name == "world/config/spawn-player-black.png")
                 teamsSpawnpoints.insert(1,
                                         QPoint(
                                             getTileSize() * (x + tileLayers["5-config"]->topLeftX),

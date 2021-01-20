@@ -7,8 +7,8 @@
 
 Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources, QString layer, int tileType, DataLoader *dataLoader, QGraphicsItem* parent)
     :QGraphicsObject(parent),
-      tileType(tileType),
       layer(layer),
+      tileType(tileType),
     dataLoader(dataLoader)
 {
     image = dataLoader->getTileRessource(tileType)->image;
@@ -27,7 +27,7 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
     //painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
 
-    if(!(layer == "4-collision" || layer == "5-config")) {
+    if(!(layer == "1-spawns" || layer == "4-collision" || layer == "5-config")) {
         QRectF sourceRect(0, 0, image->width(), image->height());
         painter->drawPixmap(boundingRect(), *image, sourceRect);
     }
@@ -35,6 +35,10 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     // Lignes pour le compilateur
     Q_UNUSED(option)
     Q_UNUSED(widget)
+}
+
+int Tile::getTileType() {
+    return tileType;
 }
 
 // Returns outer bounds of item as a rectangle

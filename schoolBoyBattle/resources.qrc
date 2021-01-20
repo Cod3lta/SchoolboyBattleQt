@@ -76,5 +76,7 @@
         <file>Resources/bosses/carpet/red/carpet-9.png</file>
         <file>Resources/bosses/idle/boss-black-idle.png</file>
         <file>Resources/bosses/idle/boss-red-idle.png</file>
+        <file>Resources/world/config/spawn-player-black.png</file>
+        <file>Resources/world/config/spawn-player-red.png</file>
     </qresource>
 </RCC>

@@ -22,11 +22,14 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void pickUp(int playerId, int idTeam);
     void refresh(QPointF pos, int posInQueue, double delta);
+    void capture(double deltaMs);
     bool isTaken();
     int getId();
     int getCurrentPlayerId();
     void setCurrentPlayerId(int playerId);
     void setTeamId(int idTeam);
+    void validate();
+    bool isValidated();
 
 
     enum Type : int {peanut = 0, mandarin = 1};
@@ -50,6 +53,7 @@ private:
     TileCandyPlacement* tilePlacement;
     int currentPlayerId;
     bool taken;
+    bool valid;
 
 
     void loadAnimations();
@@ -62,6 +66,7 @@ private:
 
 signals:
     void pickedUp();
+    void validated(int id, int playerId);
 };
 
 

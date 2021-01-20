@@ -23,7 +23,7 @@ TileCandyPlacement::TileCandyPlacement(
     respawnDelayMs(respawnDelayMs),
     id(id)
 {
-    int min = 1000, max = 10000;
+    int min = 0, max = 2000;
     int randomDelayFirstSpawnMs = min + (rand() % static_cast<int>(max - min + 1));
     timer = new QTimer();
     timer->setInterval(respawnDelayMs + randomDelayFirstSpawnMs);
