@@ -153,17 +153,17 @@ void TcpClient::playerValidateCandies(int playerId) {
 }
 
 void TcpClient::jsonReceived(const QJsonObject &docObj) {
-    // actions depend on the type of message
+    // l'action dépend du type de message
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
     if (typeVal.isNull() || !typeVal.isString())
-        return; // a message with no type was received so we just ignore it
+        return; // le message sans type sera reçu mais on va l'ignorer
     if (typeVal.toString().compare(QLatin1String("login"), Qt::CaseInsensitive) == 0) { // Message de login
         if (loggedIn)
-            return; // if we are already logged in we ignore
-        // the success field will contain the result of our attempt to login
+            return; // si on est déjà logué, on ignore
+        // le résultat de la valeur contiendra le résultat de notre tentative de connexion
         const QJsonValue resultVal = docObj.value(QLatin1String("success"));
         if (resultVal.isNull() || !resultVal.isBool())
-            return; // the message had no success field so we ignore
+            return; // le message n'a pas de champ de succès, donc on ignore
         if(docObj.value("reason") == "duplicateUsername") {
             QMessageBox::critical(nullptr, "Erreur", "Ce nom d'utilisateur est déjà pris");
             askUsername();
@@ -171,26 +171,26 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         }
         const bool loginSuccess = resultVal.toBool();
         if (loginSuccess) {
-            // we logged in succesfully and we notify it via the loggedIn signal
+            // connexion avec succès, on le notifie avec le signal de connexion
             loggedIn = true;
             descriptor = docObj.value("descriptor").toInt();
             emit UserLoggedIn();
             return;
         }
-        // the login attempt failed, we extract the reason of the failure from the JSON
-        // and notify it via the loginError signal
+        // la tentative de connexion a échoué, on récupère la raison de l'échec en JSON
+        // et le notifier avec le signal loginError
         const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
         emit loginError(reasonVal.toString());
     } else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { // Message de chat
-        // we extract the text field containing the chat text
+        // on récupère le champ de texte contenant le texte du chat
         const QJsonValue textVal = docObj.value(QLatin1String("text"));
-        // we extract the sender field containing the username of the sender
+        // on récupère le champ contenant le nom d'utilisateur de l'expéditeur
         const QJsonValue senderVal = docObj.value(QLatin1String("sender"));
         if (textVal.isNull() || !textVal.isString())
-            return; // the text field was invalid so we ignore
+            return; // le champ de texte n'était pas valide donc on ignore
         if (senderVal.isNull() || !senderVal.isString())
-            return; // the sender field was invalid so we ignore
-        // we notify a new message was received via the messageReceived signal
+            return; // le champ de l'expéditeur n'était pas valide donc on ignore
+        // un nouveau message a été reçu via le messageReceived
         emit messageReceived(senderVal.toString(), textVal.toString());
     } else if (typeVal.toString().compare(QLatin1String("updateUsersList"), Qt::CaseInsensitive) == 0) { // Refresh la liste des joueurs
         // Transformer les données json en QHash<int, QHash<QString, QString>>
@@ -215,11 +215,11 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
                                             // reprendre les infos au démarrage du jeu
         emit userListRefresh(usersList);
     } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // Un utilisateur a quitté
-         // we extract the username of the new user
+         // on extrait le nom d'utilisateur du nouvel utilisateur
         const QJsonValue usernameVal = docObj.value(QLatin1String("username"));
         if (usernameVal.isNull() || !usernameVal.isString())
-            return; // the username was invalid so we ignore
-        // we notify of the user disconnection the userLeft signal
+            return; // le nom d'utilisateur était invalide donc on ignore
+        // nous informons de la déconnexion de l'utilisateur le signal userLeft
         emit userLeft(usernameVal.toString());
     } else if (typeVal.toString().compare(QLatin1String("startGame"), Qt::CaseInsensitive) == 0) {  // Démarrage du jeu
         // On peut avoir des parties à min 4 mais jamais en dessous de 2 en serveur
@@ -287,8 +287,8 @@ void TcpClient::onReadyRead() {
             QJsonParseError parseError;
             const QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
             if (parseError.error == QJsonParseError::NoError) {
-                if (jsonDoc.isObject()) // and is a JSON object
-                    jsonReceived(jsonDoc.object()); // parse the JSON
+                if (jsonDoc.isObject()) // et c'est un JSON object
+                    jsonReceived(jsonDoc.object()); // parser le JSON
             }
         } else {
             break;
@@ -299,11 +299,11 @@ void TcpClient::onReadyRead() {
 
 
 void TcpClient::error(QAbstractSocket::SocketError error) {
-    // show a message to the user that informs of what kind of error occurred
+    // afficher un message à l'utilisateur qui informe du type d'erreur survenu
     switch (error) {
     case QAbstractSocket::RemoteHostClosedError:
     case QAbstractSocket::ProxyConnectionClosedError:
-        return; // handled by disconnectedFromServer
+        return; // gérer par disconnectedFromServer
     case QAbstractSocket::ConnectionRefusedError:
         QMessageBox::critical(nullptr, tr("Error"), tr("The host refused the connection"));
         break;
@@ -353,13 +353,13 @@ void TcpClient::error(QAbstractSocket::SocketError error) {
 }
 
 void TcpClient::askUsername() {
-    // once we connected to the server we ask the user for what username they would like to use
+    // une fois que nous nous sommes connectés au serveur, nous demandons à l'utilisateur quel nom d'utilisateur il souhaite utiliser
     const QString newUsername = QInputDialog::getText(nullptr, tr("Choisissez un nom d'utilisateur"), tr("Nom d'utilisateur"));
     if (newUsername.isEmpty()){
-        // if the user clicked cancel or typed nothing, we just disconnect from the server
+        // si l'utilisateur a cliqué sur Annuler ou n'a rien tapé, nous nous déconnectons simplement du serveur
         return socket->disconnectFromHost();
     }
-    // try to login with the given username
+    // essayer de se connecter avec le nom d'utilisateur donné
     login(newUsername);
 }
 
