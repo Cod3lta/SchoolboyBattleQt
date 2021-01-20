@@ -93,6 +93,7 @@ void Game::setupMultiplayerGame() {
     connect(tcpClient, &TcpClient::playerPickUpCandy, this, &Game::playerPickedUpCandyMulti);
     // Recevoir les candy que tel joueur vol
     connect(tcpClient, &TcpClient::playerStealCandy, this, &Game::playerStealsCandies);
+    connect(tcpClient, &TcpClient::playerValidateCandy, this, &Game::playerValidateCandies);
 
     // Créer chaque joueur présent dans la liste des joueurs de l'objet tcpClient
     QHash<int, QHash<QString, QString>> clientsList = tcpClient->getUsersList();
@@ -121,6 +122,10 @@ void Game::setupMultiplayerGame() {
             connect(players.value(i.key()), &Player::stealCandies, tcpClient, &TcpClient::playerStealsCandies);
             // Voler le candy pour cette instance
             connect(players.value(i.key()), &Player::stealCandies, this, &Game::playerStealsCandies);
+            // Envoyer l'info au serveur que ce joueur a validé ses candies
+            connect(players.value(i.key()), &Player::validateCandies, tcpClient, &TcpClient::playerValidateCandies);
+            // Signal qui est émit quand ce joueur valide ses candies
+            connect(players.value(i.key()), &Player::validateCandies, this, &Game::playerValidateCandies);
         }
         count++;
     }
@@ -331,6 +336,7 @@ void Game::refreshEntities() {
                 Candy *previousCandy = candies[candiesTaken.first()];
                 // pour chaque bonbon pris par ce joueur
                 for(int i = 0; i < candiesTaken.length(); i++) {
+                    // Si le candy n'existe pas (plus), on passe au prochain
                     if(!candies.contains(candiesTaken.at(i))) continue;
                     if(candies[candiesTaken.at(i)]->isValidated()) {
                         // Animation des candy vers le point de spawn

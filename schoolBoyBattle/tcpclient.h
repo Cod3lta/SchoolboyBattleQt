@@ -36,6 +36,7 @@ public slots:
     void sendNewCandy(int candyType, int candySize, int tilePlacementId, int candyId);
     void isCandyFree(int candyId);
     void playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
+    void playerValidateCandies(int playerId);
 private slots:
     void onReadyRead();
     void error(QAbstractSocket::SocketError error);
@@ -59,6 +60,7 @@ signals:
     void spawnNewCandy(int candyType, int candySize, int tilePlacementId, int candyId);
     void playerPickUpCandy(int descriptor, int candyId);
     void playerStealCandy(int candyIdStartingFrom, int winnerDescriptor);
+    void playerValidateCandy(int descriptor);
 
 };
 

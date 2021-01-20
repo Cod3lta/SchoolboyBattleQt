@@ -283,6 +283,12 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         candyTaken.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
         candyTaken.insert("candyIdStartingFrom", QJsonValue(docObj.value(QLatin1String("candyIdStartingFrom"))));
         broadcast(candyTaken, sender);
+    }else if(typeVal.toString().compare(QLatin1String("validateCandies"), Qt::CaseInsensitive) == 0) {   // validation de candies
+        // On envoie à tout le monde que tel joueur a validé tels candies
+        QJsonObject candyTaken;
+        candyTaken.insert("type", QJsonValue("validateCandies"));
+        candyTaken.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
+        broadcast(candyTaken, sender);
     }
 }
 

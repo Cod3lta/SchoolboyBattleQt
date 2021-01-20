@@ -155,6 +155,9 @@ bool Player::collideWithWalls(QVector2D movingVector) {
 
 void Player::collideWithSpawn() {
 
+    // Si le joueur n'a pas de candy, on passe
+    if(IdsCandiesTaken.length() == 0) return;
+
     // Les items en contacte avec le joueur
     QList<QGraphicsItem*> itemsColliding = collidingItems();
 
@@ -177,12 +180,6 @@ void Player::collideWithSpawn() {
                 // de collisions qui se trouvent à proximité
                 if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
                     emit validateCandies(this->id);
-                    // On attends une seconde et on vide la liste de bonbons capturés
-                    /*int nbCandies = IdsCandiesTaken.length();
-                    queueProtected->singleShot(1000, this, [=] () {
-                        // On supprime tous les candy validés jusque là
-                        IdsCandiesTaken = IdsCandiesTaken.mid(nbCandies);
-                    });*/
                     break;
                 }
             }
