@@ -353,7 +353,8 @@ QList<int> Player::getCandiesTaken() {
 }
 
 void Player::pickupCandyMulti(int candyId) {
-    IdsCandiesTaken.prepend(candyId);
+    if(IdsCandiesTaken.length() <= CANDY_MAX)
+        IdsCandiesTaken.prepend(candyId);
 }
 
 Player::~Player() {

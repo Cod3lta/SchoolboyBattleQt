@@ -367,10 +367,6 @@ void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
     players[descriptor]->pickupCandyMulti(candyId);
 }
 
-void Game::reset() {
-
-}
-
 QList<TileCandyPlacement *> Game::getTileCandyPlacementList() {
     return tileCandyPlacements;
 }
