@@ -122,6 +122,8 @@ void Game::setupMultiplayerGame() {
             connect(players.value(i.key()), &Player::stealCandies, tcpClient, &TcpClient::playerStealsCandies);
             // Voler le candy pour cette instance
             connect(players.value(i.key()), &Player::stealCandies, this, &Game::playerStealsCandies);
+            // Pour qu'un player puisse demander si tous ses candies sont déjà validés
+            connect(players.value(i.key()), &Player::arePlayerTakenCandiesValidated, this, &Game::arePlayerTakenCandiesValidated);
             // Envoyer l'info au serveur que ce joueur a validé ses candies
             connect(players.value(i.key()), &Player::validateCandies, tcpClient, &TcpClient::playerValidateCandies);
             // Signal qui est émit quand ce joueur valide ses candies
@@ -178,7 +180,8 @@ void Game::receiveRollback(double playerX, double playerY, QHash<int, QPointF> c
     QHashIterator<int, QPointF> i(candies);
     while(i.hasNext()) {
         i.next();
-        this->candies[i.key()]->setPos(i.value());
+        if(candies.contains(i.key()))
+            this->candies[i.key()]->setPos(i.value());
     }
 }
 
@@ -379,6 +382,8 @@ void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int can
 }
 
 void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
+    // Si le candy n'existe plus, on annule
+    if(!candies.contains(candyIdStartingFrom)) return;
     Player *victim = players[candies[candyIdStartingFrom]->getCurrentPlayerId()];
     Player *stealer = players[playerWinningId];
     // S'ils sont de la même équipe, on annule
@@ -428,6 +433,15 @@ void Game::deleteCandy(int id, int playerId) {
     players[playerId]->deleteCandy(id);
     candies.remove(id);
 
+}
+
+bool Game::arePlayerTakenCandiesValidated(int playerId) {
+    QList<int> playerCandies = players[playerId]->getCandiesTaken();
+    for(int i = 0; i < playerCandies.length(); i++)
+        // Si au moins un candy n'est pas validé, on retourne false
+        if(!candies[playerCandies.at(i)]->isValidated())
+            return false;
+    return true;
 }
 
 void Game::reset() {

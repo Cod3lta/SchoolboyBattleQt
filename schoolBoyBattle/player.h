@@ -97,6 +97,7 @@ signals:
     void isCandyFree(int candyId);
     QList<int> stealCandies(int candyIdStartingFrom, int playerWinningId);
     void validateCandies(int id);
+    bool arePlayerTakenCandiesValidated(int id);
 };
 
 #endif // PLAYER_H

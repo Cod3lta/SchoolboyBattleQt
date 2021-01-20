@@ -9,7 +9,7 @@
 #include <QVector2D>
 #include "game.h"
 
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 #define QUEUE_PROTECTED_TIME_MS 750
 
 // Constructeur utilisé pour créer les boss
@@ -91,9 +91,9 @@ void Player::refresh(double delta, int socketDescriptor) {
     // On ne calcule la collision avec les candy et les murs que dans 2 conditions
     // - Si on est en local
     // - Si on est en multi et ce joueur est celui qui est joué
-    if((dataLoader->isMultiplayer() && id == socketDescriptor) || !dataLoader->isMultiplayer())
-        if(collideWithWalls(movingVector))
-            movingVector = calculateAnswerVector(movingVector);
+
+    if(collideWithWalls(movingVector))
+        movingVector = calculateAnswerVector(movingVector);
 
     move(movingVector);
 
@@ -158,6 +158,9 @@ void Player::collideWithSpawn() {
     // Si le joueur n'a pas de candy, on passe
     if(IdsCandiesTaken.length() == 0) return;
 
+    // Si tous les bonbons du joueur sont déjà validés, on ne fait rien
+    if(emit arePlayerTakenCandiesValidated(id)) return;
+
     // Les items en contacte avec le joueur
     QList<QGraphicsItem*> itemsColliding = collidingItems();
 
@@ -170,12 +173,12 @@ void Player::collideWithSpawn() {
             QGraphicsItem *collidingItem = itemsColliding.at(i);
 
             for(int j = 0; j < spawnTilesNearby.size(); j++) {
-                // Si la tile n'est pas celle de notre équipe, on ne fait rien
-                if(id == black && dataLoader->getTileType("world/config/spawn-red.png") == spawnTilesNearby.at(j)->getTileType())
-                        return;
-                if(id == red && dataLoader->getTileType("world/config/spawn-black.png") == spawnTilesNearby.at(j)->getTileType())
-                        return;
                 Tile *tileNearby = spawnTilesNearby.at(j);
+                // Si la tile n'est pas celle de notre équipe, on ne fait rien
+                if(team == black && dataLoader->getTileType("world/config/spawn-red.png") == tileNearby->getTileType())
+                        return;
+                if(team == red && dataLoader->getTileType("world/config/spawn-black.png") == tileNearby->getTileType())
+                        return;
                 // Si un des items avec lesquels on collide se trouve dans la liste des tiles
                 // de collisions qui se trouvent à proximité
                 if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {

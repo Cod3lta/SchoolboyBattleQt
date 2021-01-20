@@ -67,6 +67,7 @@ private slots:
     void playerValidateCandies(int playerId);
     void playerPickedUpCandyMulti(int descriptor, int candyId);
     void deleteCandy(int id, int playerId);
+    bool arePlayerTakenCandiesValidated(int playerId);
 
 public slots:
     void startGame(int nbPlayers);
