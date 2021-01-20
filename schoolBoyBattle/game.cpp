@@ -363,6 +363,8 @@ void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int can
 void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
     Player *victim = players[candies[candyIdStartingFrom]->getCurrentPlayerId()];
     Player *stealer = players[playerWinningId];
+    // S'ils sont de la même équipe, on annule
+    if(victim->getTeam() == stealer->getTeam()) return;
     QList<int>candiesGained = victim->looseCandies(candyIdStartingFrom);
 
     // S'il n'y a pas de candy volé, on s'arrête là
