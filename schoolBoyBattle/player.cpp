@@ -30,7 +30,6 @@ Player::Player(
       playerSpeed(playerSpeed),
       collisionTiles(collisionTiles)
 {
-    nb_candy = 0;
     setPos(
         dataLoader->getTeamSpawnpoint(team).x(),
         dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
@@ -156,21 +155,15 @@ void Player::collideWithCandy() {
             for(int j = 0; j < candiesNearby.size(); j++) {
                 Candy *candyNearby = candiesNearby.at(j);
                 if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
+                    if (IdsCandiesTaken.length() >= CANDY_MAX)
+                        return;
                     // si le candy qu'on touche est pris (pas par nous)
                     if(candyNearby->isTaken()) {
                         if(candyNearby->getCurrentPlayerId() != this->id) {
                             // Voler le candy
-                            if (nb_candy+1 <= CANDY_MAX)
-                            {
-                                nb_candy++;
-                                qDebug() << "voler candy, nb candy équipe " << this->id << " : " << nb_candy;
-                                emit stealCandies(candyNearby->getId(), this->id);
-                            }
+                            emit stealCandies(candyNearby->getId(), this->id);
                         }
                     }else{
-                        if (nb_candy+1 <= CANDY_MAX) {
-                            nb_candy++;
-                            qDebug() << "ramasser candy, nb candy équipe " << this->id << " : " << nb_candy;
                             // Ramasser le candy
                             if(dataLoader->isMultiplayer()) {
                                 // Demander au serveur si on peut prendre le candy
@@ -182,7 +175,6 @@ void Player::collideWithCandy() {
                                 candyNearby->pickUp(id, team);
                                 IdsCandiesTaken.prepend(candyNearby->getId());
                             }
-                        }
                     }
                 }
             }
@@ -201,11 +193,9 @@ QList<int> Player::looseCandies(int candyStolenId) {
         return candiesStolen;
     for(int i = 0; i < IdsCandiesTaken.length(); i++) {
         if(IdsCandiesTaken.at(i) == candyStolenId) {
-            nb_candy--;
-            qDebug() << "perdu candy, nb candy équipe " << this->id << " : " << nb_candy;
-            candiesStolen = IdsCandiesTaken.mid(i);
-            IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
-            return candiesStolen;
+           candiesStolen = IdsCandiesTaken.mid(i);
+           IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
+           return candiesStolen;
         }
     }
     return candiesStolen;

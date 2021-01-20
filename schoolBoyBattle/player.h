@@ -64,7 +64,6 @@ private:
     const int playerWidth;
     const int playerHeight;
     const int playerSpeed;
-    int nb_candy;
 
     QList<Tile*> *collisionTiles;
 
