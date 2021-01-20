@@ -57,6 +57,7 @@ private:
     void placeTilesCandyPlacement();
     void setupMultiplayerGame();
     void setupLocalGame(int nbPlayers);
+    void placeBosses();
 
 private slots:
     void sendRollback();

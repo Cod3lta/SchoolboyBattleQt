@@ -12,22 +12,24 @@
 #define HITBOX_DEBUG false
 #define QUEUE_PROTECTED_TIME_MS 750
 
+// Constructeur utilisé pour créer les boss
+Player::Player(int team, DataLoader *dataLoader) :
+    team(static_cast<Team>(team)),
+    dataLoader(dataLoader)
+{}
+
 Player::Player(
         int id,
         int team,
         int gender,
         DataLoader *dataLoader,
         QList<Tile*> *collisionTiles,
-        int playerWidth, int playerHeight, int playerSpeed,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       team(static_cast<Team>(team)),
-      gender(static_cast<Gender>(gender)),
       dataLoader(dataLoader),
+      gender(static_cast<Gender>(gender)),
       id(id),
-      playerWidth(playerWidth),
-      playerHeight(playerHeight),
-      playerSpeed(playerSpeed),
       collisionTiles(collisionTiles)
 {
     setPos(
@@ -36,7 +38,7 @@ Player::Player(
 
     loadAnimations();
     setAnimation(idle);
-    setZIndex();
+    setZIndex(dataLoader->getPlayerSize().y());
     queueProtected = new QTimer(this);
     queueProtected->setSingleShot(true);
     queueProtected->setInterval(QUEUE_PROTECTED_TIME_MS);
@@ -91,7 +93,7 @@ void Player::refresh(double delta, int socketDescriptor) {
     move(movingVector);
 
     if(getAnimationType() == run) {
-        setZIndex();
+        setZIndex(dataLoader->getPlayerSize().y());
     }
 
     // On ne calcule la collision avec les candy que dans 2 conditions
@@ -215,7 +217,7 @@ QVector2D Player::calculateMovingVector(double delta) {
     v.setX(int(moves[moveRight]) - int(moves[moveLeft]));
     v.setY(int(moves[moveDown]) - int(moves[moveUp]));
     v.normalize();
-    v *= delta * playerSpeed;
+    v *= delta * dataLoader->getPlayerSpeed();
     return v;
 }
 
@@ -242,8 +244,8 @@ void Player::move(QVector2D vector, bool inverted) {
 
 // -------------------------------------------------------------------------------------
 
-void Player::setZIndex() {
-    setZValue(y() + playerHeight);
+void Player::setZIndex(int yToAdd) {
+    setZValue(y() + yToAdd);
 }
 
 void Player::validate_candies() {
@@ -350,7 +352,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 // Called by QGraphicsView to determine what regions need to be redrawn
 // the rect stay at 0:0 !!
 QRectF Player::boundingRect() const {
-    return QRectF(0, 0, playerWidth, playerHeight);
+    return QRectF(0, 0, dataLoader->getPlayerSize().x(), dataLoader->getPlayerSize().y());
 }
 
 // collisions detection
