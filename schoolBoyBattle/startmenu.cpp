@@ -10,21 +10,20 @@
 
 StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
 {
-    //setFixedSize(700,500);
-
     QPalette pal = palette();
     pal.setColor(QPalette::Background, Qt::lightGray);
     setAutoFillBackground(true);
     setPalette(pal);
 
     // Création du layout
-    QVBoxLayout *vLayout = new QVBoxLayout(this);
-    QHBoxLayout *connectToServerLayout = new QHBoxLayout(this);
-    QHBoxLayout *copyrightLayout = new QHBoxLayout(this);
-    QHBoxLayout *startLayout = new QHBoxLayout(this);
-    QHBoxLayout *quitLayout = new QHBoxLayout(this);
-    QHBoxLayout *imgLogoJeuLayout = new QHBoxLayout(this);
-    QHBoxLayout *imgPersonnageLayout = new QHBoxLayout(this);
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    QHBoxLayout *connectToServerLayout = new QHBoxLayout();
+    QHBoxLayout *copyrightLayout = new QHBoxLayout();
+    QHBoxLayout *startLayout = new QHBoxLayout();
+    QHBoxLayout *quitLayout = new QHBoxLayout();
+    QHBoxLayout *imgLogoJeuLayout = new QHBoxLayout();
+    QHBoxLayout *imgPersonnageLayout = new QHBoxLayout();
+    QHBoxLayout *mainLayout = new QHBoxLayout();
 
     // Création des widgets
 
@@ -61,7 +60,6 @@ StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
 
     setFieldsValidator();
 
-    vLayout->addStretch(1);
     vLayout->addLayout(imgLogoJeuLayout);
     vLayout->addLayout(imgPersonnageLayout);
     vLayout->addLayout(startLayout);
@@ -70,10 +68,12 @@ StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
     connectToServerLayout->addWidget(connectToServer);
     vLayout->addLayout(connectToServerLayout);
     vLayout->addLayout(quitLayout);
-    vLayout->addStretch(1);
     vLayout->addLayout(copyrightLayout);
+    mainLayout->addStretch(1);
+    mainLayout->addLayout(vLayout);
+    mainLayout->addStretch(1);
 
-    setLayout(vLayout);
+    setLayout(mainLayout);
 
     // Connexions
     connect(startGame, &QPushButton::clicked, this, [=] () {
