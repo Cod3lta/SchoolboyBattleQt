@@ -56,5 +56,27 @@
         <file>Resources/player/idle/girl-black-idle.png</file>
         <file>Resources/player/idle/girl-red-idle.png</file>
         <file>Resources/schoolboybattle-icon.ico</file>
+        <file>Resources/bosses/carpet/black/carpet-1.png</file>
+        <file>Resources/bosses/carpet/black/carpet-2.png</file>
+        <file>Resources/bosses/carpet/black/carpet-3.png</file>
+        <file>Resources/bosses/carpet/black/carpet-4.png</file>
+        <file>Resources/bosses/carpet/black/carpet-5.png</file>
+        <file>Resources/bosses/carpet/black/carpet-6.png</file>
+        <file>Resources/bosses/carpet/black/carpet-7.png</file>
+        <file>Resources/bosses/carpet/black/carpet-8.png</file>
+        <file>Resources/bosses/carpet/black/carpet-9.png</file>
+        <file>Resources/bosses/carpet/red/carpet-1.png</file>
+        <file>Resources/bosses/carpet/red/carpet-2.png</file>
+        <file>Resources/bosses/carpet/red/carpet-3.png</file>
+        <file>Resources/bosses/carpet/red/carpet-4.png</file>
+        <file>Resources/bosses/carpet/red/carpet-5.png</file>
+        <file>Resources/bosses/carpet/red/carpet-6.png</file>
+        <file>Resources/bosses/carpet/red/carpet-7.png</file>
+        <file>Resources/bosses/carpet/red/carpet-8.png</file>
+        <file>Resources/bosses/carpet/red/carpet-9.png</file>
+        <file>Resources/bosses/idle/boss-black-idle.png</file>
+        <file>Resources/bosses/idle/boss-red-idle.png</file>
+        <file>Resources/world/config/spawn-player-black.png</file>
+        <file>Resources/world/config/spawn-player-red.png</file>
     </qresource>
 </RCC>

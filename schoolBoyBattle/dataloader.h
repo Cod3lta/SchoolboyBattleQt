@@ -23,13 +23,14 @@ class DataLoader
 public:
     DataLoader(QString terrainFileName, bool isMultiplayer);
     int getTileSize();
+    int getPlayerSpeed();
     QVector2D getPlayerSize();
     bool isMultiplayer();
     void setPlayerIndexInMulti(int id);
     int getPlayerIndexInMulti();
 
 private:
-    int const tileSize = 130, playerHeight = 150, playerWidth = tileSize;
+    int const tileSize = 130, playerHeight = 150, playerWidth = tileSize, playerSpeed = 8;
     QDomDocument terrainXMLDoc;
     QDomDocument getFileContent(QString fileName);
     bool multiplayer;
@@ -55,6 +56,7 @@ public:
     } PlayerAnimationsStruct;
     QHash<int, PlayerAnimationsStruct*> playerAnimations;
     int getPlayerAnimationId(int gender, int team, int animation);
+    int getBossAnimationId(int team);
 
 private:
     void loadPlayerAnimations();
@@ -112,7 +114,7 @@ public:
 
 private:
     void loadTileLayers();
-    QList<QList<int>> setupTileLayer(QDomNodeList chunks);
+    QList<QList<int>> setupTileLayer(QDomNodeList chunks, int *topLeftX, int *topLeftY);
     void getLayerPlacement(int *layerWidth, int *layerHeight, int *chunkMinX, int *chunkMinY, int size, QDomNodeList chunks);
     QHash<QString, int> highestLowestPointsOfMap();
     void updateTileLayersZIndex();
@@ -129,11 +131,9 @@ public:
     TileRessourcesStruct* getTileRessource(int tileType);
     int getTileType(QString name);
 
-
 private:
     void loadTilesRessources();
     QHash<int, QString> loadTilesIds();
-
 };
 
 #endif // DATALOADER_H

@@ -6,7 +6,7 @@
 #include <QDomDocument>
 #include <QVector2D>
 
-#define PLAYER_AFTER_LAYER 1    // Définit que les joueurs se trouvent entre
+#define PLAYER_AFTER_LAYER 2    // Définit que les joueurs se trouvent entre
                                 // les layers x et x+1
 
 DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
@@ -36,6 +36,10 @@ int DataLoader::getTileSize() {
     return tileSize;
 }
 
+int DataLoader::getPlayerSpeed() {
+    return playerSpeed;
+}
+
 QVector2D DataLoader::getPlayerSize() {
     return QVector2D(playerWidth, playerHeight);
 }
@@ -61,13 +65,13 @@ void DataLoader::setPlayersSpawnpoint() {
             int tileType = tileLayers["5-config"]->tiles.at(y).at(x);
             if(tileType == 0)
                 continue;
-            if(getTileRessource(tileType)->name == "world/config/spawn-red.png")
+            if(getTileRessource(tileType)->name == "world/config/spawn-player-red.png")
                 teamsSpawnpoints.insert(0,
                                         QPoint(
                                             getTileSize() * (x + tileLayers["5-config"]->topLeftX),
                                             getTileSize() * (y + tileLayers["5-config"]->topLeftY)
                         ));
-            if(getTileRessource(tileType)->name == "world/config/spawn-black.png")
+            if(getTileRessource(tileType)->name == "world/config/spawn-player-black.png")
                 teamsSpawnpoints.insert(1,
                                         QPoint(
                                             getTileSize() * (x + tileLayers["5-config"]->topLeftX),
@@ -92,6 +96,9 @@ void DataLoader::loadPlayerAnimations() {
     playerAnimations.insert(5, setupPlayerAnimation(10, 50, ":/Resources/player/run/girl-black-run.png"));
     playerAnimations.insert(6, setupPlayerAnimation(10, 50, ":/Resources/player/run/boy-red-run.png"));
     playerAnimations.insert(7, setupPlayerAnimation(10, 50, ":/Resources/player/run/girl-red-run.png"));
+    // Dans le jeu, un boss est comme un joueur (ils partagent les animations)
+    playerAnimations.insert(8, setupPlayerAnimation(6, 150, ":/Resources/bosses/idle/boss-black-idle.png"));
+    playerAnimations.insert(9, setupPlayerAnimation(6, 150, ":/Resources/bosses/idle/boss-red-idle.png"));
 }
 
 DataLoader::PlayerAnimationsStruct* DataLoader::setupPlayerAnimation(int nbFrame, int framerate, QString fileName) {
@@ -112,6 +119,12 @@ int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
     if(gender == 1 && team == 0 && animation == 1) return 6;
     if(gender == 0 && team == 1 && animation == 1) return 5;
     if(gender == 1 && team == 1 && animation == 1) return 4;
+    return -1;
+}
+
+int DataLoader::getBossAnimationId(int team) {
+    if(team == 0) return 9;
+    if(team == 1) return 8;
     return -1;
 }
 
@@ -178,23 +191,24 @@ void DataLoader::loadTileLayers() {
         // Chaque layer
 
         TileLayerStruct *tileLayer = new TileLayerStruct();
+        int topLeftX = 0, topLeftY = 0;
 
         // Prendre chaque chunk de la layer
         QDomNodeList chunks = layer.firstChild().childNodes();
-        tileLayer->tiles = setupTileLayer(chunks);
+        tileLayer->tiles = setupTileLayer(chunks, &topLeftX, &topLeftY);
 
         tileLayer->height = tileLayer->tiles.size();
         if(tileLayer->height != 0)
             tileLayer->width = tileLayer->tiles.at(0).size();
         QDomElement firstChunk = layers.at(i).firstChild().firstChild().toElement();
         tileLayer->zIndex = i;
-        tileLayer->topLeftX = firstChunk.attributes().namedItem("x").nodeValue().toInt();
-        tileLayer->topLeftY = firstChunk.attributes().namedItem("y").nodeValue().toInt();
+        tileLayer->topLeftX = topLeftX;
+        tileLayer->topLeftY = topLeftY;
         tileLayers.insert(layer.attribute("name"), tileLayer);
     }
 }
 
-QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
+QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX, int *topLeftY) {
 
     QList<QList<int>> dimLevel;
 
@@ -202,7 +216,7 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
     int chunkMinX = 0, chunkMinY = 0, layerWidth = 0, layerHeight = 0;
 
     // Déterminer la taille de la layer
-    getLayerPlacement(&layerWidth, &layerHeight, &chunkMinX, &chunkMinY, chunkSize, chunks);
+    getLayerPlacement(&layerWidth, &layerHeight, topLeftX, topLeftY, chunkSize, chunks);
 
     // Initialiser la liste
     for(int i = 0; i < layerHeight; i++) {
@@ -225,8 +239,8 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks) {
         }
         for(int y = 0; y < chunkSize; y++) {
             for(int x = 0; x < chunkSize; x++) {
-                int insertYList = chunk.attribute("y").toInt() + y - chunkMinY;
-                int insertXList = chunk.attribute("x").toInt() + x - chunkMinX;
+                int insertYList = chunk.attribute("y").toInt() + y - *topLeftX;
+                int insertXList = chunk.attribute("x").toInt() + x - *topLeftY;
                 QList<int> subList = dimLevel.value(insertYList);
                 subList.replace(insertXList, intList.at(y*chunkSize + x));
                 dimLevel.replace(insertYList, subList);

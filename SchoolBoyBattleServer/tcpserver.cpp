@@ -190,6 +190,8 @@ void TcpServer::startGame() {
         teamSetter = !teamSetter;
         clients.at(i)->setGender(rand()%2);
     }
+    // Vider la liste des candies libres
+    freeCandies.empty();
 
     // Envoyer à tout le monde la liste des clients avec les teams / genders
     // On envoie aussi le descriptor du candy master
@@ -280,6 +282,12 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         candyTaken.insert("type", QJsonValue("stealCandies"));
         candyTaken.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
         candyTaken.insert("candyIdStartingFrom", QJsonValue(docObj.value(QLatin1String("candyIdStartingFrom"))));
+        broadcast(candyTaken, sender);
+    }else if(typeVal.toString().compare(QLatin1String("validateCandies"), Qt::CaseInsensitive) == 0) {   // validation de candies
+        // On envoie à tout le monde que tel joueur a validé tels candies
+        QJsonObject candyTaken;
+        candyTaken.insert("type", QJsonValue("validateCandies"));
+        candyTaken.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
         broadcast(candyTaken, sender);
     }
 }
