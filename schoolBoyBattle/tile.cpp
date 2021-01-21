@@ -2,8 +2,10 @@
 #include "tile.h"
 #include <QGraphicsItem>
 #include <QPainter>
+#include <QDebug>
 
 #define TILE_SIZE 130
+#define IMAGE_PIXEL_SIZE 13
 
 Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources, QString layer, int tileType, DataLoader *dataLoader, QGraphicsItem* parent)
     :QGraphicsObject(parent),
@@ -14,8 +16,17 @@ Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources,
     image = dataLoader->getTileRessource(tileType)->image;
     int x = layerRessources->topLeftX * TILE_SIZE + indexX * TILE_SIZE;
     int y = layerRessources->topLeftY * TILE_SIZE + indexY * TILE_SIZE;
+    int ratio = TILE_SIZE / IMAGE_PIXEL_SIZE;
+    int tileWidth = image->width() * ratio;
+    int tileHeight = image->height() * ratio;
+
+    prepareGeometryChange();
+    boundingRectangle = QRectF(0, TILE_SIZE - tileHeight, tileWidth, tileHeight);
+
     setPos(x, y);
+
     setZValue(layerRessources->zIndex);
+
 }
 
 
@@ -45,7 +56,7 @@ int Tile::getTileType() {
 // Called by QGraphicsView to determine what regions need to be redrawn
 // the rect stay at 0:0 !!
 QRectF Tile::boundingRect() const {
-    return QRectF(0, 0, TILE_SIZE, TILE_SIZE);
+    return boundingRectangle;
 }
 
 // collisions detection

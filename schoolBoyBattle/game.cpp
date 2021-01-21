@@ -321,7 +321,6 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
 }
 
 void Game::refreshEntities() {
-    qDebug() << "Nombre d'items : " << items().count();
     if(views().length() == 0) return;
     int delta = playerRefreshDelta->nsecsElapsed();
     double deltaMs = delta/10e6;

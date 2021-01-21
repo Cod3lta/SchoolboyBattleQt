@@ -29,6 +29,7 @@ public:
 private:
     QString layer;
     QPixmap* image;
+    QRectF boundingRectangle;
 
 protected:
     // Pour les tiles de type TileCandyPlacement
