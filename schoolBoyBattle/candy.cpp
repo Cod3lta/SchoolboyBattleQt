@@ -4,40 +4,61 @@
 #include <QDebug>
 #include "game.h"
 
-#define CANDY_WIDTH 75
-#define CANDY_HEIGHT 75
-#define HITBOX_DEBUG true
+#define CANDY_WIDTH 130
+#define CANDY_HEIGHT 130
+#define HITBOX_DEBUG false
+#define LERP_AMOUNT 1e7
+#define LERP_ACCELERATION 20
 
 
 Candy::Candy(
-        int type,
-        QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas,
-        QGraphicsItem *parent)
-    : QGraphicsItem(parent),
-      type(static_cast<Type>(type))
+        int candyType,
+        int candySize,
+        DataLoader *dataLoader,
+        TileCandyPlacement *tilePlacement,
+        int id,
+        QGraphicsObject *parent)
+    : QGraphicsObject(parent),
+      id(id),
+      idTeam(-1),
+      candyType(static_cast<Type>(candyType)),
+      candySize(static_cast<Size>(candySize)),
+      dataLoader(dataLoader),
+      tilePlacement(tilePlacement),
+      currentPlayerId(-1),
+      taken(false),
+      valid(false)
 {
-    loadAnimations(sharedAnimationsDatas);
+    loadAnimations();
     setAnimation(idle);
-    setPos(750, 500);
+    setPos(tilePlacement->pos());
     setZIndex();
+    if(tilePlacement != nullptr) {
+        connect(this, &Candy::pickedUp, tilePlacement, &TileCandyPlacement::candyPickedUp);
+    }
 }
 
 // Setup des animations des candies ---------------------------------------------------------
 
-void Candy::loadAnimations(QHash<int, DataLoader::CandyAnimationsStruct*> *sharedAnimationsDatas) {
-    animations.insert(idle, setupCandyAnimationData(-1, sharedAnimationsDatas->value(DataLoader::getCandyAnimationId(type))));
+void Candy::loadAnimations() {
+    animationsLocal.insert(
+                idle,
+                setupCandyAnimationData(
+                    dataLoader->candyAnimations.value(
+                        dataLoader->getCandyAnimationId(candyType, candySize))));
 }
 
-Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate, DataLoader::CandyAnimationsStruct *sharedDatas) {
-    AnimationsLocalDatasStruct *c = new AnimationsLocalDatasStruct();
+Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(DataLoader::CandyAnimationsStruct* sharedDatas) {
+    AnimationsLocalStruct *c = new AnimationsLocalStruct();
     c->frameIndex = 0;
     c->sharedDatas = sharedDatas;
     // Si on donne un -1 pour le framerate, il n'y a pas d'animation
     c->timer = new QTimer();
-    if(framerate >= 0) {
-        c->timer->setInterval(framerate);
+    if(sharedDatas->framerate >= 0) {
+        c->timer->setInterval(sharedDatas->framerate);
         c->timer->stop();
     }
+    connect(c->timer, &QTimer::timeout, this, &Candy::animationNextFrame);
     return c;
 }
 
@@ -47,7 +68,7 @@ Candy::AnimationsLocalDatasStruct* Candy::setupCandyAnimationData(int framerate,
 // autres trucs de la classe ----------------------------------------------------------------
 
 void Candy::animationNextFrame() {
-    AnimationsLocalDatasStruct *a = animations.value(animationJeTestDautresTrucs);
+    AnimationsLocalStruct *a = animationsLocal.value(animation);
     a->frameIndex++;
     if(a->frameIndex >= a->sharedDatas->nbFrame) {
         a->frameIndex = 0;
@@ -55,42 +76,110 @@ void Candy::animationNextFrame() {
     update();
 }
 
-void Candy::setAnimation(AnimationsJeTestDesTrucs a) {
+void Candy::setAnimation(Animations a) {
     // Arrêter le timer de l'animation qui se termine
-    if(animations.contains(animationJeTestDautresTrucs)) {
-        animations.value(animationJeTestDautresTrucs)->timer->stop();
+    if(animationsLocal.contains(animation)) {
+        animationsLocal.value(animation)->timer->stop();
     }
     // Changer l'animation
-    animationJeTestDautresTrucs = a;
+    animation = a;
     // Démarer le timer de la nouvelle animation
-    animations.value(a)->timer->start();
+    animationsLocal.value(a)->timer->start();
 }
 
 void Candy::setZIndex() {
-    setZValue(y());
+    setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
+void Candy::pickUp(int playerId, int idTeam) {
+    taken = true;
+    // Envoyer un msg au slot du TileCandyPlacement qu'il
+    // peut en placer un nouveau
+    emit pickedUp();
+    currentPlayerId = playerId;
+    this->idTeam = idTeam;
+}
+
+bool Candy::isTaken() {
+    return taken;
+}
+
+int Candy::getId() {
+    return id;
+}
+
+void Candy::setCurrentPlayerId(int playerId) {
+    currentPlayerId = playerId;
+}
+
+void Candy::setTeamId(int idTeam) {
+    this->idTeam = idTeam;
+}
+
+void Candy::validate() {
+    valid = true;
+}
+
+bool Candy::isValidated() {
+    return valid;
+}
+
+int Candy::getCurrentPlayerId() {
+    return currentPlayerId;
+}
+
+void Candy::refresh(QPointF pos, int posInQueue, double delta) {
+    if(!taken || valid) return;
+    int yOffset = 0;
+    int lerpFactor = (LERP_AMOUNT * LERP_ACCELERATION) / (LERP_AMOUNT + posInQueue);
+    if(posInQueue == 0) yOffset = dataLoader->getPlayerSize().y() / 8;
+    setX(this->x() + (pos.x() - this->x()          ) / lerpFactor * delta);
+    setY(this->y() + (pos.y() - this->y() + yOffset) / lerpFactor * delta);
+
+    setZIndex();
+}
+
+void Candy::capture(double deltaMs) {
+    QPoint objective = dataLoader->getTeamSpawnpoint(idTeam);
+    setX(x() + (objective.x() - x()) / 20 * deltaMs);
+    setY(y() + (objective.y() - y()) / 20 * deltaMs);
+    // Si le candy est suffisamment proche du point de spawn
+    if(x() - 50 < objective.x() && x() + 50 > objective.x() &&
+       y() - 50 < objective.y() && y() + 50 > objective.y()) {
+        emit validated(id, currentPlayerId);
+        deleteLater();
+    }
+
+}
 
 // OVERRIDE REQUIRED ------------------------------------------------------------------------
 
 // Paints contents of item in local coordinates
 void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-
     if(HITBOX_DEBUG) {
         // Debug rect
-        painter->setPen(QPen(Qt::black));
-        painter->setBrush(QBrush(Qt::white));
+        painter->setPen(QPen(Qt::yellow));
         painter->drawRect(boundingRect());
-        painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(id));
+        painter->setPen(QPen(Qt::red));
+        painter->drawPath(shape());
+        painter->drawText(10, 10, "ID : " + QString::number(id));
+        painter->drawText(10, 30, "Player : " + QString::number(currentPlayerId));
     }
 
-    AnimationsLocalDatasStruct *candyToDraw = animations.value(animationJeTestDautresTrucs);
+    AnimationsLocalStruct *candyToDraw = animationsLocal.value(animation);
     QPixmap *imageToDraw = candyToDraw->sharedDatas->image;
+    QPixmap *imageHover = candyToDraw->sharedDatas->image;
+    if(idTeam == 0)
+         imageHover = candyToDraw->sharedDatas->imageRed;
+    else if(idTeam == 1)
+         imageHover = candyToDraw->sharedDatas->imageBlack;
 
     QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->sharedDatas->nbFrame * candyToDraw->frameIndex, 0,
                                imageToDraw->width() / candyToDraw->sharedDatas->nbFrame, imageToDraw->height());
     QRectF targetRect = boundingRect();
+
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
+    if(idTeam != -1) painter->drawPixmap(targetRect, *imageHover, sourceRect);
 
     // Lignes pour le compilateur
     Q_UNUSED(option)
@@ -107,7 +196,11 @@ QRectF Candy::boundingRect() const {
 // collisions detection
 QPainterPath Candy::shape() const {
     QPainterPath path;
-    path.addRect(boundingRect());
+    path.addRect(QRectF(
+                     boundingRect().x() + boundingRect().width() / 4,
+                     boundingRect().y() + boundingRect().height() / 4,
+                     boundingRect().width()/2,
+                     boundingRect().height()/2));
     return path;
 }
 

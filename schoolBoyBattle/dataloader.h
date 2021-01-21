@@ -21,11 +21,30 @@
 class DataLoader
 {
 public:
-    DataLoader(QString terrainFileName);
+    DataLoader(QString terrainFileName, bool isMultiplayer);
+    int getTileSize();
+    int getPlayerSpeed();
+    QVector2D getPlayerSize();
+    bool isMultiplayer();
+    void setPlayerIndexInMulti(int id);
+    int getPlayerIndexInMulti();
 
 private:
+    int const tileSize = 130, playerHeight = 150, playerWidth = tileSize, playerSpeed = 8;
+    QDomDocument terrainXMLDoc;
     QDomDocument getFileContent(QString fileName);
+    bool multiplayer;
+    int playerIndexInMulti;         // position du joueur actuel dans la liste "players" si
+                                    // on est en multijoueur
 
+    // PLAYER SPAWNPOINTS ----------------------------------------------------------------
+
+public:
+    QHash<int, QPoint> teamsSpawnpoints;
+    QPoint getTeamSpawnpoint(int teamId);
+
+private:
+    void setPlayersSpawnpoint();
 
     // PLAYER ANIMATIONS -----------------------------------------------------------------
 
@@ -33,32 +52,51 @@ public:
     typedef struct PlayerAnimations_s {
         QPixmap *image;
         int nbFrame;
+        int framerate;
     } PlayerAnimationsStruct;
-    QHash<int, DataLoader::PlayerAnimationsStruct*> playerAnimations;
+    QHash<int, PlayerAnimationsStruct*> playerAnimations;
     int getPlayerAnimationId(int gender, int team, int animation);
+    int getBossAnimationId(int team);
 
 private:
-    QDomDocument terrainXMLDoc;
     void loadPlayerAnimations();
-    DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, QString fileName);
+    DataLoader::PlayerAnimationsStruct *setupPlayerAnimation(int nbFrame, int framerate, QString fileName);
+
+    // CANDY RESSOURCES ------------------------------------------------------------
+
+public:
+    typedef struct CandyRessources_s {
+        int nbPoints;
+        int candyType;
+        int candySize;
+        int respawnDelayMs;
+    } CandyRessourcesStruct;
+    // le int est le tileType (ce qu'il y a dans le .tmx)
+    QHash<int, CandyRessourcesStruct*> candiesRessources;
+    CandyRessourcesStruct *getCandyRessources(int tileType);
+
+private:
+    void loadCandyRessources();
+    DataLoader::CandyRessourcesStruct *setupCandyRessources(int nbPoints, int candyType, int candySize, int delayRespawnMs);
 
     // CANDY ANIMATIONS ------------------------------------------------------------------
-
 
 public:
     typedef struct CandyAnimations_s {
         QPixmap *image;
+        QPixmap *imageBlack;
+        QPixmap *imageRed;
         int nbFrame;
-        int nbPoints;
+        int framerate;
     } CandyAnimationsStruct;
-    QHash<int, CandyAnimationsStruct*> candiesAnimations;
-    static int getCandyAnimationId(int type);
+    QHash<int, CandyAnimationsStruct*> candyAnimations;
+    int getCandyAnimationId(int type, int size);
 
 private:
     void loadCandyAnimations();
-    DataLoader::CandyAnimationsStruct *setupCandyAnimations(int nbFrame, int nbPoints, QString filename);
+    DataLoader::CandyAnimationsStruct *setupCandyAnimation(int nbFrame, int framerate, QString fileName);
 
-    // TILES -----------------------------------------------------------------------------
+    // TILE LAYERS ----------------------------------------------------------------------
 
 public:
     typedef struct TileLayer_s {
@@ -67,29 +105,35 @@ public:
         int height;
         int topLeftX;
         int topLeftY;
+        int zIndex;
     } TileLayerStruct;
+    // doit être dans une qmap car plus tard dans le game.cpp, on prendra chaque layer
+    // dans l'ordre pour y construire les tiles (c'est pour ça que les layers sont
+    // nommées dans l'ordre alphabétique dans le .tmx)
     QMap<QString, TileLayerStruct*> tileLayers;
 
 private:
-    void loadTiles();
-    QList<QList<int>> buildLayer(QDomNodeList chunks);
-    void getLayerSize(int *layerWidth, int *layerHeight, int size, QDomNodeList chunks);
+    void loadTileLayers();
+    QList<QList<int>> setupTileLayer(QDomNodeList chunks, int *topLeftX, int *topLeftY);
+    void getLayerPlacement(int *layerWidth, int *layerHeight, int *chunkMinX, int *chunkMinY, int size, QDomNodeList chunks);
+    QHash<QString, int> highestLowestPointsOfMap();
+    void updateTileLayersZIndex();
 
     // TILES RESSOURCES ------------------------------------------------------------------
 
 public:
     typedef struct TileRessource_s {
         QPixmap *image;
-        QString name;
-    } TileRessourceStruct;
-    QHash<int, TileRessourceStruct*> tileRessources;
-    TileRessourceStruct* getTileRessource(int type);
-
+        QString name;   // corresponds au chemin d'accès du fichier depuis :/Resources
+    } TileRessourcesStruct;
+    // le int est le tileType (ce qu'il y a dans le .tmx)
+    QHash<int, TileRessourcesStruct*> tileRessources;
+    TileRessourcesStruct* getTileRessource(int tileType);
+    int getTileType(QString name);
 
 private:
     void loadTilesRessources();
     QHash<int, QString> loadTilesIds();
-
 };
 
 #endif // DATALOADER_H

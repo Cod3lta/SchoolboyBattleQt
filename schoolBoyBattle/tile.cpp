@@ -5,15 +5,17 @@
 
 #define TILE_SIZE 130
 
-Tile::Tile(int indexX, int indexY, int sceneTopLeftX, int sceneTopLeftY, QString layer, int type, DataLoader *dataLoader, QGraphicsItem* parent)
+Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources, QString layer, int tileType, DataLoader *dataLoader, QGraphicsItem* parent)
     :QGraphicsObject(parent),
-      type(type),
-      layer(layer)
+      layer(layer),
+      tileType(tileType),
+    dataLoader(dataLoader)
 {
-    image = dataLoader->getTileRessource(type)->image;
-    int x = sceneTopLeftX * TILE_SIZE + indexX * TILE_SIZE;
-    int y = sceneTopLeftY * TILE_SIZE + indexY * TILE_SIZE;
+    image = dataLoader->getTileRessource(tileType)->image;
+    int x = layerRessources->topLeftX * TILE_SIZE + indexX * TILE_SIZE;
+    int y = layerRessources->topLeftY * TILE_SIZE + indexY * TILE_SIZE;
     setPos(x, y);
+    setZValue(layerRessources->zIndex);
 }
 
 
@@ -25,19 +27,18 @@ void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
     //painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
 
-    if(!(layer == "4-collision" || layer == "5-config")) {
+    if(!(layer == "1-spawns" || layer == "4-collision" || layer == "5-config")) {
         QRectF sourceRect(0, 0, image->width(), image->height());
         painter->drawPixmap(boundingRect(), *image, sourceRect);
-    }else{
-        if(type == 10) {
-            painter->setPen(QPen(Qt::red));
-            //painter->drawRect(boundingRect());
-        }
     }
 
     // Lignes pour le compilateur
     Q_UNUSED(option)
     Q_UNUSED(widget)
+}
+
+int Tile::getTileType() {
+    return tileType;
 }
 
 // Returns outer bounds of item as a rectangle

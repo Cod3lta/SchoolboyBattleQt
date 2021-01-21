@@ -1,7 +1,7 @@
 #include "view.h"
 #include <QDebug>
 
-#define LERP_AMOUNT 25
+#define LERP_AMOUNT 7
 
 View::View(int id, QGraphicsView *parent)
     : QGraphicsView(parent),
@@ -14,9 +14,10 @@ View::View(int id, QGraphicsView *parent)
                                     // flechées
 }
 
-void View::moveView(Player *player, int playerWidth, int playerHeight) {
-    x += ((player->x() + playerWidth/2) - x) / LERP_AMOUNT;
-    y += ((player->y() + playerHeight/2) - y) / LERP_AMOUNT;
+void View::moveView(Player *player, int playerWidth, int playerHeight, double deltaMs) {
+    x += ((player->x() + playerWidth/2) - x) / LERP_AMOUNT * deltaMs;
+    y += ((player->y() + playerHeight/2) - y) / LERP_AMOUNT * deltaMs;
     centerOn(QPointF(x, y));
+    //centerOn(player->pos());
     update();
 }

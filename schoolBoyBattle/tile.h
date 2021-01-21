@@ -14,22 +14,27 @@ public:
     Tile(
             int x,
             int y,
-            int sceneTopLeftX,
-            int sceneTopLeftY,
+            DataLoader::TileLayerStruct* layerRessources,
             QString layer,
-            int type,
+            int tileType,                   // numéro qu'il y a dans le .tmx
             DataLoader *dataLoader,
             QGraphicsItem* parent = nullptr);
     ~Tile();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    int type;
+    int getTileType();
+    DataLoader::TileLayerStruct* layerRessources;
 
 private:
     QString layer;
-    DataLoader *dataLoader;
     QPixmap* image;
+
+protected:
+    // Pour les tiles de type TileCandyPlacement
+    int tileType;
+    DataLoader *dataLoader;
+
 };
 
 #endif // TILE_H

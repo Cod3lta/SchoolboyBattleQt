@@ -1,10 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>Resources/background/terrain.png</file>
-        <file>Resources/player/idle/boy-black-idle.png</file>
-        <file>Resources/player/idle/boy-red-idle.png</file>
-        <file>Resources/player/idle/girl-black-idle.png</file>
-        <file>Resources/player/idle/girl-red-idle.png</file>
         <file>Resources/player/run/boy-black-run.png</file>
         <file>Resources/player/run/boy-red-run.png</file>
         <file>Resources/player/run/girl-black-run.png</file>
@@ -43,5 +39,44 @@
         <file>Resources/world/deco/shelf-bottom.png</file>
         <file>Resources/world/deco/shelf-top.png</file>
         <file>Resources/debugTerrain.tmx</file>
+        <file>Resources/candy/idle/mandarin-small-idle.png</file>
+        <file>Resources/candy/idle/peanut-small-idle.png</file>
+        <file>Resources/candy/idle/mandarin-big-idle.png</file>
+        <file>Resources/candy/idle/peanut-big-idle.png</file>
+        <file>Resources/candy/idle/hovers/mandarin-big-idle-black.png</file>
+        <file>Resources/candy/idle/hovers/mandarin-big-idle-red.png</file>
+        <file>Resources/candy/idle/hovers/mandarin-small-idle-black.png</file>
+        <file>Resources/candy/idle/hovers/mandarin-small-idle-red.png</file>
+        <file>Resources/candy/idle/hovers/peanut-big-idle-black.png</file>
+        <file>Resources/candy/idle/hovers/peanut-big-idle-red.png</file>
+        <file>Resources/candy/idle/hovers/peanut-small-idle-black.png</file>
+        <file>Resources/candy/idle/hovers/peanut-small-idle-red.png</file>
+        <file>Resources/player/idle/boy-black-idle.png</file>
+        <file>Resources/player/idle/boy-red-idle.png</file>
+        <file>Resources/player/idle/girl-black-idle.png</file>
+        <file>Resources/player/idle/girl-red-idle.png</file>
+        <file>Resources/schoolboybattle-icon.ico</file>
+        <file>Resources/bosses/carpet/black/carpet-1.png</file>
+        <file>Resources/bosses/carpet/black/carpet-2.png</file>
+        <file>Resources/bosses/carpet/black/carpet-3.png</file>
+        <file>Resources/bosses/carpet/black/carpet-4.png</file>
+        <file>Resources/bosses/carpet/black/carpet-5.png</file>
+        <file>Resources/bosses/carpet/black/carpet-6.png</file>
+        <file>Resources/bosses/carpet/black/carpet-7.png</file>
+        <file>Resources/bosses/carpet/black/carpet-8.png</file>
+        <file>Resources/bosses/carpet/black/carpet-9.png</file>
+        <file>Resources/bosses/carpet/red/carpet-1.png</file>
+        <file>Resources/bosses/carpet/red/carpet-2.png</file>
+        <file>Resources/bosses/carpet/red/carpet-3.png</file>
+        <file>Resources/bosses/carpet/red/carpet-4.png</file>
+        <file>Resources/bosses/carpet/red/carpet-5.png</file>
+        <file>Resources/bosses/carpet/red/carpet-6.png</file>
+        <file>Resources/bosses/carpet/red/carpet-7.png</file>
+        <file>Resources/bosses/carpet/red/carpet-8.png</file>
+        <file>Resources/bosses/carpet/red/carpet-9.png</file>
+        <file>Resources/bosses/idle/boss-black-idle.png</file>
+        <file>Resources/bosses/idle/boss-red-idle.png</file>
+        <file>Resources/world/config/spawn-player-black.png</file>
+        <file>Resources/world/config/spawn-player-red.png</file>
     </qresource>
 </RCC>
