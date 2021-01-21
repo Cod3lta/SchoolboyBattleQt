@@ -23,16 +23,16 @@ FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent)
      if(victoire)
      {
          btnReturnMenu->setStyleSheet("QPushButton {background-color: Black; color: white;font-family:Algerian; font-size:12pt;}");
-         labelInfos->setText("The black winner");
-         labelInfos->setStyleSheet("QLabel { color: black; font-size:36pt;  }");
+         labelInfos->setText("L'équipe noir a gagné");
+         labelInfos->setStyleSheet("QLabel { color: black; font-size:36pt;  font-family:Bariol;font-weight: bold;  }");
          QPixmap pixmapVictory(":/Resources/brand/black.png");
          imgVictory->setPixmap(pixmapVictory);
      }
      else
      {
          btnReturnMenu->setStyleSheet("QPushButton {background-color: Red; color: white;font-family:Algerian; font-size:12pt;}");
-         labelInfos->setText("The red winner");
-         labelInfos->setStyleSheet("QLabel { color: red; font-size:36pt;  }");
+         labelInfos->setText("L'équipe rouge a gagné");
+         labelInfos->setStyleSheet("QLabel { color: red; font-size:36pt;font-family:Bariol;font-weight: bold; }");
          QPixmap pixmapVictory(":/Resources/brand/red.png");
          imgVictory->setPixmap(pixmapVictory);
      }
