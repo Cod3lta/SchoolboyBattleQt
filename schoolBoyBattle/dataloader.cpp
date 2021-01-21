@@ -213,7 +213,7 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX,
     QList<QList<int>> dimLevel;
 
     int chunkSize = chunks.at(0).toElement().attribute("width").toInt(); // 16
-    int chunkMinX = 0, chunkMinY = 0, layerWidth = 0, layerHeight = 0;
+    int layerWidth = 0, layerHeight = 0;
 
     // Déterminer la taille de la layer
     getLayerPlacement(&layerWidth, &layerHeight, topLeftX, topLeftY, chunkSize, chunks);
@@ -239,8 +239,8 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX,
         }
         for(int y = 0; y < chunkSize; y++) {
             for(int x = 0; x < chunkSize; x++) {
-                int insertYList = chunk.attribute("y").toInt() + y - *topLeftX;
-                int insertXList = chunk.attribute("x").toInt() + x - *topLeftY;
+                int insertYList = chunk.attribute("y").toInt() + y - *topLeftY;
+                int insertXList = chunk.attribute("x").toInt() + x - *topLeftX;
                 QList<int> subList = dimLevel.value(insertYList);
                 subList.replace(insertXList, intList.at(y*chunkSize + x));
                 dimLevel.replace(insertYList, subList);
