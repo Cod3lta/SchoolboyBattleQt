@@ -145,5 +145,16 @@
         <file>Resources/world/deco/rock-1.png</file>
         <file>Resources/world/deco/rock-4.png</file>
         <file>Resources/world/deco/shelf.png</file>
+        <file>Resources/world/deco/door-vertical-left.png</file>
+        <file>Resources/world/deco/rock-1-shadow.png</file>
+        <file>Resources/world/deco/rock-2-shadow.png</file>
+        <file>Resources/world/deco/rock-3-shadow.png</file>
+        <file>Resources/world/deco/rock-4-shadow.png</file>
+        <file>Resources/world/deco/tree-1-shadow.png</file>
+        <file>Resources/world/deco/tree-2-shadow.png</file>
+        <file>Resources/world/deco/tree-3-shadow.png</file>
+        <file>Resources/world/deco/tree-4-shadow.png</file>
+        <file>Resources/world/deco/tree-5-shadow.png</file>
+        <file>Resources/world/deco/tree-6-shadow.png</file>
     </qresource>
 </RCC>
