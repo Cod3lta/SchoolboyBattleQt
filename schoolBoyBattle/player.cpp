@@ -10,7 +10,7 @@
 #include "game.h"
 
 #define HITBOX_DEBUG false
-#define CANDY_MAX 15
+#define CANDY_MAX 50
 #define QUEUE_PROTECTED_TIME_MS 750
 
 // Constructeur utilisé pour créer les boss

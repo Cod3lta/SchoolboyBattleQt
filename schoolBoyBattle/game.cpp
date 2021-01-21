@@ -18,7 +18,7 @@
 #include "boss.h"
 
 #define SERVER_ROLLBACK_DELAY 1000
-#define REFRESH_DELAY 1/60*1000
+#define REFRESH_DELAY 1/60*1000                 // Pour avoir un taux de refresh atteignant 60 images / secondes
 
 Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient, QGraphicsScene *parent)
     : QGraphicsScene(parent),
@@ -321,7 +321,6 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
 }
 
 void Game::refreshEntities() {
-    qDebug() << "Nombre d'items : " << items().count();
     if(views().length() == 0) return;
     int delta = playerRefreshDelta->nsecsElapsed();
     double deltaMs = delta/10e6;
