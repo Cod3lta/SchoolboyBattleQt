@@ -36,8 +36,6 @@
         <file>Resources/world/deco/dark-table.png</file>
         <file>Resources/world/deco/desk-student-north.png</file>
         <file>Resources/world/deco/desk-student-south.png</file>
-        <file>Resources/world/deco/shelf-bottom.png</file>
-        <file>Resources/world/deco/shelf-top.png</file>
         <file>Resources/debugTerrain.tmx</file>
         <file>Resources/candy/idle/mandarin-small-idle.png</file>
         <file>Resources/candy/idle/peanut-small-idle.png</file>
@@ -129,12 +127,8 @@
         <file>Resources/world/base/path/path47.png</file>
         <file>Resources/world/base/path/path48.png</file>
         <file>Resources/world/deco/door-vertical-right.png</file>
-        <file>Resources/world/deco/rock-1-bottom.png</file>
-        <file>Resources/world/deco/rock-1-top.png</file>
         <file>Resources/world/deco/rock-2.png</file>
         <file>Resources/world/deco/rock-3.png</file>
-        <file>Resources/world/deco/rock-4-bottom.png</file>
-        <file>Resources/world/deco/rock-4-top.png</file>
         <file>Resources/world/deco/snow-1.png</file>
         <file>Resources/world/deco/snow-2.png</file>
         <file>Resources/world/deco/snow-3.png</file>
@@ -142,17 +136,14 @@
         <file>Resources/world/deco/snow-5.png</file>
         <file>Resources/world/deco/snow-6.png</file>
         <file>Resources/world/deco/snow-7.png</file>
-        <file>Resources/world/deco/tree-1-bottom.png</file>
-        <file>Resources/world/deco/tree-1-top.png</file>
-        <file>Resources/world/deco/tree-2-bottom.png</file>
-        <file>Resources/world/deco/tree-2-top.png</file>
-        <file>Resources/world/deco/tree-3-bottom.png</file>
-        <file>Resources/world/deco/tree-3-top.png</file>
-        <file>Resources/world/deco/tree-4-bottom.png</file>
-        <file>Resources/world/deco/tree-4-top.png</file>
-        <file>Resources/world/deco/tree-5-bottom.png</file>
-        <file>Resources/world/deco/tree-5-top.png</file>
-        <file>Resources/world/deco/tree-6-bottom.png</file>
-        <file>Resources/world/deco/tree-6-top.png</file>
+        <file>Resources/world/deco/tree-1.png</file>
+        <file>Resources/world/deco/tree-2.png</file>
+        <file>Resources/world/deco/tree-3.png</file>
+        <file>Resources/world/deco/tree-4.png</file>
+        <file>Resources/world/deco/tree-5.png</file>
+        <file>Resources/world/deco/tree-6.png</file>
+        <file>Resources/world/deco/rock-1.png</file>
+        <file>Resources/world/deco/rock-4.png</file>
+        <file>Resources/world/deco/shelf.png</file>
     </qresource>
 </RCC>

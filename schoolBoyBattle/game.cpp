@@ -290,6 +290,7 @@ QList<Tile*> Game::tilesNearby(QString layer, int x, int y) {
         // Sélectionner les tiles à proximité du point (x,y)
         int tileSize = dataLoader->getTileSize();
         if(
+                //QSize tileSize = dataLoader->getTileRessource(tiles[layer].at(i)->getTileType())->image->size();
                 tile->x() > x - 2 * tileSize &&
                 tile->x() < x + 2 * tileSize &&
                 tile->y() > y - 2 * tileSize &&

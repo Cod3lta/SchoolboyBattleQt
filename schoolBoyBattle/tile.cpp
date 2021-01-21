@@ -4,7 +4,6 @@
 #include <QPainter>
 #include <QDebug>
 
-#define TILE_SIZE 130
 #define IMAGE_PIXEL_SIZE 13
 
 Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources, QString layer, int tileType, DataLoader *dataLoader, QGraphicsItem* parent)
@@ -13,22 +12,23 @@ Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources,
       tileType(tileType),
     dataLoader(dataLoader)
 {
+    int tileSize = dataLoader->getTileSize();
     image = dataLoader->getTileRessource(tileType)->image;
-    int x = layerRessources->topLeftX * TILE_SIZE + indexX * TILE_SIZE;
-    int y = layerRessources->topLeftY * TILE_SIZE + indexY * TILE_SIZE;
-    int ratio = TILE_SIZE / IMAGE_PIXEL_SIZE;
+    int x = layerRessources->topLeftX * tileSize + indexX * tileSize;
+    int y = layerRessources->topLeftY * tileSize + indexY * tileSize;
+    int ratio = tileSize / IMAGE_PIXEL_SIZE;
     int tileWidth = image->width() * ratio;
     int tileHeight = image->height() * ratio;
 
     prepareGeometryChange();
-    boundingRectangle = QRectF(0, TILE_SIZE - tileHeight, tileWidth, tileHeight);
+    boundingRectangle = QRectF(0, tileSize - tileHeight, tileWidth, tileHeight);
 
     setPos(x, y);
 
     if(layerRessources->zIndex.userType() == QMetaType::Int)
         setZValue(layerRessources->zIndex.toInt());
     else
-        setZValue(y + TILE_SIZE);
+        setZValue(y + tileSize);
 
 }
 
@@ -65,7 +65,7 @@ QRectF Tile::boundingRect() const {
 // collisions detection
 QPainterPath Tile::shape() const {
     QPainterPath path;
-    path.addRect(boundingRect());
+    path.addRect(QRect(0, 0, dataLoader->getTileSize(), dataLoader->getTileSize()));
     return path;
 }
 

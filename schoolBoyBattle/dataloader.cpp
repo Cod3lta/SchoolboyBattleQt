@@ -32,10 +32,6 @@ QDomDocument DataLoader::getFileContent(QString fileName) {
     return xmlBOM;
 }
 
-int DataLoader::getTileSize() {
-    return tileSize;
-}
-
 int DataLoader::getPlayerSpeed() {
     return playerSpeed;
 }
@@ -362,4 +358,8 @@ int DataLoader::getTileType(QString name) {
         }
     }
     return -1;
+}
+
+int DataLoader::getTileSize() {
+    return tileSize;
 }

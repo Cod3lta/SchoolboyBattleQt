@@ -127,6 +127,7 @@ public:
         QPixmap *image;
         QString name;   // corresponds au chemin d'accès du fichier depuis :/Resources
     } TileRessourcesStruct;
+
     // le int est le tileType (ce qu'il y a dans le .tmx)
     QHash<int, TileRessourcesStruct*> tileRessources;
     TileRessourcesStruct* getTileRessource(int tileType);
