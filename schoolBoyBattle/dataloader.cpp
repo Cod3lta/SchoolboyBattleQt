@@ -6,7 +6,7 @@
 #include <QDomDocument>
 #include <QVector2D>
 
-#define PLAYER_AFTER_LAYER 2    // Définit que les joueurs se trouvent entre
+#define PLAYER_IN_LAYER 3       // Définit que les joueurs se trouvent entre
                                 // les layers x et x+1
 
 DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
@@ -201,7 +201,7 @@ void DataLoader::loadTileLayers() {
         if(tileLayer->height != 0)
             tileLayer->width = tileLayer->tiles.at(0).size();
         QDomElement firstChunk = layers.at(i).firstChild().firstChild().toElement();
-        tileLayer->zIndex = i;
+        tileLayer->zIndex = QVariant(i);
         tileLayer->topLeftX = topLeftX;
         tileLayer->topLeftY = topLeftY;
         tileLayers.insert(layer.attribute("name"), tileLayer);
@@ -302,10 +302,12 @@ void DataLoader::updateTileLayersZIndex() {
     int j = 0;
     while(i.hasNext()) {
         i.next();
-        if(j <= PLAYER_AFTER_LAYER)
-            i.value()->zIndex += HLPoints["highest"];
-        if(j > PLAYER_AFTER_LAYER)
-            i.value()->zIndex += HLPoints["lowest"];
+        if(j < PLAYER_IN_LAYER)
+            i.value()->zIndex.setValue(i.value()->zIndex.toInt() + HLPoints["highest"]);
+        if(j > PLAYER_IN_LAYER)
+            i.value()->zIndex.setValue(i.value()->zIndex.toInt() + HLPoints["lowest"]);
+        if(j == PLAYER_IN_LAYER)
+            i.value()->zIndex.setValue(nullptr);
         j++;
     }
 }

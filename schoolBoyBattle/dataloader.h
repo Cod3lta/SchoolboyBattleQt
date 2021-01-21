@@ -17,6 +17,7 @@
 #include <QTimer>
 #include <QPixmap>
 #include <QDomDocument>
+#include <QVariant>
 
 class DataLoader
 {
@@ -105,7 +106,7 @@ public:
         int height;
         int topLeftX;
         int topLeftY;
-        int zIndex;
+        QVariant zIndex;
     } TileLayerStruct;
     // doit être dans une qmap car plus tard dans le game.cpp, on prendra chaque layer
     // dans l'ordre pour y construire les tiles (c'est pour ça que les layers sont

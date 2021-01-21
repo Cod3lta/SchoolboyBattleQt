@@ -25,7 +25,10 @@ Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources,
 
     setPos(x, y);
 
-    setZValue(layerRessources->zIndex);
+    if(layerRessources->zIndex.userType() == QMetaType::Int)
+        setZValue(layerRessources->zIndex.toInt());
+    else
+        setZValue(y + TILE_SIZE);
 
 }
 
