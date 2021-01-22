@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <QWidget>
+#include <QTimer>
 
 class GameWidget : public QWidget
 {
@@ -23,7 +24,7 @@ private:
     TcpClient *tcpClient;
     QList<QGraphicsView*> views;
     Game *game;
-    QBoxLayout *hlayout;
+    QBoxLayout *viewsLayout;
     // GUI
     QProgressBar *teamsPointsProgess;
     QLabel *pointsRed;
@@ -33,7 +34,7 @@ public slots:
     void restartGame(int nbPlayers, int nbViews = 0);
 
 private slots:
-    void refreshGuiScore(int nbPointsRed, int nbPointsBlack);
+    void updateTeamsPoints(int nbPointsRed, int nbPointsBlack);
 
 signals:
     void showWinner(int teamWinner);
