@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QWidget>
 
+
 class WaitingRoom : public QWidget
 {
     Q_OBJECT
@@ -25,9 +26,11 @@ private:
     QPushButton *btnLeave;
 
 
+
 private slots:
     void userListRefresh(QHash<int, QHash<QString, QString>>);
     void connected();
+
 
 public slots:
     void startWaitingRoom(QHostAddress address, qint16 port);

@@ -1,5 +1,7 @@
 QT       += core gui network xml multimedia
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += multimedia
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11 resources_big
@@ -13,12 +15,12 @@ SOURCES += \
     candy.cpp \
     dataloader.cpp \
     display.cpp \
+    finishmenu.cpp \
     game.cpp \
     gamewidget.cpp \
     keyinputs.cpp \
     main.cpp \
     mainwidget.cpp \
-    menu.cpp \
     player.cpp \
     startmenu.cpp \
     tcpclient.cpp \
@@ -32,11 +34,11 @@ HEADERS += \
     candy.h \
     dataloader.h \
     display.h \
+    finishmenu.h \
     game.h \
     gamewidget.h \
     keyinputs.h \
     mainwidget.h \
-    menu.h \
     player.h \
     startmenu.h \
     tcpclient.h \
