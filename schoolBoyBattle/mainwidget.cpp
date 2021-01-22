@@ -17,7 +17,7 @@ MainWidget::MainWidget() :
     addWidget(waitingRoom);
     addWidget(finishMenu);
 
-    setCurrentWidget(finishMenu);
+    setCurrentWidget(startMenu);
     connect(startMenu, &StartMenu::startLocalGame, gameWidget, &GameWidget::restartGame);
     connect(startMenu, &StartMenu::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
     connect(startMenu, &StartMenu::startClient, waitingRoom, &WaitingRoom::startWaitingRoom);
