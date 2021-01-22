@@ -182,17 +182,6 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         // et le notifier avec le signal loginError
         const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
         emit loginError(reasonVal.toString());
-    } else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { // Message de chat
-        // on récupère le champ de texte contenant le texte du chat
-        const QJsonValue textVal = docObj.value(QLatin1String("text"));
-        // on récupère le champ contenant le nom d'utilisateur de l'expéditeur
-        const QJsonValue senderVal = docObj.value(QLatin1String("sender"));
-        if (textVal.isNull() || !textVal.isString())
-            return; // le champ de texte n'était pas valide donc on ignore
-        if (senderVal.isNull() || !senderVal.isString())
-            return; // le champ de l'expéditeur n'était pas valide donc on ignore
-        // un nouveau message a été reçu via le messageReceived
-        emit messageReceived(senderVal.toString(), textVal.toString());
     } else if (typeVal.toString().compare(QLatin1String("updateUsersList"), Qt::CaseInsensitive) == 0) { // Refresh la liste des joueurs
         // Transformer les données json en QHash<int, QHash<QString, QString>>
         QHash<int, QHash<QString, QString>> usersList;
