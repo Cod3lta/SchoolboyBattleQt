@@ -2,8 +2,7 @@
 #include <QBoxLayout>
 
 FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent) {
-    int victoire = 0;
-
+    int victoire = 1;
 
     QPalette pal = palette();
     pal.setColor(QPalette::Background, Qt::lightGray);
@@ -20,12 +19,23 @@ FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent) {
      QLabel *labelInfos = new QLabel();
      QLabel *imgVictory=new QLabel;
 
-     if(victoire) {
-         labelInfos->setText("L'équipe noir a gagné");
+     if(victoire == 1) {
+         labelInfos->setText("L'équipe noir a gagné !");
+         labelInfos->setStyleSheet(""
+            "font-family: Helvetica;"
+            "color: #26292d;"
+            "font-size: 35pt;"
+            "font-weight: bold;}");
          QPixmap pixmapVictory(":/Resources/brand/black.png");
          imgVictory->setPixmap(pixmapVictory);
-     }else {
-         labelInfos->setText("L'équipe rouge a gagné");
+     }else if(victoire == 0) {
+         labelInfos->setText("L'équipe rouge a gagné !");
+         labelInfos->setStyleSheet(""
+            "QLabel { color: #AE3838;"
+            "font-family: Helvetica;"
+            "color: #26292d;"
+            "font-size: 35pt;"
+            "font-weight: bold;}");
          QPixmap pixmapVictory(":/Resources/brand/red.png");
          imgVictory->setPixmap(pixmapVictory);
      }
