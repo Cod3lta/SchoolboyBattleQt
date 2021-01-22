@@ -2,6 +2,9 @@
 
 #include <QLabel>
 #include <QMessageBox>
+#include <QSoundEffect>
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 
 #define MAX_USERS 8
 #define MIN_USERS 2
@@ -10,15 +13,45 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     QWidget(parent),
     tcpClient(tcpClient)
 {
+    QPalette pal = palette();
+    pal.setColor(QPalette::Background, Qt::lightGray);
+    setAutoFillBackground(true);
+    setPalette(pal);
+
     // Mise en place du layout
-    QVBoxLayout *vLayout = new QVBoxLayout(this);
+    QVBoxLayout *vLayout = new QVBoxLayout;
     QHBoxLayout *btnsLayout = new QHBoxLayout;
+    QHBoxLayout *labelInfoLayout = new QHBoxLayout;
+    QHBoxLayout *labelMainLayout = new QHBoxLayout;
     QGridLayout *users = new QGridLayout;
+    QHBoxLayout *imgPersonnageLayout = new QHBoxLayout;
+    QHBoxLayout *mainLayout = new QHBoxLayout;
+
+    //Création des widgets
     mainLabel = new QLabel;
     QLabel *labelInfos = new QLabel("Dès que toutes les personnes ayant rejoint le serveur sont prêtes, le jeu commencera");
-    labelInfos->setStyleSheet("QLabel { color: gray; }");
+    labelInfoLayout->addWidget(labelInfos);
+    labelMainLayout->addWidget(mainLabel);
     btnReady = new QPushButton("Prêt");
     btnLeave = new QPushButton("Quitter le serveur");
+    QPixmap pixmapPersonnage(":/Resources/brand/Personnage.png");
+    QLabel *imgPersonnage=new QLabel;
+    imgPersonnage->setPixmap(pixmapPersonnage);
+    imgPersonnageLayout->addStretch(1);
+    imgPersonnageLayout->addWidget(imgPersonnage);
+    imgPersonnageLayout->addStretch(1);
+
+    labelInfos->setStyleSheet("");
+
+   /* QMediaPlaylist *playlist = new QMediaPlaylist();
+       playlist->addMedia(QUrl("qrc:/Resources/music/music.wav"));
+       playlist->setPlaybackMode(QMediaPlaylist::Loop);
+       QMediaPlayer *music = new QMediaPlayer();
+       music->setPlaylist(playlist);
+       music->play();
+
+*/
+
 
     for(int i = 0; i < MAX_USERS; i++) {
         usersLayout.append(new QHBoxLayout);
@@ -36,14 +69,21 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     users->addLayout(usersLayout.at(5), 1, 1);
     users->addLayout(usersLayout.at(6), 2, 1);
     users->addLayout(usersLayout.at(7), 3, 1);
-    vLayout->addWidget(mainLabel);
-    vLayout->addWidget(labelInfos);
+
+    vLayout->addStretch(1);
+    vLayout->addLayout(imgPersonnageLayout);
+    vLayout->addLayout(labelMainLayout);
+    vLayout->addLayout(labelInfoLayout);
     vLayout->addLayout(users);
     btnsLayout->addWidget(btnReady);
     btnsLayout->addStretch(1);
     btnsLayout->addWidget(btnLeave);
     vLayout->addLayout(btnsLayout);
-    setLayout(vLayout);
+    vLayout->addStretch(1);
+    mainLayout->addStretch(1);
+    mainLayout->addLayout(vLayout);
+    mainLayout->addStretch(1);
+    setLayout(mainLayout);
 
     // Connexions
     connect(tcpClient, &TcpClient::userListRefresh, this, &WaitingRoom::userListRefresh);
@@ -114,3 +154,4 @@ void WaitingRoom::startWaitingRoom(QHostAddress address, qint16 port) {
         usersReady[i]->setText("...");
     }
 }
+

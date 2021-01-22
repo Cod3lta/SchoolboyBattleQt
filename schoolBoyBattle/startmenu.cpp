@@ -5,32 +5,74 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QValidator>
+#include <QLabel>
+#include <QColorDialog>
 
 StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
 {
-    // Création du layout
-    QVBoxLayout *vLayout = new QVBoxLayout(this);
-    QHBoxLayout *connectToServerLayout = new QHBoxLayout(this);
+    QPalette pal = palette();
+    pal.setColor(QPalette::Background, Qt::lightGray);
+    setAutoFillBackground(true);
+    setPalette(pal);
 
+    // Création du layout
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    QHBoxLayout *connectToServerLayout = new QHBoxLayout();
+    QHBoxLayout *copyrightLayout = new QHBoxLayout();
+    QHBoxLayout *startLayout = new QHBoxLayout();
+    QHBoxLayout *quitLayout = new QHBoxLayout();
+    QHBoxLayout *imgLogoJeuLayout = new QHBoxLayout();
+    QHBoxLayout *imgPersonnageLayout = new QHBoxLayout();
+    QHBoxLayout *mainLayout = new QHBoxLayout();
+
+    // Création des widgets
+
+    QPixmap pixmapPersonnage(":/Resources/brand/Personnage.png");
+    QLabel *imgPersonnage=new QLabel;
+    imgPersonnage->setPixmap(pixmapPersonnage);
+    QPixmap pixmapLogoJeu(":/Resources/brand/logoJeu.PNG");
+    QLabel *imgLogoJeu=new QLabel;
+    imgLogoJeu->setPixmap(pixmapLogoJeu);
     QPushButton *startGame = new QPushButton("Démarrer le jeu en local à 2 joueurs");
     QPushButton *connectToServer = new QPushButton("Se connecter à un serveur");
     serverAddress = new QLineEdit("127.0.0.1", this);
     serverPort = new QLineEdit("1962", this);
     serverAddress->setPlaceholderText("Adresse du serveur");
+    serverPort->setMaximumWidth(150);
     serverPort->setPlaceholderText("Port");
+    serverPort->setMaximumWidth(50);
     QPushButton *btnQuit = new QPushButton("Quitter le jeu");
+    QLabel *lblCopyright = new QLabel("HE-ARC Copyright © 2021\nPrétat Valentin, Margueron Yasmine et Badel Kevin", this);
+    lblCopyright->setAlignment(Qt::AlignHCenter);
+
+
+    copyrightLayout->addStretch(1);
+    copyrightLayout->addWidget(lblCopyright);
+    imgLogoJeuLayout->addStretch(1);
+    imgLogoJeuLayout->addWidget(imgLogoJeu);
+    imgLogoJeuLayout->addStretch(1);
+    imgPersonnageLayout->addStretch(1);
+    imgPersonnageLayout->addWidget(imgPersonnage);
+    imgPersonnageLayout->addStretch(1);
+    startLayout->addWidget(startGame);
+    quitLayout->addWidget(btnQuit);
+
     setFieldsValidator();
 
-    vLayout->addStretch(1);
-    vLayout->addWidget(startGame);
+    vLayout->addLayout(imgLogoJeuLayout);
+    vLayout->addLayout(imgPersonnageLayout);
+    vLayout->addLayout(startLayout);
     connectToServerLayout->addWidget(serverAddress);
     connectToServerLayout->addWidget(serverPort);
     connectToServerLayout->addWidget(connectToServer);
     vLayout->addLayout(connectToServerLayout);
-    vLayout->addWidget(btnQuit);
-    vLayout->addStretch(1);
+    vLayout->addLayout(quitLayout);
+    vLayout->addLayout(copyrightLayout);
+    mainLayout->addStretch(1);
+    mainLayout->addLayout(vLayout);
+    mainLayout->addStretch(1);
 
-    setLayout(vLayout);
+    setLayout(mainLayout);
 
     // Connexions
     connect(startGame, &QPushButton::clicked, this, [=] () {
@@ -44,6 +86,7 @@ StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
         emit startClient(QHostAddress(serverAddress->text()), serverPort->text().toInt());
     });
     connect(btnQuit, &QPushButton::clicked, QApplication::instance(), &QApplication::quit);
+
 }
 
 void StartMenu::setFieldsValidator() {

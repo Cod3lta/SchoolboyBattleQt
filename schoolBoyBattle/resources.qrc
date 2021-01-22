@@ -55,7 +55,6 @@
         <file>Resources/player/idle/boy-red-idle.png</file>
         <file>Resources/player/idle/girl-black-idle.png</file>
         <file>Resources/player/idle/girl-red-idle.png</file>
-        <file>Resources/schoolboybattle-icon.ico</file>
         <file>Resources/bosses/carpet/black/carpet-1.png</file>
         <file>Resources/bosses/carpet/black/carpet-2.png</file>
         <file>Resources/bosses/carpet/black/carpet-3.png</file>
@@ -78,5 +77,10 @@
         <file>Resources/bosses/idle/boss-red-idle.png</file>
         <file>Resources/world/config/spawn-player-black.png</file>
         <file>Resources/world/config/spawn-player-red.png</file>
+        <file>Resources/brand/logoJeu.PNG</file>
+        <file>Resources/brand/Personnage.png</file>
+        <file>Resources/brand/schoolboybattle-icon.ico</file>
+        <file>Resources/brand/black.png</file>
+        <file>Resources/brand/red.png</file>
     </qresource>
 </RCC>
