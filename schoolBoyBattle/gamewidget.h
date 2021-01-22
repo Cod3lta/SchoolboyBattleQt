@@ -32,6 +32,7 @@ private slots:
     void refreshGuiScore(int nbPointsRed, int nbPointsBlack);
 
 signals:
+    void showWinner(int teamWinner);
     void setVisibleWidget(int index);
 
 };

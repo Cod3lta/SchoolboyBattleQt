@@ -46,13 +46,14 @@ void GameWidget::keyReleaseEvent(QKeyEvent *event) {
 void GameWidget::restartGame(int nbPlayers, int nbViews) {
     game = new Game();
     connect(game, &Game::teamsPointsChanged, this, &GameWidget::refreshGuiScore);
-    connect(game, &Game::showEndScreen, this, [=] () {
+    connect(game, &Game::showEndScreen, this, [=] (int teamWinner) {
         delete game;
         for(int i = 0; i < views.length(); i++)
             delete views.at(i);
         views.clear();
         delete hlayout;
-        emit setVisibleWidget(1);
+        emit showWinner(teamWinner);
+        emit setVisibleWidget(3);
     });
 
     if(nbViews == 0) nbViews = nbPlayers;

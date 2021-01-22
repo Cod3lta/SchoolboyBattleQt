@@ -473,7 +473,12 @@ void Game::gameEnd() {
     tileCandyPlacements.clear();
     delete keyboardInputs;
     delete dataLoader;
-    emit showEndScreen();
+    int teamWinner = -1;
+    if(scores[0] > scores[1])
+        teamWinner = 0;
+    if(scores[0] < scores[1])
+        teamWinner = 1;
+    emit showEndScreen(teamWinner);
 }
 
 bool Game::hasPlayerAnyCandyValid(int playerId) {

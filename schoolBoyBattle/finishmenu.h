@@ -12,6 +12,13 @@ class FinishMenu : public QWidget
 public:
    explicit FinishMenu(QWidget *parent = nullptr);
 
+private:
+    QLabel *labelInfos;
+    QLabel *imgVictory;
+
+public slots:
+    void showWinner(int teamWinner);
+
 signals:
     void setVisibleWidget(int i);
 };

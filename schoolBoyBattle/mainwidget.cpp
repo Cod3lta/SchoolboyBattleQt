@@ -50,5 +50,6 @@ MainWidget::MainWidget() :
     connect(waitingRoom, &WaitingRoom::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
     connect(finishMenu, &FinishMenu::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
     connect(tcpClient, &TcpClient::startGame, gameWidget, &GameWidget::restartGame);
+    connect(gameWidget, &GameWidget::showWinner, finishMenu, &FinishMenu::showWinner);
     setFocusPolicy(Qt::StrongFocus);
 }

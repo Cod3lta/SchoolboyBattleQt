@@ -78,7 +78,7 @@ signals:
     void rollbackToServer(QPointF playerPos, QHash<int, QPointF> candiesTaken);
     void playerStealCandies(int candyIdStartingFrom, int playerWinningId);
     void teamsPointsChanged(int nbPointsRed, int nbPointsBlack);
-    void showEndScreen();
+    void showEndScreen(int teamWinner);
 
 };
 #endif // MAINWINDOW_H
