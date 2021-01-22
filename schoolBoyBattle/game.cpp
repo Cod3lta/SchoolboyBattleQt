@@ -63,7 +63,7 @@ void Game::setupLocalGame(int nbPlayers) {
 
     // Créer chaque joueur
     for(int i = 0; i < nbPlayers; i++) {
-        players.insert(i, new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"]));
+        players.insert(i, new Player(i, i%2, rand()%2, "", dataLoader, &tiles["4-collision"]));
         addItem(players.value(i));
     }
 
@@ -104,16 +104,12 @@ void Game::setupMultiplayerGame() {
     while(i.hasNext()) {
         i.next();
         QHash<QString, QString> clientProps = i.value();
-        players.insert(i.key(), new Player(
-                           i.key(),
-                           clientProps["team"].toInt(),
-                           clientProps["gender"].toInt(),
-                           dataLoader,
-                           &tiles["4-collision"]));
+        if(i.key() == socketDescriptor)
+            dataLoader->setPlayerIndexInMulti(i.key());
+        players.insert(i.key(), new Player(i.key(), clientProps["team"].toInt(), clientProps["gender"].toInt(), clientProps["username"], dataLoader, &tiles["4-collision"]));
         addItem(players.value(i.key()));
         // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
         if(i.key() == socketDescriptor) {
-            dataLoader->setPlayerIndexInMulti(i.key());
             // On connecte la sortie du clavier à ce joueur
             connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.value(i.key()), &Player::keyMove);
             // On connecte la détection des candy au serveur (demander au serveur si un candy est libre)
@@ -131,6 +127,7 @@ void Game::setupMultiplayerGame() {
             // Signal qui est émit quand ce joueur valide ses candies
             connect(players.value(i.key()), &Player::validateCandies, this, &Game::playerValidateCandies);
         }
+
         count++;
     }
     // Signal / slot du keyboard au serveur

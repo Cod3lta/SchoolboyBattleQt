@@ -7,6 +7,7 @@
 #include <QRectF>
 #include <QDebug>
 #include <QVector2D>
+#include <QFont>
 #include "game.h"
 
 #define HITBOX_DEBUG false
@@ -23,6 +24,7 @@ Player::Player(
         int id,
         int team,
         int gender,
+        QString username,
         DataLoader *dataLoader,
         QList<Tile*> *collisionTiles,
         QGraphicsObject *parent)
@@ -44,6 +46,20 @@ Player::Player(
     queueProtected->setSingleShot(true);
     queueProtected->setInterval(QUEUE_PROTECTED_TIME_MS);
     queueProtected->stop();
+
+    // Noms d'utilisateurs sur les autres joueurs
+    this->username = new QGraphicsTextItem(this);
+    if(dataLoader->isMultiplayer() && dataLoader->getPlayerIndexInMulti() != id)
+        setUsername(username);
+}
+
+void Player::setUsername(QString username) {
+    this->username->setHtml("<div style='background-color:#65ffffff;'>" + username + "</div>");
+    this->username->setFlag(GraphicsItemFlag::ItemIgnoresTransformations);
+    QFont font("Helvetica", 17);
+    this->username->setFont(font);
+    int centerTextX = (this->username->boundingRect().width() - boundingRect().width()) / 2;
+    this->username->setPos(-centerTextX, -40);
 }
 
 void Player::loadAnimations() {
@@ -347,16 +363,19 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         painter->setPen(QPen(Qt::red));
         painter->drawPath(shape());
     }
-    
+
     AnimationsLocalStruct *animToDraw = animationsLocal.value(currentAnimation);
     QPixmap *imageToDraw = animToDraw->sharedDatas->image;
+    QTransform trans;
+    int centerTextX = (this->username->boundingRect().width() - boundingRect().width()) / 2;
+
     if(facing == facingLeft) {
-        QTransform trans;
         trans.translate(boundingRect().width(), 0).scale(-1, 1);
         setTransform(trans);
-
+        this->username->setPos(centerTextX + boundingRect().width(), -40);
     }else if (facing == facingRight) {
         setTransform(QTransform(1, 0, 0, 1, 1, 1));
+        this->username->setPos(-centerTextX, -40);
     }else{
         resetTransform();
     }
@@ -364,7 +383,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
     QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->sharedDatas->nbFrame * animToDraw->frameIndex, 0,
                                imageToDraw->width() / animToDraw->sharedDatas->nbFrame, imageToDraw->height());
-    QRectF targetRect = boundingRect();
+    QRectF targetRect = QRectF(0, 0, dataLoader->getPlayerSize().x(), dataLoader->getPlayerSize().y());
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
 
     // Lignes pour le compilateur

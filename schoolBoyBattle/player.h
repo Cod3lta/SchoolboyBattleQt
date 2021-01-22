@@ -23,6 +23,7 @@ public:
             int id,
             int team,
             int gender,
+            QString username,
             DataLoader *dataLoader,
             QList<Tile*> *collisionTiles,
             QGraphicsObject *parent = nullptr);
@@ -67,6 +68,7 @@ private:
     Gender gender;
     Animations currentAnimation;
     QList<int> IdsCandiesTaken;
+    QGraphicsTextItem *username;
     int id;                 // En solo : int incrémentatif
                             // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
@@ -86,6 +88,7 @@ private:
     Player::Facing getFacing();
     void loadAnimations();
     Player::AnimationsLocalStruct *setupAnimation(DataLoader::PlayerAnimationsStruct* sharedDatas);
+    void setUsername(QString username);
 
 public slots:
     void keyMove(int playerId, int direction, bool value);
