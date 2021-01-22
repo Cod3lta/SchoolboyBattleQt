@@ -156,5 +156,6 @@
         <file>Resources/world/deco/tree-4-shadow.png</file>
         <file>Resources/world/deco/tree-5-shadow.png</file>
         <file>Resources/world/deco/tree-6-shadow.png</file>
+        <file>Resources/sounds/mainTitle.wav</file>
     </qresource>
 </RCC>

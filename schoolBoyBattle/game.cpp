@@ -7,6 +7,7 @@
 #include <QKeyEvent>
 #include <QSet>
 #include <QMessageBox>
+#include <QSound>
 
 #include "candy.h"
 #include "player.h"
@@ -451,7 +452,7 @@ void Game::deleteCandy(int id, int playerId) {
 void Game::gameEnd() {
     delete playerRefresh;
     delete playerRefreshDelta;
-    delete serverRollback;
+    if(dataLoader->isMultiplayer()) delete serverRollback;
     delete gameTimer;
     QHashIterator<int, Player*> i(players);
     while(i.hasNext()) {

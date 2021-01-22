@@ -4,6 +4,9 @@
 #include <QLabel>
 #include <QKeyEvent>
 #include <QDebug>
+#include <QtMultimedia/QMediaPlayer>
+#include <QSound>
+#include <QAudioOutput>
 
 GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
     QWidget(parent),
@@ -72,6 +75,15 @@ void GameWidget::restartGame(int nbPlayers, int nbViews) {
     teamsPointsProgess->raise();
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
+
+
+    QMediaPlayer *ambientMusicPlayer = new QMediaPlayer(this);
+    ambientMusicPlayer->setMedia(QUrl("qrc:/Resources/sounds/mainTitle.wav"));
+    ambientMusicPlayer->play();
+    //QSound music("qrc:/Resources/music.wav");
+    //music.play();
+//    QFile musicSourceFile;
+//    QAudioOutput* audio;
 
 
 }
