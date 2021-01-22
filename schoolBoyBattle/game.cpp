@@ -377,9 +377,9 @@ void Game::refreshEntities() {
                     deltaMs);
 }
 
-void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
+void Game::spawnCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId) {
     TileCandyPlacement* tileCandyPlacementToSpawn = tileCandyPlacements.at(tilePlacementId);
-    Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn, candyId);
+    Candy *candy = new Candy(candyType, candySize, nbPoints, dataLoader, tileCandyPlacementToSpawn, candyId);
     connect(candy, &Candy::validated, this, &Game::deleteCandy);
     addItem(candy);
     candies.insert(candyId, candy);
@@ -423,7 +423,7 @@ void Game::playerValidateCandies(int playerId) {
     for(int i = 0; i < candiesToValidate.length(); i++) {
         if(!candies[candiesToValidate.at(i)]->isValidated()) {
             candies[candiesToValidate.at(i)]->validate();
-            scores[players[playerId]->getTeam()] ++;
+            scores[players[playerId]->getTeam()] += candies[candiesToValidate.at(i)]->getNbPoints();
         }
     }
 

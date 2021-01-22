@@ -37,7 +37,7 @@ public slots:
     void candyPickedUp();
 
 signals:
-    void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
+    void spawnCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId);
 
 };
 

@@ -12,6 +12,7 @@ public:
     Candy(
             int candyType,
             int candySize,
+            int nbPoints,
             DataLoader *dataLoader,
             TileCandyPlacement *tilePlacement,
             int id,
@@ -25,6 +26,7 @@ public:
     void capture(double deltaMs);
     bool isTaken();
     int getId();
+    int getNbPoints();
     int getCurrentPlayerId();
     void setCurrentPlayerId(int playerId);
     void setTeamId(int idTeam);

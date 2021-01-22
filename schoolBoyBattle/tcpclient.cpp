@@ -111,13 +111,14 @@ void TcpClient::rollback(QPointF playerPos, QHash<int, QPointF> candiesTaken) {
 /*
  * Envoi du nouveau candy créé au serveur
  */
-void TcpClient::sendNewCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
+void TcpClient::sendNewCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId) {
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_9);
     QJsonObject message;
     message[QStringLiteral("type")] = QStringLiteral("newCandy");
     message[QStringLiteral("candyType")] = candyType;
     message[QStringLiteral("candySize")] = candySize;
+    message[QStringLiteral("nbPoints")] = candySize;
     message[QStringLiteral("tilePlacementId")] = tilePlacementId;
     message[QStringLiteral("candyId")] = candyId;
     clientStream << QJsonDocument(message).toJson();
@@ -252,6 +253,7 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         emit spawnNewCandy(
                 docObj["candyType"].toInt(),
                 docObj["candySize"].toInt(),
+                docObj["nbPoints"].toInt(),
                 docObj["tilePlacementId"].toInt(),
                 docObj["candyId"].toInt());
     } else if(typeVal.toString().compare(QLatin1String("candyTaken"), Qt::CaseInsensitive) == 0) {  // Un joueur a pris un candy

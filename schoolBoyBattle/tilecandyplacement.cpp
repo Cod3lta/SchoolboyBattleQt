@@ -37,6 +37,7 @@ void TileCandyPlacement::spawnCandyTimer() {
     emit spawnCandy(
                 dataLoader->getCandyRessources(tileType)->candyType,
                 dataLoader->getCandyRessources(tileType)->candySize,
+                dataLoader->getCandyRessources(tileType)->nbPoints,
                 this->id,
                 candyId);
     candyId++;
