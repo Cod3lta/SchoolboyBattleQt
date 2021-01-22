@@ -4,7 +4,6 @@
 #include <QLabel>
 #include <QKeyEvent>
 #include <QDebug>
-#include <QtMultimedia/QMediaPlayer>
 #include <QSound>
 #include <QAudioOutput>
 
@@ -12,7 +11,7 @@ GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
     QWidget(parent),
     tcpClient(tcpClient)
 {
-
+    ambientMusicPlayer = new QMediaPlayer(this);
     teamsPointsProgess = new QProgressBar(this);
     teamsPointsProgess->setMinimum(0);
     teamsPointsProgess->setMaximum(100);
@@ -82,16 +81,13 @@ void GameWidget::keyReleaseEvent(QKeyEvent *event) {
     game->keyRelease(event);
 }
 
-void GameWidget::restartGame(int nbPlayers, int nbViews) {
+void GameWidget::startGame(int nbPlayers, int nbViews) {
+
     game = new Game();
+
     connect(game, &Game::teamsPointsChanged, this, &GameWidget::updateTeamsPoints);
     connect(game, &Game::showEndScreen, this, [=] (int teamWinner) {
-        delete game;
-        for(int i = 0; i < views.length(); i++)
-            delete views.at(i);
-        views.clear();
-        delete viewsLayout;
-        emit showWinner(teamWinner);
+        emit setFinishMenuWinner(teamWinner);
         emit setVisibleWidget(3);
     });
 
@@ -118,10 +114,20 @@ void GameWidget::restartGame(int nbPlayers, int nbViews) {
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
 
-    QMediaPlayer *ambientMusicPlayer = new QMediaPlayer(this);
     ambientMusicPlayer->setMedia(QUrl("qrc:/Resources/sounds/mainTitle.wav"));
     ambientMusicPlayer->play();
 }
+
+void GameWidget::resetGame() {
+    delete game;
+    for(int i = 0; i < views.length(); i++)
+        delete views.at(i);
+    views.clear();
+    delete viewsLayout;
+    ambientMusicPlayer->stop();
+}
+
+
 
 void GameWidget::updateTeamsPoints(int nbPointsRed, int nbPointsBlack) {
     pointsRed->setText(QString::number(nbPointsRed));

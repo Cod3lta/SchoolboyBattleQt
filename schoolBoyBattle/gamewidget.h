@@ -10,6 +10,7 @@
 #include <QProgressBar>
 #include <QWidget>
 #include <QTimer>
+#include <QMediaPlayer>
 
 class GameWidget : public QWidget
 {
@@ -29,15 +30,17 @@ private:
     QProgressBar *teamsPointsProgess;
     QLabel *pointsRed;
     QLabel *pointsBlack;
+    QMediaPlayer *ambientMusicPlayer;
 
 public slots:
-    void restartGame(int nbPlayers, int nbViews = 0);
+    void startGame(int nbPlayers, int nbViews = 0);
+    void resetGame();
 
 private slots:
     void updateTeamsPoints(int nbPointsRed, int nbPointsBlack);
 
 signals:
-    void showWinner(int teamWinner);
+    void setFinishMenuWinner(int teamWinner);
     void setVisibleWidget(int index);
 
 };

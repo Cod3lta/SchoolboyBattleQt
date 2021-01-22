@@ -21,6 +21,7 @@ public slots:
 
 signals:
     void setVisibleWidget(int i);
+    void resetGame();
 };
 
 #endif // FINISHMENU_H

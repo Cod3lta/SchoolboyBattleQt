@@ -3,6 +3,8 @@
 #include "startmenu.h"
 #include "finishmenu.h"
 
+#include <QMessageBox>
+
 MainWidget::MainWidget() :
     tcpClient(new TcpClient(this))
 {
@@ -43,13 +45,22 @@ MainWidget::MainWidget() :
     addWidget(finishMenu);
 
     setCurrentWidget(startMenu);
-    connect(startMenu, &StartMenu::startLocalGame, gameWidget, &GameWidget::restartGame);
+    connect(startMenu, &StartMenu::startLocalGame, gameWidget, &GameWidget::startGame);
     connect(startMenu, &StartMenu::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
-    connect(gameWidget, &GameWidget::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
     connect(startMenu, &StartMenu::startClient, waitingRoom, &WaitingRoom::startWaitingRoom);
     connect(waitingRoom, &WaitingRoom::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
+    connect(gameWidget, &GameWidget::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
+    connect(gameWidget, &GameWidget::setFinishMenuWinner, finishMenu, &FinishMenu::showWinner);
     connect(finishMenu, &FinishMenu::setVisibleWidget, this, &QStackedWidget::setCurrentIndex);
-    connect(tcpClient, &TcpClient::startGame, gameWidget, &GameWidget::restartGame);
-    connect(gameWidget, &GameWidget::showWinner, finishMenu, &FinishMenu::showWinner);
+    connect(finishMenu, &FinishMenu::resetGame, gameWidget, &GameWidget::resetGame);
+    connect(tcpClient, &TcpClient::startGame, gameWidget, &GameWidget::startGame);
+    connect(tcpClient, &TcpClient::connectionError, this, [=] () {
+        setCurrentIndex(1);
+    });
+    connect(tcpClient, &TcpClient::disconnected, this, [=] () {
+        gameWidget->resetGame();
+        setCurrentIndex(1);
+        QMessageBox::critical(nullptr, "Erreur", "Déconnecté du serveur");
+    });
     setFocusPolicy(Qt::StrongFocus);
 }

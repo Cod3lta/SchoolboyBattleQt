@@ -39,6 +39,7 @@ FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent) {
     setLayout(mainLayout);
 
     connect(btnReturnMenu, &QPushButton::clicked, this, [=] () {
+        emit resetGame();
         emit setVisibleWidget(1);
     });
 
