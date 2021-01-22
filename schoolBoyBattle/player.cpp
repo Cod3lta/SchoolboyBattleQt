@@ -33,6 +33,7 @@ Player::Player(
       dataLoader(dataLoader),
       gender(static_cast<Gender>(gender)),
       id(id),
+      isMainPlayerMulti(false),
       collisionTiles(collisionTiles)
 {
     setPos(
@@ -212,6 +213,7 @@ void Player::collideWithSpawn() {
 }
 
 void Player::showTextCandiesUpdated(int nbUpdated) {
+    if(dataLoader->isMultiplayer() && !this->isMainPlayerMulti) return;
     QGraphicsTextItem *text = new QGraphicsTextItem(this);
     text->setFlag(GraphicsItemFlag::ItemIgnoresTransformations);
     if(!textsItems.empty()) {
@@ -350,6 +352,10 @@ void Player::setAnimation(Animations a) {
     currentAnimation = a;
     // Démarer le timer de la nouvelle animation
     animationsLocal.value(a)->timer->start();
+}
+
+void Player::setMainPlayerInMulti() {
+    isMainPlayerMulti = true;
 }
 
 void Player::animationNextFrame() {

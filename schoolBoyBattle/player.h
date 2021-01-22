@@ -40,6 +40,7 @@ public:
     int getTeam();
     void protectQueue();
     void deleteCandy(int candyId);
+    void setMainPlayerInMulti();
 
     // En protected se trouve les variables et
     // fonctions nécessaires pour la classe Boss
@@ -74,6 +75,7 @@ private:
                             // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
     bool atSpawn;
+    bool isMainPlayerMulti;
 
     QList<Tile*> *collisionTiles;
 

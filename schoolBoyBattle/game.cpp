@@ -117,6 +117,7 @@ void Game::setupMultiplayerGame() {
         addItem(players.value(i.key()));
         // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
         if(i.key() == socketDescriptor) {
+            players[i.key()]->setMainPlayerInMulti();
             // On connecte la sortie du clavier à ce joueur
             connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.value(i.key()), &Player::keyMove);
             // On connecte la détection des candy au serveur (demander au serveur si un candy est libre)
