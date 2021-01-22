@@ -20,7 +20,6 @@ SOURCES += \
     keyinputs.cpp \
     main.cpp \
     mainwidget.cpp \
-    menu.cpp \
     player.cpp \
     startmenu.cpp \
     tcpclient.cpp \
@@ -38,7 +37,6 @@ HEADERS += \
     gamewidget.h \
     keyinputs.h \
     mainwidget.h \
-    menu.h \
     player.h \
     startmenu.h \
     tcpclient.h \

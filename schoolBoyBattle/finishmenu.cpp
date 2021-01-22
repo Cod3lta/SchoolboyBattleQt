@@ -1,9 +1,8 @@
 #include "finishmenu.h"
 #include <QBoxLayout>
 
-FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent)
-{
-    int victoire=0;
+FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent) {
+    int victoire = 0;
 
 
     QPalette pal = palette();
@@ -18,21 +17,15 @@ FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent)
     QHBoxLayout *mainLayout = new QHBoxLayout();
     QPushButton *btnReturnMenu = new QPushButton("Retour menu");
 
-     QLabel *labelInfos = new QLabel("");
+     QLabel *labelInfos = new QLabel();
      QLabel *imgVictory=new QLabel;
-     if(victoire)
-     {
-         btnReturnMenu->setStyleSheet("QPushButton {background-color: Black; color: white;font-family:Bariol; font-size:12pt;font-weight: bold; }");
+
+     if(victoire) {
          labelInfos->setText("L'équipe noir a gagné");
-         labelInfos->setStyleSheet("QLabel { color: black; font-size:36pt;  font-family:Bariol;font-weight: bold;  }");
          QPixmap pixmapVictory(":/Resources/brand/black.png");
          imgVictory->setPixmap(pixmapVictory);
-     }
-     else
-     {
-         btnReturnMenu->setStyleSheet("QPushButton {background-color: black; color: white;font-family:Bariol; font-size:12pt;font-weight: bold; }");
+     }else {
          labelInfos->setText("L'équipe rouge a gagné");
-         labelInfos->setStyleSheet("QLabel { color: #AE3838; font-size:36pt;font-family:Bariol;font-weight: bold; }");
          QPixmap pixmapVictory(":/Resources/brand/red.png");
          imgVictory->setPixmap(pixmapVictory);
      }

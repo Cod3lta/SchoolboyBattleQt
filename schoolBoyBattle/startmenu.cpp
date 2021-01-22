@@ -34,15 +34,14 @@ StartMenu::StartMenu(QWidget *parent) : QWidget(parent)
     QLabel *imgLogoJeu=new QLabel;
     imgLogoJeu->setPixmap(pixmapLogoJeu);
     QPushButton *startGame = new QPushButton("Démarrer le jeu en local à 2 joueurs");
-    startGame->setStyleSheet("QPushButton {background-color: black; color: white;font-family:Algerian; font-size:12pt;}");
     QPushButton *connectToServer = new QPushButton("Se connecter à un serveur");
-    connectToServer->setStyleSheet("QPushButton {background-color: black; color: white;font-family:Algerian; font-size:12pt;}");
     serverAddress = new QLineEdit("127.0.0.1", this);
     serverPort = new QLineEdit("1962", this);
     serverAddress->setPlaceholderText("Adresse du serveur");
+    serverPort->setMaximumWidth(150);
     serverPort->setPlaceholderText("Port");
+    serverPort->setMaximumWidth(50);
     QPushButton *btnQuit = new QPushButton("Quitter le jeu");
-    btnQuit->setStyleSheet("QPushButton {background-color: black; color: white;font-family:Algerian; font-size:12pt;}");
     QLabel *lblCopyright = new QLabel("HE-ARC Copyright © 2021\nPrétat Valentin, Margueron Yasmine et Badel Kevin", this);
     lblCopyright->setAlignment(Qt::AlignHCenter);
 
