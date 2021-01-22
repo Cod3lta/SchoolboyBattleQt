@@ -424,6 +424,7 @@ void Game::playerValidateCandies(int playerId) {
         if(!candies[candiesToValidate.at(i)]->isValidated()) {
             candies[candiesToValidate.at(i)]->validate();
             scores[players[playerId]->getTeam()] += candies[candiesToValidate.at(i)]->getNbPoints();
+            emit teamsPointsChanged(scores[0], scores[1]);
         }
     }
 
