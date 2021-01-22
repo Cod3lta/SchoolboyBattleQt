@@ -12,12 +12,17 @@ GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
     QWidget(parent),
     tcpClient(tcpClient)
 {
+
     teamsPointsProgess = new QProgressBar(this);
     teamsPointsProgess->setMinimum(0);
     teamsPointsProgess->setMaximum(100);
     teamsPointsProgess->setValue(50);
     teamsPointsProgess->setTextVisible(false);
-
+    pointsRed = new QLabel("points rouges", this);
+    pointsBlack = new QLabel("points noirs", this);
+    teamsPointsProgess->resize(size().width() * 0.5, 15);
+    teamsPointsProgess->move((width() - teamsPointsProgess->width())/2, 50);
+    pointsRed->setAlignment(Qt::AlignmentFlag::AlignRight);
 
 }
 
@@ -25,6 +30,8 @@ void GameWidget::resizeEvent(QResizeEvent *event) {
     Q_UNUSED(event)
     teamsPointsProgess->resize(size().width() * 0.5, 15);
     teamsPointsProgess->move((width() - teamsPointsProgess->width())/2, 50);
+    pointsRed->move(teamsPointsProgess->pos().x() - 10, 50);
+    pointsBlack->move(teamsPointsProgess->pos().x() + teamsPointsProgess->width() + 10, 50);
 }
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
@@ -69,11 +76,11 @@ void GameWidget::restartGame(int nbPlayers, int nbViews) {
         hlayout->addWidget(v);
         views.append(v);
     }
-    teamsPointsProgess->resize(size().width() * 0.5, 15);
-    teamsPointsProgess->move((width() - teamsPointsProgess->width())/2, 50);
 
     setLayout(hlayout);
     teamsPointsProgess->raise();
+    pointsRed->raise();
+    pointsBlack->raise();
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
 
@@ -92,5 +99,7 @@ void GameWidget::restartGame(int nbPlayers, int nbViews) {
 void GameWidget::refreshGuiScore(int nbPointsRed, int nbPointsBlack) {
     teamsPointsProgess->setMaximum(nbPointsRed + nbPointsBlack);
     teamsPointsProgess->setValue(nbPointsRed);
+    pointsRed->setText(QString::number(nbPointsRed));
+    pointsBlack->setText(QString::number(nbPointsBlack));
 }
 

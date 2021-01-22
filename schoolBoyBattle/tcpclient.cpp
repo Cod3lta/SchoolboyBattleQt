@@ -118,7 +118,7 @@ void TcpClient::sendNewCandy(int candyType, int candySize, int nbPoints, int til
     message[QStringLiteral("type")] = QStringLiteral("newCandy");
     message[QStringLiteral("candyType")] = candyType;
     message[QStringLiteral("candySize")] = candySize;
-    message[QStringLiteral("nbPoints")] = candySize;
+    message[QStringLiteral("nbPoints")] = nbPoints;
     message[QStringLiteral("tilePlacementId")] = tilePlacementId;
     message[QStringLiteral("candyId")] = candyId;
     clientStream << QJsonDocument(message).toJson();

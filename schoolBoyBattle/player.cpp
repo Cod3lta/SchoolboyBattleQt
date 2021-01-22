@@ -10,7 +10,7 @@
 #include <QFont>
 #include "game.h"
 
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 #define CANDY_MAX 50
 #define QUEUE_PROTECTED_TIME_MS 750
 
@@ -50,8 +50,8 @@ Player::Player(
 
     // Noms d'utilisateurs sur les autres joueurs
     this->username = new QGraphicsTextItem(this);
-    //if(dataLoader->isMultiplayer() && dataLoader->getPlayerIndexInMulti() != id)
-        setUsername("username");
+    if(dataLoader->isMultiplayer() && dataLoader->getPlayerIndexInMulti() != id)
+        setUsername(username);
 }
 
 void Player::setUsername(QString username) {
@@ -182,7 +182,7 @@ void Player::collideWithSpawn() {
     // Les items en contacte avec le joueur
     QList<QGraphicsItem*> itemsColliding = collidingItems();
 
-    // Les tiles sur la couche collision autour du joueur
+    // Les tiles sur la couche de spawn autour du joueur
     QList<Tile*> spawnTilesNearby = static_cast<Game*>(scene())->tilesNearby("1-spawns", x(), y());
 
     // S'il y a une tile de spawn près du joueur
@@ -224,7 +224,6 @@ void Player::showTextCandiesUpdated(int nbUpdated) {
             delete textToDelete;
         }
     }
-
     text->setHtml("<div style='background-color:#65ffffff;'>&nbsp;" + QString::number(nbUpdated) + "&nbsp;</div>");
     text->setPos(0, -70);
     textsItems.append(text);

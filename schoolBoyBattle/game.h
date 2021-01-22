@@ -48,8 +48,6 @@ private:
     DataLoader *dataLoader;
 
     bool startBool;
-    int playerIndexInMulti;         // position du joueur actuel dans la liste "players" si
-                                    // on est en multijoueur
     QHash<int, int> scores;
 
     void setCustomSceneRect();

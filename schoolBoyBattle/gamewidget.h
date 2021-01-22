@@ -6,6 +6,7 @@
 #include "view.h"
 
 #include <QBoxLayout>
+#include <QLabel>
 #include <QProgressBar>
 #include <QWidget>
 
@@ -20,10 +21,13 @@ public:
 
 private:
     TcpClient *tcpClient;
-    QProgressBar *teamsPointsProgess;
     QList<QGraphicsView*> views;
     Game *game;
     QBoxLayout *hlayout;
+    // GUI
+    QProgressBar *teamsPointsProgess;
+    QLabel *pointsRed;
+    QLabel *pointsBlack;
 
 public slots:
     void restartGame(int nbPlayers, int nbViews = 0);
