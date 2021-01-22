@@ -5,6 +5,7 @@
 #include "tcpclient.h"
 #include "view.h"
 
+#include <QBoxLayout>
 #include <QProgressBar>
 #include <QWidget>
 
@@ -22,6 +23,7 @@ private:
     QProgressBar *teamsPointsProgess;
     QList<QGraphicsView*> views;
     Game *game;
+    QBoxLayout *hlayout;
 
 public slots:
     void restartGame(int nbPlayers, int nbViews = 0);
@@ -30,6 +32,7 @@ private slots:
     void refreshGuiScore(int nbPointsRed, int nbPointsBlack);
 
 signals:
+    void setVisibleWidget(int index);
 
 };
 

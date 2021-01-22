@@ -22,7 +22,8 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
-    Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient = nullptr, QGraphicsScene *parent = nullptr);
+    Game(QGraphicsScene *parent = nullptr);
+    ~Game();
     bool start();
     void exit();
     void keyPress(QKeyEvent *event);
@@ -37,6 +38,7 @@ private:
     QTimer *playerRefresh;
     QElapsedTimer *playerRefreshDelta;
     QTimer *serverRollback;
+    QTimer *gameTimer;
     QHash<int, Player*> players;
     QHash<int, Candy*> candies;
     QList<TileCandyPlacement*> tileCandyPlacements;
@@ -45,7 +47,6 @@ private:
     KeyInputs *keyboardInputs;
     DataLoader *dataLoader;
 
-    bool isMultiplayer;
     bool startBool;
     int playerIndexInMulti;         // position du joueur actuel dans la liste "players" si
                                     // on est en multijoueur
@@ -68,14 +69,16 @@ private slots:
     void playerValidateCandies(int playerId);
     void playerPickedUpCandyMulti(int descriptor, int candyId);
     void deleteCandy(int id, int playerId);
+    void gameEnd();
 
 public slots:
-    void startGame(int nbPlayers);
+    void startGame(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient);
 
 signals:
     void rollbackToServer(QPointF playerPos, QHash<int, QPointF> candiesTaken);
     void playerStealCandies(int candyIdStartingFrom, int playerWinningId);
     void teamsPointsChanged(int nbPointsRed, int nbPointsBlack);
+    void showEndScreen();
 
 };
 #endif // MAINWINDOW_H

@@ -2,7 +2,6 @@
 #include "startmenu.h"
 
 #include <QLabel>
-#include <QLayout>
 #include <QKeyEvent>
 #include <QDebug>
 
@@ -15,6 +14,8 @@ GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
     teamsPointsProgess->setMaximum(100);
     teamsPointsProgess->setValue(50);
     teamsPointsProgess->setTextVisible(false);
+
+
 }
 
 void GameWidget::resizeEvent(QResizeEvent *event) {
@@ -40,13 +41,23 @@ void GameWidget::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void GameWidget::restartGame(int nbPlayers, int nbViews) {
+    game = new Game();
+    connect(game, &Game::teamsPointsChanged, this, &GameWidget::refreshGuiScore);
+    connect(game, &Game::showEndScreen, this, [=] () {
+        delete game;
+        for(int i = 0; i < views.length(); i++)
+            delete views.at(i);
+        views.clear();
+        delete hlayout;
+        emit setVisibleWidget(1);
+    });
+
     if(nbViews == 0) nbViews = nbPlayers;
     // S'il y a autant de QGraphicsView que de joueurs -> splitscreen
     bool isMultiplayer = nbPlayers == nbViews ? false : true;
     QString terrainFileName = ":/Resources/debugTerrain.tmx";
-    game = new Game(terrainFileName, nbPlayers, isMultiplayer, tcpClient);
-    connect(game, &Game::teamsPointsChanged, this, &GameWidget::refreshGuiScore);
-    QBoxLayout *hlayout = new QHBoxLayout(this);
+    game->startGame(terrainFileName, nbPlayers, isMultiplayer, tcpClient);
+    hlayout = new QHBoxLayout(this);
 
     for(int i = 0; i < nbViews; i++) {
         View *v = new View(i);
@@ -69,3 +80,4 @@ void GameWidget::refreshGuiScore(int nbPointsRed, int nbPointsBlack) {
     teamsPointsProgess->setMaximum(nbPointsRed + nbPointsBlack);
     teamsPointsProgess->setValue(nbPointsRed);
 }
+

@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QSet>
+#include <QMessageBox>
 
 #include "candy.h"
 #include "player.h"
@@ -20,12 +21,13 @@
 #define SERVER_ROLLBACK_DELAY 1000
 #define REFRESH_DELAY 1/60*1000                 // Pour avoir un taux de refresh atteignant 60 images / secondes
 
-Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient, QGraphicsScene *parent)
-    : QGraphicsScene(parent),
-      tcpClient(tcpClient),
-      isMultiplayer(isMultiplayer)
-{
+Game::Game(QGraphicsScene *parent)
+    : QGraphicsScene(parent)
+{}
 
+void Game::startGame(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient) {
+
+    this->tcpClient = tcpClient;
     // Chargement des données
     dataLoader = new DataLoader(terrainFileName, isMultiplayer);
     //QHashIterator<QString, QString>
@@ -36,10 +38,6 @@ Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient
     scores.insert(0, 0);
     scores.insert(1, 0);
 
-    startGame(nbPlayers);
-}
-
-void Game::startGame(int nbPlayers) {
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
@@ -58,12 +56,16 @@ void Game::startGame(int nbPlayers) {
     connect(playerRefresh, &QTimer::timeout, this, &Game::refreshEntities);
     playerRefresh->start();
     playerRefreshDelta->start();
+    gameTimer = new QTimer(this);
+    gameTimer->singleShot(3 * 60 * 1000, this, &Game::gameEnd);
 }
 
 void Game::setupLocalGame(int nbPlayers) {
     // Connecter les signaux des placements de candy à la fonction qui les créé
-    for(int i = 0; i < tileCandyPlacements.length(); i++)
-        connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+    for(int j = 0; j < tileCandyPlacements.length(); j++) {
+        TileCandyPlacement *candyToConnect = tileCandyPlacements.at(j);
+        connect(candyToConnect, &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+    }
 
     // Créer chaque joueur
     for(int i = 0; i < nbPlayers; i++) {
@@ -427,9 +429,6 @@ void Game::playerValidateCandies(int playerId) {
             emit teamsPointsChanged(scores[0], scores[1]);
         }
     }
-
-
-    qDebug() << "Team " << players[playerId]->getTeam() << " has " << scores[players[playerId]->getTeam()] << " points";
 }
 
 /*
@@ -449,6 +448,32 @@ void Game::deleteCandy(int id, int playerId) {
 
 }
 
+void Game::gameEnd() {
+    delete playerRefresh;
+    delete playerRefreshDelta;
+    delete serverRollback;
+    delete gameTimer;
+    QHashIterator<int, Player*> i(players);
+    while(i.hasNext()) {
+        i.next();
+        delete players[i.key()];
+    }
+    players.clear();
+    QHashIterator<int, Candy*> j(candies);
+    while(j.hasNext()) {
+        j.next();
+        delete candies[j.key()];
+    }
+    candies.clear();
+    for(int k = 0; k < tileCandyPlacements.length(); k++) {
+        delete tileCandyPlacements.at(k);
+    }
+    tileCandyPlacements.clear();
+    delete keyboardInputs;
+    delete dataLoader;
+    emit showEndScreen();
+}
+
 bool Game::hasPlayerAnyCandyValid(int playerId) {
     QList<int> playerCandies = players[playerId]->getCandiesTaken();
     for(int i = 0; i < playerCandies.length(); i++)
@@ -464,4 +489,8 @@ void Game::reset() {
 
 QList<TileCandyPlacement *> Game::getTileCandyPlacementList() {
     return tileCandyPlacements;
+}
+
+Game::~Game() {
+    delete playerRefreshDelta;
 }
