@@ -30,19 +30,18 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     //Création des widgets
     mainLabel = new QLabel;
     QLabel *labelInfos = new QLabel("Dès que toutes les personnes ayant rejoint le serveur sont prêtes, le jeu commencera");
-    labelInfos->setStyleSheet("QLabel {font-family:Bodoni MT Condense FB;font-size:12pt }");
     labelInfoLayout->addWidget(labelInfos);
     labelMainLayout->addWidget(mainLabel);
     btnReady = new QPushButton("Prêt");
-    btnReady->setStyleSheet("QPushButton {background-color: black; color: white;font-family:Algerian; font-size:12pt;}");
     btnLeave = new QPushButton("Quitter le serveur");
-    btnLeave->setStyleSheet("QPushButton {background-color: black; color: white;font-family:Algerian; font-size:12pt;}");
     QPixmap pixmapPersonnage(":/Resources/brand/Personnage.png");
     QLabel *imgPersonnage=new QLabel;
     imgPersonnage->setPixmap(pixmapPersonnage);
     imgPersonnageLayout->addStretch(1);
     imgPersonnageLayout->addWidget(imgPersonnage);
     imgPersonnageLayout->addStretch(1);
+
+    labelInfos->setStyleSheet("");
 
    /* QMediaPlaylist *playlist = new QMediaPlaylist();
        playlist->addMedia(QUrl("qrc:/Resources/music/music.wav"));
