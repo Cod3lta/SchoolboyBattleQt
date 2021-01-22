@@ -32,6 +32,10 @@ Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient
     keyboardInputs = new KeyInputs(tcpClient->getSocketDescriptor());
     addItem(keyboardInputs);
 
+    // Préparer le tableau des scores
+    scores.insert(0, 0);
+    scores.insert(1, 0);
+
     startGame(nbPlayers);
 }
 
@@ -120,8 +124,8 @@ void Game::setupMultiplayerGame() {
             connect(this, &Game::playerStealCandies, tcpClient, &TcpClient::playerStealsCandies);
             // Voler le candy pour cette instance
             connect(players.value(i.key()), &Player::stealCandies, this, &Game::playerStealsCandies);
-            // Pour qu'un player puisse demander si tous ses candies sont déjà validés
-            connect(players.value(i.key()), &Player::arePlayerTakenCandiesValidated, this, &Game::arePlayerTakenCandiesValidated);
+//             Pour qu'un player puisse demander si tous ses candies sont déjà validés
+//            connect(players.value(i.key()), &Player::arePlayerTakenCandiesValidated, this, &Game::arePlayerTakenCandiesValidated);
             // Envoyer l'info au serveur que ce joueur a validé ses candies
             connect(players.value(i.key()), &Player::validateCandies, tcpClient, &TcpClient::playerValidateCandies);
             // Signal qui est émit quand ce joueur valide ses candies
@@ -417,9 +421,14 @@ void Game::playerValidateCandies(int playerId) {
     QList<int> candiesToValidate = players[playerId]->getCandiesTaken();
     // Valider chacun des candies de ce player
     for(int i = 0; i < candiesToValidate.length(); i++) {
-        if(!candies[candiesToValidate.at(i)]->isValidated())
+        if(!candies[candiesToValidate.at(i)]->isValidated()) {
             candies[candiesToValidate.at(i)]->validate();
+            scores[players[playerId]->getTeam()] ++;
+        }
     }
+
+
+    qDebug() << "Team " << players[playerId]->getTeam() << " has " << scores[players[playerId]->getTeam()] << " points";
 }
 
 /*
@@ -439,13 +448,13 @@ void Game::deleteCandy(int id, int playerId) {
 
 }
 
-bool Game::arePlayerTakenCandiesValidated(int playerId) {
+bool Game::hasPlayerAnyCandyValid(int playerId) {
     QList<int> playerCandies = players[playerId]->getCandiesTaken();
     for(int i = 0; i < playerCandies.length(); i++)
-        // Si au moins un candy n'est pas validé, on retourne false
-        if(!candies[playerCandies.at(i)]->isValidated())
-            return false;
-    return true;
+        // Si au moins un candy est validé, on retourne true
+        if(candies[playerCandies.at(i)]->isValidated())
+            return true;
+    return false;
 }
 
 void Game::reset() {

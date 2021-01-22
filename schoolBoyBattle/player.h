@@ -72,6 +72,7 @@ private:
     int id;                 // En solo : int incrémentatif
                             // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
+    bool atSpawn;
 
     QList<Tile*> *collisionTiles;
 

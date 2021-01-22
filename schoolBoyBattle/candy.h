@@ -46,6 +46,7 @@ private:
 
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     int id;
+    int nbPoints;
     int idTeam;
     Type candyType;
     Size candySize;

@@ -176,7 +176,7 @@ void Player::collideWithSpawn() {
     if(IdsCandiesTaken.length() == 0) return;
 
     // Si tous les bonbons du joueur sont déjà validés, on ne fait rien
-    if(emit arePlayerTakenCandiesValidated(id)) return;
+    if(static_cast<Game*>(scene())->hasPlayerAnyCandyValid(id)) return;
 
     // Les items en contacte avec le joueur
     QList<QGraphicsItem*> itemsColliding = collidingItems();
@@ -184,7 +184,7 @@ void Player::collideWithSpawn() {
     // Les tiles sur la couche collision autour du joueur
     QList<Tile*> spawnTilesNearby = static_cast<Game*>(scene())->tilesNearby("1-spawns", x(), y());
 
-    // S'il y a une tile collision près du joueur
+    // S'il y a une tile de spawn près du joueur
     if(spawnTilesNearby.size() > 0) {
         for(int i = 0; i < itemsColliding.size(); i++) {
             QGraphicsItem *collidingItem = itemsColliding.at(i);
@@ -199,12 +199,16 @@ void Player::collideWithSpawn() {
                 // Si un des items avec lesquels on collide se trouve dans la liste des tiles
                 // de collisions qui se trouvent à proximité
                 if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
-                    emit validateCandies(this->id);
-                    break;
+                    if(!atSpawn) {
+                        atSpawn = true;
+                        emit validateCandies(this->id);
+                        break;
+                    }
                 }
             }
         }
     }
+    atSpawn = false;
 }
 
 void Player::collideWithCandy() {
