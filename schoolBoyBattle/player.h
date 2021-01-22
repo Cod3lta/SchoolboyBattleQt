@@ -68,6 +68,7 @@ private:
     Gender gender;
     Animations currentAnimation;
     QList<int> IdsCandiesTaken;
+    QList<QGraphicsTextItem *> textsItems;
     QGraphicsTextItem *username;
     int id;                 // En solo : int incrémentatif
                             // En multi : le SocketDescriptor
@@ -81,6 +82,8 @@ private:
     bool collideWithWalls(QVector2D movingVector);
     void collideWithCandy();
     void collideWithSpawn();
+    void showTextCandiesUpdated(int nbUpdated);
+    int getTextXToCenter(QGraphicsTextItem *text);
 
     QVector2D calculateMovingVector(double delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);

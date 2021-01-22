@@ -49,12 +49,12 @@ Player::Player(
 
     // Noms d'utilisateurs sur les autres joueurs
     this->username = new QGraphicsTextItem(this);
-    if(dataLoader->isMultiplayer() && dataLoader->getPlayerIndexInMulti() != id)
-        setUsername(username);
+    //if(dataLoader->isMultiplayer() && dataLoader->getPlayerIndexInMulti() != id)
+        setUsername("username");
 }
 
 void Player::setUsername(QString username) {
-    this->username->setHtml("<div style='background-color:#65ffffff;'>" + username + "</div>");
+    this->username->setHtml("<div style='background-color:#65ffffff;'>&nbsp;" + username + "&nbsp;</div>");
     this->username->setFlag(GraphicsItemFlag::ItemIgnoresTransformations);
     QFont font("Helvetica", 17);
     this->username->setFont(font);
@@ -211,6 +211,39 @@ void Player::collideWithSpawn() {
     atSpawn = false;
 }
 
+void Player::showTextCandiesUpdated(int nbUpdated) {
+    QGraphicsTextItem *text = new QGraphicsTextItem(this);
+    text->setFlag(GraphicsItemFlag::ItemIgnoresTransformations);
+    if(!textsItems.empty()) {
+        for(int i = 0; i < textsItems.length(); i++) {
+            nbUpdated += textsItems.at(i)->toPlainText().toInt();
+            QGraphicsTextItem *textToDelete = textsItems.at(i);
+            textsItems.removeAt(i);
+            delete textToDelete;
+        }
+    }
+
+    text->setHtml("<div style='background-color:#65ffffff;'>&nbsp;" + QString::number(nbUpdated) + "&nbsp;</div>");
+    text->setPos(0, -70);
+    textsItems.append(text);
+    QFont font("Helvetica", 25);
+    text->setFont(font);
+    QTimer::singleShot(1000, this, [=] () {
+        if(textsItems.removeAll(text) > 0)
+            delete text;
+    });
+}
+
+int Player::getTextXToCenter(QGraphicsTextItem *text) {
+    int centerTextX = 0;
+    if(facing == facingLeft) {
+        centerTextX = (text->boundingRect().width() - boundingRect().width()) / 2 + boundingRect().width();
+    }else if(this->facing == facingRight) {
+        centerTextX = -(text->boundingRect().width() - boundingRect().width()) / 2;
+    }
+    return centerTextX;
+}
+
 void Player::collideWithCandy() {
     QList<QGraphicsItem*> itemsColliding = collidingItems();
     QList<Candy *> candiesNearby = static_cast<Game*>(scene())->candiesNearby(x(), y());
@@ -250,6 +283,7 @@ void Player::collideWithCandy() {
 
 void Player::prependCandiesTaken(QList<int> candiesGained) {
     IdsCandiesTaken = candiesGained + IdsCandiesTaken;
+    showTextCandiesUpdated(candiesGained.length());
 }
 
 QList<int> Player::looseCandies(int candyStolenId) {
@@ -264,6 +298,7 @@ QList<int> Player::looseCandies(int candyStolenId) {
         if(IdsCandiesTaken.at(i) == candyStolenId) {
            candiesStolen = IdsCandiesTaken.mid(i);
            IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
+           showTextCandiesUpdated(-candiesStolen.length());
            return candiesStolen;
         }
     }
@@ -371,18 +406,24 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     AnimationsLocalStruct *animToDraw = animationsLocal.value(currentAnimation);
     QPixmap *imageToDraw = animToDraw->sharedDatas->image;
     QTransform trans;
-    int centerTextX = (this->username->boundingRect().width() - boundingRect().width()) / 2;
 
     if(facing == facingLeft) {
         trans.translate(boundingRect().width(), 0).scale(-1, 1);
         setTransform(trans);
-        this->username->setPos(centerTextX + boundingRect().width(), -40);
     }else if (facing == facingRight) {
         setTransform(QTransform(1, 0, 0, 1, 1, 1));
-        this->username->setPos(-centerTextX, -40);
     }else{
         resetTransform();
     }
+
+
+
+
+
+    // Redéfinir les positions des texts
+    this->username->setPos(getTextXToCenter(this->username), -40);
+    for(int i = 0; i < textsItems.length(); i++)
+        textsItems.at(i)->setPos(getTextXToCenter(this->username), textsItems.at(i)->pos().y() - 0.1);
 
 
     QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->sharedDatas->nbFrame * animToDraw->frameIndex, 0,
