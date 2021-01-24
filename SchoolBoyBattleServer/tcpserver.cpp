@@ -104,8 +104,11 @@ void TcpServer::jsonReceived(ServerWorker *sender, const QJsonObject &doc)
 void TcpServer::userDisconnected(ServerWorker *sender, int threadIdx) {
     threadsLoaded[threadIdx]--;
     clients.removeAll(sender);
-    if(clients.length() == 0) gameStarted = false;
-    logMessage("Tous les clients sont déconnectés ! Une nouvelle partie peut démarrer...");
+    if(clients.length() == 0) {
+        gameStarted = false;
+        logMessage("Tous les clients sont déconnectés ! Une nouvelle partie peut démarrer...");
+    }
+
     const QString userName = sender->getUsername();
     if (!userName.isEmpty()) {
         QJsonObject userListMessage;

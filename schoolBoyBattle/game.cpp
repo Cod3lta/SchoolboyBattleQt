@@ -446,8 +446,8 @@ void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
 
 void Game::deleteCandy(int id, int playerId) {
     players[playerId]->deleteCandy(id);
+    delete candies[id];
     candies.remove(id);
-
 }
 
 void Game::gameEnd() {

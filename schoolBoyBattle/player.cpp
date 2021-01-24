@@ -419,20 +419,16 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         resetTransform();
     }
 
-
-
-
+    // Dessiner le joueur
+    QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->sharedDatas->nbFrame * animToDraw->frameIndex, 0,
+                               imageToDraw->width() / animToDraw->sharedDatas->nbFrame, imageToDraw->height());
+    QRectF targetRect = QRectF(0, 0, dataLoader->getPlayerSize().x(), dataLoader->getPlayerSize().y());
+    painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
 
     // Redéfinir les positions des texts
     this->username->setPos(getTextXToCenter(this->username), -40);
     for(int i = 0; i < textsItems.length(); i++)
         textsItems.at(i)->setPos(getTextXToCenter(this->username), textsItems.at(i)->pos().y() - 0.1);
-
-
-    QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->sharedDatas->nbFrame * animToDraw->frameIndex, 0,
-                               imageToDraw->width() / animToDraw->sharedDatas->nbFrame, imageToDraw->height());
-    QRectF targetRect = QRectF(0, 0, dataLoader->getPlayerSize().x(), dataLoader->getPlayerSize().y());
-    painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
 
     // Lignes pour le compilateur
     Q_UNUSED(option)

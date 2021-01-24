@@ -153,7 +153,6 @@ void Candy::capture(double deltaMs) {
     if(x() - 50 < objective.x() && x() + 50 > objective.x() &&
        y() - 50 < objective.y() && y() + 50 > objective.y()) {
         emit validated(id, currentPlayerId);
-        deleteLater();
     }
 
 }
