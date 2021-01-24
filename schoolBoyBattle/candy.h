@@ -52,16 +52,15 @@ private:
     int idTeam;
     Type candyType;
     Size candySize;
+    Animations animation;
     DataLoader *dataLoader;
     TileCandyPlacement* tilePlacement;
     int currentPlayerId;
     bool taken;
     bool valid;
 
-
     void loadAnimations();
     Candy::AnimationsLocalStruct *setupCandyAnimationData(DataLoader::CandyAnimationsStruct *sharedDatas);
-    Animations animation;
     void setType(Type t);
     void animationNextFrame();
     void setAnimation(Animations a);

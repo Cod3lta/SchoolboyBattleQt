@@ -14,7 +14,6 @@ SOURCES += \
     boss.cpp \
     candy.cpp \
     dataloader.cpp \
-    display.cpp \
     finishmenu.cpp \
     game.cpp \
     gamewidget.cpp \
@@ -33,7 +32,6 @@ HEADERS += \
     boss.h \
     candy.h \
     dataloader.h \
-    display.h \
     finishmenu.h \
     game.h \
     gamewidget.h \

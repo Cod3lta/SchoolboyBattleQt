@@ -1,5 +1,6 @@
 #include "finishmenu.h"
 #include <QBoxLayout>
+#include <QTimer>
 
 FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent) {
 
@@ -40,6 +41,7 @@ FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent) {
 
     connect(btnReturnMenu, &QPushButton::clicked, this, [=] () {
         emit resetGame();
+        emit updateStartMenuButtons();
         emit setVisibleWidget(1);
     });
 
@@ -81,4 +83,8 @@ void FinishMenu::showWinner(int teamWinner) {
         imgVictory->setPixmap(pixmapVictory);
         break;
     }
+
+    // Démarrer la musique du menu après 3 secondes
+    QTimer timer(this);
+    timer.singleShot(3000, this, &FinishMenu::startMenuMusic);
 }

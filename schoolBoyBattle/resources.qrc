@@ -161,5 +161,6 @@
         <file>Resources/brand/schoolboybattle-icon.ico</file>
         <file>Resources/brand/black.png</file>
         <file>Resources/brand/red.png</file>
+        <file>Resources/sounds/menuTitle.wav</file>
     </qresource>
 </RCC>

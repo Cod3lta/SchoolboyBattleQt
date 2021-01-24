@@ -7,6 +7,7 @@
 
 TcpServer::TcpServer(QObject *parent) :
     QTcpServer(parent),
+    gameStarted(false),
     idealThreadCount(qMax(QThread::idealThreadCount(), 1)),
     nbUsersConnected(0)
 {
@@ -21,8 +22,11 @@ TcpServer::~TcpServer() {
     }
 }
 
+
+
+
 void TcpServer::incomingConnection(qintptr socketDescriptor) {
-    ServerWorker *worker = new ServerWorker(this);
+    ServerWorker *worker = new ServerWorker;
     if(!worker->setSocketDescriptor(socketDescriptor)) {
         worker->deleteLater();
         return;
@@ -38,6 +42,18 @@ void TcpServer::incomingConnection(qintptr socketDescriptor) {
         threadsLoaded[threadIdx]++;
     }
     worker->moveToThread(availableThreads.at(threadIdx));
+
+    // Si la partie a déjà commencé
+    if (gameStarted) {
+        QJsonObject message;
+        message[QStringLiteral("type")] = QStringLiteral("login");
+        message[QStringLiteral("success")] = false;
+        message[QStringLiteral("reason")] = QStringLiteral("gameAlreadyStarted");
+        sendJson(worker, message);
+        worker->deleteLater();
+        return;
+    }
+
     connect(availableThreads.at(threadIdx), &QThread::finished, worker, &QObject::deleteLater);
     connect(worker, &ServerWorker::disconnectedFromClient, this, std::bind(&TcpServer::userDisconnected, this, worker, threadIdx));
     connect(worker, &ServerWorker::error, this, std::bind(&TcpServer::userError, this, worker));
@@ -88,6 +104,8 @@ void TcpServer::jsonReceived(ServerWorker *sender, const QJsonObject &doc)
 void TcpServer::userDisconnected(ServerWorker *sender, int threadIdx) {
     threadsLoaded[threadIdx]--;
     clients.removeAll(sender);
+    if(clients.length() == 0) gameStarted = false;
+    logMessage("Tous les clients sont déconnectés ! Une nouvelle partie peut démarrer...");
     const QString userName = sender->getUsername();
     if (!userName.isEmpty()) {
         QJsonObject userListMessage;
@@ -205,6 +223,8 @@ void TcpServer::startGame() {
     startGameMessage.insert("type", QJsonValue("startGame"));
     startGameMessage.insert("nbUsers", QJsonValue(clients.length()));
     sendEveryone(startGameMessage);
+
+    gameStarted = true;
 }
 
 

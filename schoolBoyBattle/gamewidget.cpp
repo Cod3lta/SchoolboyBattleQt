@@ -9,7 +9,8 @@
 
 GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
     QWidget(parent),
-    tcpClient(tcpClient)
+    tcpClient(tcpClient),
+    gameRunning(false)
 {
     ambientMusicPlayer = new QMediaPlayer(this);
     teamsPointsProgess = new QProgressBar(this);
@@ -116,15 +117,20 @@ void GameWidget::startGame(int nbPlayers, int nbViews) {
 
     ambientMusicPlayer->setMedia(QUrl("qrc:/Resources/sounds/mainTitle.wav"));
     ambientMusicPlayer->play();
+    emit stopMenuMusic();
+
+    gameRunning = true;
 }
 
 void GameWidget::resetGame() {
+    if(!gameRunning) return;
     delete game;
     for(int i = 0; i < views.length(); i++)
         delete views.at(i);
     views.clear();
     delete viewsLayout;
     ambientMusicPlayer->stop();
+    gameRunning = false;
 }
 
 

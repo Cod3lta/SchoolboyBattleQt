@@ -25,7 +25,6 @@ public:
             int gender,
             QString username,
             DataLoader *dataLoader,
-            QList<Tile*> *collisionTiles,
             QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
@@ -57,10 +56,11 @@ protected:
     } AnimationsLocalStruct;
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     DataLoader *dataLoader;
+    QTimer *queueProtected;
+
     void setZIndex(int yToAdd);
     void animationNextFrame();
     void setAnimation(Animations a);
-    QTimer *queueProtected;
 
 private:
     enum Gender : int {girl = 0, boy = 1};
@@ -76,8 +76,6 @@ private:
     bool moves[4] = {false, false, false, false};
     bool atSpawn;
     bool isMainPlayerMulti;
-
-    QList<Tile*> *collisionTiles;
 
     //void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);

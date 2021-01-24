@@ -12,7 +12,7 @@ class TcpClient : public QObject
     Q_DISABLE_COPY(TcpClient)
 
 public:
-    explicit TcpClient(QObject *parent = nullptr);
+    TcpClient(QObject *parent = nullptr);
     int getSocketDescriptor();
     bool isCandyMaster();
     QHash<int, QHash<QString, QString>> getUsersList();
@@ -51,9 +51,7 @@ signals:
     void userLeft();
     void messageReceived(const QString &sender, const QString &text);
     void connectionError();
-    //void userListRefresh(QList<QVariant>);
     void userListRefresh(QHash<int, QHash<QString, QString>>);
-    //void userJoined(const QString &username);
     void userLeft(const QString &username);
     void userMove(int direction, int playerDescriptor, bool value);
     void userRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor);

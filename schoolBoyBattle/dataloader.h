@@ -33,10 +33,10 @@ public:
 private:
     int const tileSize = 130, playerHeight = 150, playerWidth = tileSize, playerSpeed = 8;
     QDomDocument terrainXMLDoc;
-    QDomDocument getFileContent(QString fileName);
     bool multiplayer;
     int playerIndexInMulti;         // position du joueur actuel dans la liste "players" si
                                     // on est en multijoueur
+    QDomDocument getFileContent(QString fileName);
 
     // PLAYER SPAWNPOINTS ----------------------------------------------------------------
 

@@ -82,8 +82,3 @@ QPainterPath TileCandyPlacement::shape() const {
     path.addRect(boundingRect());
     return path;
 }
-
-
-TileCandyPlacement::~TileCandyPlacement() {
-
-}

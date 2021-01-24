@@ -11,7 +11,7 @@ class ServerWorker : public QObject
     Q_DISABLE_COPY(ServerWorker)
 
 public:
-    explicit ServerWorker(QObject *parent = nullptr);
+    ServerWorker(QObject *parent = nullptr);
     void sendJson(const QJsonObject &jsonData);
 
     // Getters / setters

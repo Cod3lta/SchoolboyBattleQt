@@ -16,14 +16,14 @@ class GameWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GameWidget(TcpClient *tcpClient, QWidget *parent = nullptr);
+    GameWidget(TcpClient *tcpClient, QWidget *parent = nullptr);
     void resizeEvent(QResizeEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
 
 private:
     TcpClient *tcpClient;
-    QList<QGraphicsView*> views;
+    QList<View*> views;
     Game *game;
     QBoxLayout *viewsLayout;
     // GUI
@@ -31,6 +31,7 @@ private:
     QLabel *pointsRed;
     QLabel *pointsBlack;
     QMediaPlayer *ambientMusicPlayer;
+    bool gameRunning;
 
 public slots:
     void startGame(int nbPlayers, int nbViews = 0);
@@ -42,6 +43,7 @@ private slots:
 signals:
     void setFinishMenuWinner(int teamWinner);
     void setVisibleWidget(int index);
+    void stopMenuMusic();
 
 };
 

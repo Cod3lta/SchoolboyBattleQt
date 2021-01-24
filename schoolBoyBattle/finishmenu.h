@@ -10,7 +10,7 @@ class FinishMenu : public QWidget
 {
      Q_OBJECT
 public:
-   explicit FinishMenu(QWidget *parent = nullptr);
+   FinishMenu(QWidget *parent = nullptr);
 
 private:
     QLabel *labelInfos;
@@ -22,6 +22,8 @@ public slots:
 signals:
     void setVisibleWidget(int i);
     void resetGame();
+    void startMenuMusic();
+    void updateStartMenuButtons();
 };
 
 #endif // FINISHMENU_H

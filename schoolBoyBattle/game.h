@@ -24,14 +24,14 @@ class Game : public QGraphicsScene
 public:
     Game(QGraphicsScene *parent = nullptr);
     ~Game();
-    bool start();
-    void exit();
     void keyPress(QKeyEvent *event);
     void keyRelease(QKeyEvent *event);
     QList<Tile*> tilesNearby(QString layer, int x, int y);
     QList<Candy *> candiesNearby(int x, int y);
     QList<TileCandyPlacement *> getTileCandyPlacementList();
     bool hasPlayerAnyCandyValid(int playerId);
+
+    enum PlayerMovesEnum : int {up = 0, right = 1, down = 2, left = 3};
 
 private:
     TcpClient *tcpClient;

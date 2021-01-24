@@ -70,7 +70,7 @@ void Game::setupLocalGame(int nbPlayers) {
 
     // Créer chaque joueur
     for(int i = 0; i < nbPlayers; i++) {
-        players.insert(i, new Player(i, i%2, rand()%2, "", dataLoader, &tiles["4-collision"]));
+        players.insert(i, new Player(i, i%2, rand()%2, "", dataLoader));
         addItem(players.value(i));
     }
 
@@ -113,7 +113,7 @@ void Game::setupMultiplayerGame() {
         QHash<QString, QString> clientProps = i.value();
         if(i.key() == socketDescriptor)
             dataLoader->setPlayerIndexInMulti(i.key());
-        players.insert(i.key(), new Player(i.key(), clientProps["team"].toInt(), clientProps["gender"].toInt(), clientProps["username"], dataLoader, &tiles["4-collision"]));
+        players.insert(i.key(), new Player(i.key(), clientProps["team"].toInt(), clientProps["gender"].toInt(), clientProps["username"], dataLoader));
         addItem(players.value(i.key()));
         // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
         if(i.key() == socketDescriptor) {

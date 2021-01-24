@@ -12,11 +12,12 @@ class View : public QGraphicsView
 public:
     View(int id, QGraphicsView *parent = nullptr);
     void moveView(Player *player, int playerWidth, int playerHeight, double deltaMs);
+
+
 private:
     int id;
     float x;
     float y;
-    Game *game;
 };
 
 #endif // VIEW_H

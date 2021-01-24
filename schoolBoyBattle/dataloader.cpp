@@ -106,7 +106,6 @@ DataLoader::PlayerAnimationsStruct* DataLoader::setupPlayerAnimation(int nbFrame
 }
 
 int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
-    // TODO : Améliorer ce code un peu moche
     if(gender == 0 && team == 0 && animation == 0) return 3;
     if(gender == 1 && team == 0 && animation == 0) return 2;
     if(gender == 0 && team == 1 && animation == 0) return 1;

@@ -165,6 +165,10 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         const QJsonValue resultVal = docObj.value(QLatin1String("success"));
         if (resultVal.isNull() || !resultVal.isBool())
             return; // le message n'a pas de champ de succès, donc on ignore
+        if(docObj.value("reason") == "gameAlreadyStarted") {
+            QMessageBox::critical(nullptr, "Erreur", "La partie a déjà commencé");
+            return;
+        }
         if(docObj.value("reason") == "duplicateUsername") {
             QMessageBox::critical(nullptr, "Erreur", "Ce nom d'utilisateur est déjà pris");
             askUsername();
@@ -281,7 +285,7 @@ void TcpClient::onReadyRead() {
                 if (jsonDoc.isObject()) // et c'est un JSON object
                     jsonReceived(jsonDoc.object()); // parser le JSON
             }
-        } else {
+        }else {
             break;
         }
     }
@@ -296,7 +300,7 @@ void TcpClient::error(QAbstractSocket::SocketError error) {
     case QAbstractSocket::ProxyConnectionClosedError:
         return; // gérer par disconnectedFromServer
     case QAbstractSocket::ConnectionRefusedError:
-        QMessageBox::critical(nullptr, tr("Error"), tr("The host refused the connection"));
+        //QMessageBox::critical(nullptr, tr("Error"), tr("The host refused the connection"));
         break;
     case QAbstractSocket::ProxyConnectionRefusedError:
         QMessageBox::critical(nullptr, tr("Error"), tr("The proxy refused the connection"));

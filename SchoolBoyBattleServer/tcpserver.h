@@ -15,25 +15,24 @@ public:
     ~TcpServer();
 
 private:
+    bool gameStarted;
     const int idealThreadCount;
     QVector<QThread *> availableThreads;
     QVector<int> threadsLoaded;
     int nbUsersConnected;
     QVector<ServerWorker *> clients;
+    QList<int> freeCandies;
+
     void jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &doc);
     void jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &doc);
     void sendJson(ServerWorker *destination, const QJsonObject &message);
     QJsonObject generateUserList();
     void checkEveryoneReady();
     void startGame();
-    QList<int> freeCandies;
 
 protected:
     void incomingConnection(qintptr socketDescription) override;
 
-signals:
-    void logMessage(const QString &msg);
-    void stopAllClients();
 
 public slots:
     void stopServer();
@@ -45,6 +44,10 @@ private slots:
     void userDisconnected(ServerWorker *client, int threadIdx);
     void userError(ServerWorker *sender);
     void sendEveryone(const QJsonObject &message);
+
+signals:
+    void logMessage(const QString &msg);
+    void stopAllClients();
 };
 
 #endif // TCPSERVER_H

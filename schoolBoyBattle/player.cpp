@@ -10,7 +10,7 @@
 #include <QFont>
 #include "game.h"
 
-#define HITBOX_DEBUG true
+#define HITBOX_DEBUG false
 #define CANDY_MAX 50
 #define QUEUE_PROTECTED_TIME_MS 750
 
@@ -26,15 +26,13 @@ Player::Player(
         int gender,
         QString username,
         DataLoader *dataLoader,
-        QList<Tile*> *collisionTiles,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       team(static_cast<Team>(team)),
       dataLoader(dataLoader),
       gender(static_cast<Gender>(gender)),
       id(id),
-      isMainPlayerMulti(false),
-      collisionTiles(collisionTiles)
+      isMainPlayerMulti(false)
 {
     setPos(
         dataLoader->getTeamSpawnpoint(team).x(),

@@ -14,7 +14,7 @@ class WaitingRoom : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WaitingRoom(TcpClient *tcpClient, QWidget *parent = nullptr);
+    WaitingRoom(TcpClient *tcpClient, QWidget *parent = nullptr);
 
 private:
     TcpClient* tcpClient;
