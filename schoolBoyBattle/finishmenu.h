@@ -7,19 +7,18 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef FINISHMENU_H
-#define FINISHMENU_H
-
 #include <QPushButton>
 #include <QLabel>
 
-
+#ifndef FINISHMENU_H
+#define FINISHMENU_H
 
 class FinishMenu : public QWidget
 {
-     Q_OBJECT
+    Q_OBJECT
+
 public:
-   FinishMenu(QWidget *parent = nullptr);
+    FinishMenu(QWidget *parent = nullptr);
 
 private:
     QLabel *labelInfos;

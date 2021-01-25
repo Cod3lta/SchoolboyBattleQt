@@ -7,13 +7,11 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef TILE_H
-#define TILE_H
-
 #include "dataloader.h"
-
 #include <QGraphicsObject>
 
+#ifndef TILE_H
+#define TILE_H
 
 class Tile : public QGraphicsObject
 {
@@ -43,7 +41,6 @@ protected:
     // Pour les tiles de type TileCandyPlacement
     int tileType;
     DataLoader *dataLoader;
-
 };
 
 #endif // TILE_H

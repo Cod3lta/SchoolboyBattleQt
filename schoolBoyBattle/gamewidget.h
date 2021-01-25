@@ -7,13 +7,9 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef GAMEWIDGET_H
-#define GAMEWIDGET_H
-
 #include "game.h"
 #include "tcpclient.h"
 #include "view.h"
-
 #include <QBoxLayout>
 #include <QLabel>
 #include <QProgressBar>
@@ -21,9 +17,13 @@
 #include <QTimer>
 #include <QMediaPlayer>
 
+#ifndef GAMEWIDGET_H
+#define GAMEWIDGET_H
+
 class GameWidget : public QWidget
 {
     Q_OBJECT
+
 public:
     GameWidget(TcpClient *tcpClient, QWidget *parent = nullptr);
     void resizeEvent(QResizeEvent *event) override;
@@ -57,7 +57,6 @@ signals:
     void setFinishMenuWinner(int teamWinner);
     void setVisibleWidget(int index);
     void stopMenuMusic();
-
 };
 
 #endif // GAMEWIDGET_H

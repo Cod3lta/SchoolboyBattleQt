@@ -9,16 +9,18 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef CANDY_H
-#define CANDY_H
 #include <QGraphicsObject>
 #include <QPixmap>
 #include "dataloader.h"
 #include "tilecandyplacement.h"
 
+#ifndef CANDY_H
+#define CANDY_H
+
 class Candy : public QGraphicsObject
 {
     Q_OBJECT
+
 public:
     Candy(
             int candyType,
@@ -44,7 +46,6 @@ public:
     void validate();
     bool isValidated();
 
-
     enum Type : int {peanut = 0, mandarin = 1};
     enum Size : int {small = 0, big = 1};
     enum Animations {idle = 0};
@@ -55,7 +56,6 @@ private:
         int frameIndex;
         DataLoader::CandyAnimationsStruct *sharedDatas;
     } AnimationsLocalStruct;
-
 
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     int id;
@@ -81,6 +81,5 @@ signals:
     void pickedUp();
     void validated(int id, int playerId);
 };
-
 
 #endif // CANDY_H

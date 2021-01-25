@@ -11,18 +11,18 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef MAINWIDGET_H
-#define MAINWIDGET_H
-
 #include "gamewidget.h"
 #include "tcpclient.h"
 #include "waitingroom.h"
-
 #include <QStackedWidget>
+
+#ifndef MAINWIDGET_H
+#define MAINWIDGET_H
 
 class MainWidget : public QStackedWidget
 {
     Q_OBJECT
+
 public:
     MainWidget();
 
@@ -35,7 +35,6 @@ private:
 private slots:
     void stopMenuMusic();
     void startMenuMusic();
-
 };
 
 #endif // MAINWIDGET_H

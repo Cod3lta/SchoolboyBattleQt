@@ -10,9 +10,6 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef GAME_H
-#define GAME_H
-
 #include <QMainWindow>
 #include <QGraphicsItem>
 #include <QGraphicsView>
@@ -28,6 +25,9 @@
 #include "tilecandyplacement.h"
 #include "tcpclient.h"
 #include <QElapsedTimer>
+
+#ifndef GAME_H
+#define GAME_H
 
 class Game : public QGraphicsScene
 {

@@ -5,21 +5,17 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef PLAYER_H
-#define PLAYER_H
-
 #include "dataloader.h"
 #include "tile.h"
 #include "candy.h"
-
 #include <QMainWindow>
 #include <QGraphicsItem>
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QVector2D>
 
-
-
+#ifndef PLAYER_H
+#define PLAYER_H
 
 class Player : public QGraphicsObject
 {
@@ -79,7 +75,7 @@ private:
     QList<QGraphicsTextItem *> textsItems;
     QGraphicsTextItem *username;
     int id;                 // En solo : int incrémentatif
-                            // En multi : le SocketDescriptor
+    // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
     bool atSpawn;
     bool isMainPlayerMulti;

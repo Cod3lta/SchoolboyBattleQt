@@ -6,13 +6,13 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef TCPCLIENT_H
-#define TCPCLIENT_H
-
 #include <QAbstractSocket>
 #include <QObject>
 #include <QPointF>
 #include <QTcpSocket>
+
+#ifndef TCPCLIENT_H
+#define TCPCLIENT_H
 
 class TcpClient : public QObject
 {
@@ -32,6 +32,7 @@ private:
     bool candyMaster;
     int descriptor;
     void jsonReceived(const QJsonObject &doc);
+
 public slots:
     void connectToServer(const QHostAddress &address, quint16 port);
     void login(const QString &username);
@@ -45,10 +46,12 @@ public slots:
     void isCandyFree(int candyId);
     void playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
     void playerValidateCandies(int playerId);
+
 private slots:
     void onReadyRead();
     void error(QAbstractSocket::SocketError error);
     void askUsername();
+
 signals:
     void connected();
     void startGame(int nbPlayers, int nbViews);
@@ -67,7 +70,6 @@ signals:
     void playerPickUpCandy(int descriptor, int candyId);
     void playerStealCandy(int candyIdStartingFrom, int winnerDescriptor);
     void playerValidateCandy(int descriptor);
-
 };
 
 #endif // TCPCLIENT_H

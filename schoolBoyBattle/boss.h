@@ -8,10 +8,10 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
+#include "player.h"
+
 #ifndef BOSS_H
 #define BOSS_H
-
-#include "player.h"
 
 class Boss : public Player
 {
@@ -22,7 +22,6 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
-
     Boss::AnimationsLocalStruct *setupAnimation(DataLoader::PlayerAnimationsStruct *sharedDatas);
     void loadAnimations();
 };

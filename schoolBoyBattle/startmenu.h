@@ -7,17 +7,17 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef STARTMENU_H
-#define STARTMENU_H
-
 #include <QDialog>
 #include <QHostAddress>
 #include <QLineEdit>
 
+#ifndef STARTMENU_H
+#define STARTMENU_H
 
 class StartMenu : public QWidget
 {
     Q_OBJECT
+
 public:
     StartMenu(QWidget *parent = nullptr);
 

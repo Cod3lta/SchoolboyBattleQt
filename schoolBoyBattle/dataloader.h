@@ -8,14 +8,14 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef DATALOADER_H
-#define DATALOADER_H
-
 #include <QMap>
 #include <QTimer>
 #include <QPixmap>
 #include <QDomDocument>
 #include <QVariant>
+
+#ifndef DATALOADER_H
+#define DATALOADER_H
 
 class DataLoader
 {
@@ -33,7 +33,7 @@ private:
     QDomDocument terrainXMLDoc;
     bool multiplayer;
     int playerIndexInMulti;         // position du joueur actuel dans la liste "players" si
-                                    // on est en multijoueur
+    // on est en multijoueur
     QDomDocument getFileContent(QString fileName);
 
     // PLAYER SPAWNPOINTS ----------------------------------------------------------------

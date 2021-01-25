@@ -7,15 +7,16 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef KEYINPUTS_H
-#define KEYINPUTS_H
-
 #include <QMainWindow>
 #include <QGraphicsItem>
+
+#ifndef KEYINPUTS_H
+#define KEYINPUTS_H
 
 class KeyInputs : public QGraphicsObject
 {
     Q_OBJECT
+
 public:
     KeyInputs(int focusedPlayerId = 0, QGraphicsObject *parent = nullptr);
     ~KeyInputs();

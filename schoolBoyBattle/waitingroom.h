@@ -8,21 +8,20 @@
  * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
 */
 
-#ifndef WAITINGROOM_H
-#define WAITINGROOM_H
-
 #include "tcpclient.h"
-
 #include <QBoxLayout>
 #include <QHostAddress>
 #include <QLabel>
 #include <QPushButton>
 #include <QWidget>
 
+#ifndef WAITINGROOM_H
+#define WAITINGROOM_H
 
 class WaitingRoom : public QWidget
 {
     Q_OBJECT
+
 public:
     WaitingRoom(TcpClient *tcpClient, QWidget *parent = nullptr);
 
@@ -35,12 +34,9 @@ private:
     QPushButton *btnReady;
     QPushButton *btnLeave;
 
-
-
 private slots:
     void userListRefresh(QHash<int, QHash<QString, QString>>);
     void connected();
-
 
 public slots:
     void startWaitingRoom(QHostAddress address, qint16 port);
