@@ -70,7 +70,7 @@ void Game::startGame(QString terrainFileName, int nbPlayers, bool isMultiplayer,
     playerRefresh->start();
     playerRefreshDelta->start();
     gameTimer = new QTimer(this);
-    gameTimer->singleShot(3 * 1000, this, &Game::gameEnd);
+    gameTimer->singleShot(3 * 60 * 1000, this, &Game::gameEnd);
 }
 
 /**
