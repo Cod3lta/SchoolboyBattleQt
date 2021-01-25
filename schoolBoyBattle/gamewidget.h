@@ -30,7 +30,10 @@ private:
     QProgressBar *teamsPointsProgess;
     QLabel *pointsRed;
     QLabel *pointsBlack;
+    QLabel *timeLeft;
+    int min, sec;
     QMediaPlayer *ambientMusicPlayer;
+    QTimer *gameTimer;
     bool gameRunning;
 
 public slots:
@@ -39,6 +42,7 @@ public slots:
 
 private slots:
     void updateTeamsPoints(int nbPointsRed, int nbPointsBlack);
+    void timerDecreases();
 
 signals:
     void setFinishMenuWinner(int teamWinner);

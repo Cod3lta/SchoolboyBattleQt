@@ -35,9 +35,12 @@ GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
         "}");
     pointsRed = new QLabel("0", this);
     pointsBlack = new QLabel("0", this);
-    teamsPointsProgess->resize(size().width() * 0.5, 15);
-    teamsPointsProgess->move((width() - teamsPointsProgess->width())/2, 50);
+    timeLeft = new QLabel("3:00", this);
+    timeLeft->setAlignment(Qt::AlignmentFlag::AlignCenter);
     pointsRed->setAlignment(Qt::AlignmentFlag::AlignRight);
+    gameTimer = new QTimer(this);
+    gameTimer->setInterval(1000);
+    gameTimer->stop();
 
     setStyleSheet(""
         "QLabel {"
@@ -49,6 +52,8 @@ GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
             "border: 3px solid black;"
             "border-radius: 7px;"
         "}");
+    pointsRed->setStyleSheet("background-color: #ae3838; color: black");
+    timeLeft->setStyleSheet("background-color: #d8d9e6; color: #1b1c1e; font-size: 40px");
 }
 
 void GameWidget::resizeEvent(QResizeEvent *event) {
@@ -59,33 +64,18 @@ void GameWidget::resizeEvent(QResizeEvent *event) {
     pointsRed->resize(100, pointsRed->size().height());
     pointsRed->setAlignment(Qt::AlignCenter);
     pointsRed->move(teamsPointsProgess->pos().x() - 100 - 10, 35);
-    pointsRed->setStyleSheet("background-color: #ae3838; color: black");
     pointsBlack->adjustSize();
     pointsBlack->resize(100, pointsBlack->size().height());
     pointsBlack->setAlignment(Qt::AlignCenter);
     pointsBlack->move(teamsPointsProgess->pos().x() + teamsPointsProgess->width() + 10, 35);
-}
-
-void GameWidget::keyPressEvent(QKeyEvent *event) {
-    if(event->isAutoRepeat()) {
-        event->ignore();
-        return;
-    }
-    game->keyPress(event);
-}
-
-void GameWidget::keyReleaseEvent(QKeyEvent *event) {
-    if(event->isAutoRepeat()) {
-        event->ignore();
-        return;
-    }
-    game->keyRelease(event);
+    timeLeft->resize(150, timeLeft->size().height() + 20);
+    timeLeft->move(width()/2 - timeLeft->width()/2, 75);
 }
 
 void GameWidget::startGame(int nbPlayers, int nbViews) {
-
     game = new Game();
 
+    connect(gameTimer, &QTimer::timeout, this, &GameWidget::timerDecreases);
     connect(game, &Game::teamsPointsChanged, this, &GameWidget::updateTeamsPoints);
     connect(game, &Game::showEndScreen, this, [=] (int teamWinner) {
         emit setFinishMenuWinner(teamWinner);
@@ -112,13 +102,15 @@ void GameWidget::startGame(int nbPlayers, int nbViews) {
     teamsPointsProgess->raise();
     pointsRed->raise();
     pointsBlack->raise();
+    timeLeft->raise();
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
 
     ambientMusicPlayer->setMedia(QUrl("qrc:/Resources/sounds/mainTitle.wav"));
     ambientMusicPlayer->play();
     emit stopMenuMusic();
-
+    min = 3, sec = 0;
+    gameTimer->start();
     gameRunning = true;
 }
 
@@ -133,11 +125,42 @@ void GameWidget::resetGame() {
     gameRunning = false;
 }
 
-
-
 void GameWidget::updateTeamsPoints(int nbPointsRed, int nbPointsBlack) {
     pointsRed->setText(QString::number(nbPointsRed));
     pointsBlack->setText(QString::number(nbPointsBlack));
     teamsPointsProgess->setMaximum(nbPointsRed + nbPointsBlack);
     teamsPointsProgess->setValue(nbPointsRed);
+}
+
+void GameWidget::timerDecreases() {
+    sec--;
+    if(sec < 0) {
+        sec = 59;
+        min--;
+    }
+
+    if(min == 0 && sec < 16) {
+        if(sec % 2 == 0)
+            timeLeft->setStyleSheet("background-color: #d8d9e6; color: #1b1c1e; font-size: 40px");
+        else
+            timeLeft->setStyleSheet("background-color: #ae3838; color: #d8d9e6; font-size: 40px");
+    }
+
+    timeLeft->setText(QString::number(min) + ":" + (sec >= 10 ? QString::number(sec) : "0" + QString::number(sec)));
+}
+
+void GameWidget::keyPressEvent(QKeyEvent *event) {
+    if(event->isAutoRepeat()) {
+        event->ignore();
+        return;
+    }
+    game->keyPress(event);
+}
+
+void GameWidget::keyReleaseEvent(QKeyEvent *event) {
+    if(event->isAutoRepeat()) {
+        event->ignore();
+        return;
+    }
+    game->keyRelease(event);
 }
