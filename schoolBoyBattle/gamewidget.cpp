@@ -81,6 +81,9 @@ void GameWidget::resizeEvent(QResizeEvent *event) {
     timeLeft->move(width()/2 - timeLeft->width()/2, 75);
 }
 
+/**
+ * Cette méthode permet de démarrer la partie et faire du splitscreen au besoin.
+ */
 void GameWidget::startGame(int nbPlayers, int nbViews) {
     game = new Game();
 
@@ -134,6 +137,9 @@ void GameWidget::resetGame() {
     gameRunning = false;
 }
 
+/**
+ * Mise à jour du nombre de points de chaque équipe.
+ */
 void GameWidget::updateTeamsPoints(int nbPointsRed, int nbPointsBlack) {
     pointsRed->setText(QString::number(nbPointsRed));
     pointsBlack->setText(QString::number(nbPointsBlack));
@@ -141,6 +147,9 @@ void GameWidget::updateTeamsPoints(int nbPointsRed, int nbPointsBlack) {
     teamsPointsProgess->setValue(nbPointsRed);
 }
 
+/**
+ * Timer de la partie.
+ */
 void GameWidget::timerDecreases() {
     sec--;
     if(sec < 0) {

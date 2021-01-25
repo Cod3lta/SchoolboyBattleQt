@@ -42,7 +42,9 @@ Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources,
 
 // OVERRIDE REQUIRED
 
-// Paints contents of item in local coordinates
+/**
+ * Dessine le contenu de l'item en coordonnées locales.
+ */
 void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if(!(layer == "1-spawns" || layer == "4-collision" || layer == "5-config")) {
         QRectF sourceRect(0, 0, image->width(), image->height());
@@ -58,14 +60,17 @@ int Tile::getTileType() {
     return tileType;
 }
 
-// Returns outer bounds of item as a rectangle
-// Called by QGraphicsView to determine what regions need to be redrawn
-// the rect stay at 0:0 !!
+/**
+ * Renvoie les limites extérieures de l'élément sous forme de rectangle.
+ * Appelé par QGraphicsView pour déterminer quelles régions doivent être redessinées
+ */
 QRectF Tile::boundingRect() const {
     return boundingRectangle;
 }
 
-// collisions detection
+/**
+ * Détection de collisions.
+ */
 QPainterPath Tile::shape() const {
     QPainterPath path;
     path.addRect(QRect(0, 0, dataLoader->getTileSize(), dataLoader->getTileSize()));

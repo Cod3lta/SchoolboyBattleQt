@@ -90,10 +90,16 @@ MainWidget::MainWidget() :
     setFocusPolicy(Qt::StrongFocus);
 }
 
+/**
+ * Arrêter la musique.
+ */
 void MainWidget::stopMenuMusic() {
     menuMusicPlayer->stop();
 }
 
+/**
+ * Démarrer la musique.
+ */
 void MainWidget::startMenuMusic() {
     menuMusicPlayer->play();
 }

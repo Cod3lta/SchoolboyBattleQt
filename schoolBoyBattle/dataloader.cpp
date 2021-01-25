@@ -19,6 +19,11 @@
 #define PLAYER_IN_LAYER 3       // Définit que les joueurs se trouvent entre
 // les layers x et x+1
 
+/**
+ * Constructeur du DataLoader, ne crée qu'un seul objet.
+ * Charge les données d'animations des joueurs, des bonbons,
+ * les couches de Tiles, les ressource de chaque type de bonbons, etc...
+ */
 DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
     multiplayer(isMultiplayer)
 {
@@ -32,6 +37,9 @@ DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
     setPlayersSpawnpoint();
 }
 
+/**
+ * Lit et retourne le contenu du fichier donné en paramètre.
+ */
 QDomDocument DataLoader::getFileContent(QString fileName) {
     QDomDocument xmlBOM;
     QFile file(fileName);
@@ -42,28 +50,46 @@ QDomDocument DataLoader::getFileContent(QString fileName) {
     return xmlBOM;
 }
 
+/**
+ * Retourne la vitesse du joueur.
+ */
 int DataLoader::getPlayerSpeed() {
     return playerSpeed;
 }
 
+/**
+ * Retourne un vecteur 2D représentant la taille du joueur.
+ */
 QVector2D DataLoader::getPlayerSize() {
     return QVector2D(playerWidth, playerHeight);
 }
 
+/**
+ * Retourne si la partie est mutlijoueur ou non.
+ */
 bool DataLoader::isMultiplayer() {
     return multiplayer;
 }
 
+/**
+ * Définit l'id du joueur si le jeu est en multijoueur.
+ */
 void DataLoader::setPlayerIndexInMulti(int id) {
     playerIndexInMulti = id;
 }
 
+/**
+ * Retourne l'id du joueur en multijoueur.
+ */
 int DataLoader::getPlayerIndexInMulti() {
     return playerIndexInMulti;
 }
 
 // PLAYER SPAWNPOINTS -----------------------------------------------------------------------
 
+/**
+ * Définir le point d'apparition des joueurs.
+ */
 void DataLoader::setPlayersSpawnpoint() {
     for(int y = 0; y < tileLayers["5-config"]->tiles.size(); y++) {
         for(int x = 0; x < tileLayers["5-config"]->tiles.at(y).size(); x++) {
@@ -86,12 +112,18 @@ void DataLoader::setPlayersSpawnpoint() {
     }
 }
 
+/**
+ * Retourne le point d'apparition de l'id de l'équipe donné en paramètre.
+ */
 QPoint DataLoader::getTeamSpawnpoint(int teamId) {
     return teamsSpawnpoints[teamId];
 }
 
 // PLAYER ANIMATIONS ------------------------------------------------------------------------
 
+/**
+ * Charger les animations des joueurs.
+ */
 void DataLoader::loadPlayerAnimations() {
     playerAnimations.insert(0, setupPlayerAnimation(6, 150, ":/Resources/player/idle/boy-black-idle.png"));
     playerAnimations.insert(1, setupPlayerAnimation(6, 150, ":/Resources/player/idle/girl-black-idle.png"));
@@ -106,6 +138,9 @@ void DataLoader::loadPlayerAnimations() {
     playerAnimations.insert(9, setupPlayerAnimation(6, 150, ":/Resources/bosses/idle/boss-red-idle.png"));
 }
 
+/**
+ * Retourne les données de l'animation du joueur.
+ */
 DataLoader::PlayerAnimationsStruct* DataLoader::setupPlayerAnimation(int nbFrame, int framerate, QString fileName) {
     PlayerAnimationsStruct* aStruct = new PlayerAnimationsStruct;
     aStruct->nbFrame = nbFrame;
@@ -114,6 +149,9 @@ DataLoader::PlayerAnimationsStruct* DataLoader::setupPlayerAnimation(int nbFrame
     return aStruct;
 }
 
+/**
+ * Retourner l'animation, sous forme de int, du joueur passé en paramètre avec son genre, son équipe et son animation.
+ */
 int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
     if(gender == 0 && team == 0 && animation == 0) return 3;
     if(gender == 1 && team == 0 && animation == 0) return 2;
@@ -126,6 +164,9 @@ int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
     return -1;
 }
 
+/**
+ * Récupérer l'animation du Boss selon l'id de l'équipe.
+ */
 int DataLoader::getBossAnimationId(int team) {
     if(team == 0) return 9;
     if(team == 1) return 8;
@@ -134,6 +175,9 @@ int DataLoader::getBossAnimationId(int team) {
 
 // CANDY RESSOURCES -------------------------------------------------------------------------
 
+/**
+ * Charger les ressources des Candy.
+ */
 void DataLoader::loadCandyRessources() {
     candiesRessources.insert(getTileType("candy/peanut-small.png"), setupCandyRessources(1, 0, 0, 25 * 1000));
     candiesRessources.insert(getTileType("candy/mandarin-small.png"), setupCandyRessources(3, 1, 0, 30 * 1000));
@@ -141,6 +185,9 @@ void DataLoader::loadCandyRessources() {
     candiesRessources.insert(getTileType("candy/mandarin-big.png"), setupCandyRessources(10, 1, 1, 30 * 1000));
 }
 
+/**
+ * Retourne les ressources du Candy.
+ */
 DataLoader::CandyRessourcesStruct* DataLoader::setupCandyRessources(int nbPoints, int candyType, int candySize, int delayRespawnMs) {
     CandyRessourcesStruct* aStruct = new CandyRessourcesStruct;
     aStruct->nbPoints = nbPoints;
@@ -150,6 +197,9 @@ DataLoader::CandyRessourcesStruct* DataLoader::setupCandyRessources(int nbPoints
     return aStruct;
 }
 
+/**
+ * Retourne les ressources du Candy selon son tile type.
+ */
 DataLoader::CandyRessourcesStruct *DataLoader::getCandyRessources(int tileType) {
     if(candiesRessources.contains(tileType)) {
         return candiesRessources[tileType];
@@ -159,6 +209,9 @@ DataLoader::CandyRessourcesStruct *DataLoader::getCandyRessources(int tileType) 
 
 // CANDY ANIMATIONS ------------------------------------------------------------------
 
+/**
+ * Charger les animations des Candy.
+ */
 void DataLoader::loadCandyAnimations() {
     candyAnimations.insert(0, setupCandyAnimation(8, 100 , "peanut-small-idle"));
     candyAnimations.insert(1, setupCandyAnimation(8, 100, "mandarin-small-idle"));
@@ -166,6 +219,9 @@ void DataLoader::loadCandyAnimations() {
     candyAnimations.insert(3, setupCandyAnimation(10, 100, "mandarin-big-idle"));
 }
 
+/**
+ * Retourne les données de l'animation du joueur.
+ */
 DataLoader::CandyAnimationsStruct *DataLoader::setupCandyAnimation(int nbFrame, int framerate, QString fileName) {
     CandyAnimationsStruct* aStruct = new CandyAnimationsStruct;
     aStruct->nbFrame = nbFrame;
@@ -176,6 +232,9 @@ DataLoader::CandyAnimationsStruct *DataLoader::setupCandyAnimation(int nbFrame, 
     return aStruct;
 }
 
+/**
+ * Retourne l'identifiant de l'animation du Candy.
+ */
 int DataLoader::getCandyAnimationId(int type, int size) {
     if(type == 0 && size == 0) return 0;
     if(type == 0 && size == 1) return 2;
@@ -187,6 +246,9 @@ int DataLoader::getCandyAnimationId(int type, int size) {
 // TILE LAYERS ------------------------------------------------------------------------------
 
 // https://lucidar.me/fr/dev-c-cpp/reading-xml-files-with-qt/
+/**
+ * Charger les couches de tiles.
+ */
 void DataLoader::loadTileLayers() {
     // Lire le fichier XML et créer les ressources nécessaires
     QDomNodeList layers = terrainXMLDoc.elementsByTagName("layer");
@@ -213,6 +275,9 @@ void DataLoader::loadTileLayers() {
     }
 }
 
+/**
+ * Retourne la configuration des couches de tiles.
+ */
 QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX, int *topLeftY) {
     QList<QList<int>> dimLevel;
 
@@ -254,7 +319,7 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX,
     return dimLevel;
 }
 
-/*
+/**
  * Mettre dans les variables layerWidth et layerHeight la taille de la layer
  * (nombre de tiles en x et nombre de tiles en y)
  */
@@ -285,6 +350,9 @@ void DataLoader::getLayerPlacement(int *layerWidth, int *layerHeight, int *chunk
     *layerHeight = maxY - minY + chunkSize;
 }
 
+/**
+ * Retourne le point le plus haut et le plus bas du terrain.
+ */
 QHash<QString, int> DataLoader::highestLowestPointsOfMap() {
     QMapIterator<QString, TileLayerStruct*> i(tileLayers);
     QHash<QString, int> returnValue;
@@ -304,6 +372,9 @@ QHash<QString, int> DataLoader::highestLowestPointsOfMap() {
     return returnValue;
 }
 
+/**
+ * Mise à jour des couches du terrain en tenant compte du z index.
+ */
 void DataLoader::updateTileLayersZIndex() {
     QMapIterator<QString, TileLayerStruct*> i(tileLayers);
     QHash<QString, int> HLPoints = highestLowestPointsOfMap();
@@ -324,6 +395,9 @@ void DataLoader::updateTileLayersZIndex() {
 
 // TILE RESSOURCES --------------------------------------------------------------------------
 
+/**
+ * Charger les ressources des tiles.
+ */
 void DataLoader::loadTilesRessources() {
     QHash<int, QString> tilesIds = loadTilesIds();
     QHashIterator<int, QString> tilesIdsIterator(tilesIds);
@@ -337,6 +411,9 @@ void DataLoader::loadTilesRessources() {
     }
 }
 
+/**
+ * Charge les tiles avec leur id et le retourne.
+ */
 QHash<int, QString> DataLoader::loadTilesIds() {
     QHash<int, QString> tilesIds;
     QDomNodeList tilesets = terrainXMLDoc.elementsByTagName("tileset");
@@ -359,6 +436,9 @@ QHash<int, QString> DataLoader::loadTilesIds() {
     return tilesIds;
 }
 
+/**
+ * Récupérer une tile selon son type.
+ */
 DataLoader::TileRessourcesStruct* DataLoader::getTileRessource(int tileType) {
     if(tileRessources.contains(tileType)) {
         return tileRessources[tileType];
@@ -366,6 +446,9 @@ DataLoader::TileRessourcesStruct* DataLoader::getTileRessource(int tileType) {
     return nullptr;
 }
 
+/**
+ * Récupérer une tile selon le nom spécifié.
+ */
 int DataLoader::getTileType(QString name) {
     QHashIterator<int, TileRessourcesStruct*> tileRessoucesIterator(tileRessources);
     while(tileRessoucesIterator.hasNext()) {
@@ -378,6 +461,9 @@ int DataLoader::getTileType(QString name) {
     return -1;
 }
 
+/**
+ * Retourne la taille de la tile.
+ */
 int DataLoader::getTileSize() {
     return tileSize;
 }

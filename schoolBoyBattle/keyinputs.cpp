@@ -51,6 +51,9 @@ void KeyInputs::keyRelease(QKeyEvent *event) {
     }
 }
 
+/**
+ * Déplacements joueurs.
+ */
 void KeyInputs::setPlayerKeys(int focusedPlayerId) {
     if(focusedPlayerId == -1)
         focusedPlayerId = 0;
@@ -72,20 +75,26 @@ void KeyInputs::setPlayerKeys(int focusedPlayerId) {
 
 // OVERRIDE REQUIRED
 
-// Paints contents of item in local coordinates
+/**
+ * Dessine le contenu de l'article en coordonnées locales.
+ */
 void KeyInputs::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     Q_UNUSED(painter)
     Q_UNUSED(option)
     Q_UNUSED(widget)
 }
 
-// Returns outer bounds of item as a rectangle
-// Called by QGraphicsView to determine what regions need to be redrawn
+/**
+ * Retourne les limites extérieures de l'élément sous forme de rectangle.
+ * Appelé par QGraphicsView pour déterminer quelles régions doivent être redessinées.
+ */
 QRectF KeyInputs::boundingRect() const {
     return QRectF(0, 0, 0, 0);
 }
 
-// collisions detection
+/**
+ * Détection de collisions.
+ */
 QPainterPath KeyInputs::shape() const {
     QPainterPath path;
     path.addEllipse(boundingRect());

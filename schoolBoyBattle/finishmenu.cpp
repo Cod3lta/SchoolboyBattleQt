@@ -11,6 +11,9 @@
 #include <QBoxLayout>
 #include <QTimer>
 
+/**
+ * Constructeur du menu de fin.
+ */
 FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent) {
     QPalette pal = palette();
     pal.setColor(QPalette::Background, Qt::lightGray);
@@ -54,6 +57,9 @@ FinishMenu::FinishMenu(QWidget *parent) : QWidget(parent) {
     });
 }
 
+/**
+ * Permet d'afficher le vainqueur.
+ */
 void FinishMenu::showWinner(int teamWinner) {
     QPixmap pixmapVictory;
 

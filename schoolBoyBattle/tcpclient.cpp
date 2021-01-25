@@ -62,8 +62,8 @@ void TcpClient::sendMessage(const QString &text)
     clientStream << QJsonDocument(message).toJson();
 }
 
-/*
- * Quand le joueur clique sur "prêt" dans la salle d'attente
+/**
+ * Quand le joueur clique sur "prêt" dans la salle d'attente.
  */
 void TcpClient::toggleReady() {
     QDataStream clientStream(socket);
@@ -73,7 +73,7 @@ void TcpClient::toggleReady() {
     clientStream << QJsonDocument(message).toJson();
 }
 
-/*
+/**
  * Quand le joueur appuie ou relache une touche de déplacement
  * du clavier
  */
@@ -88,7 +88,7 @@ void TcpClient::keyMove(int playerDescriptor, int direction, bool value) {
     clientStream << QJsonDocument(message).toJson();
 }
 
-/*
+/**
  * Envoi du rollback au serveur
  * Infos à envoyer : la position du joueur et de ses candies
  */
@@ -116,8 +116,8 @@ void TcpClient::rollback(QPointF playerPos, QHash<int, QPointF> candiesTaken) {
     clientStream << QJsonDocument(rollback).toJson();
 }
 
-/*
- * Envoi du nouveau candy créé au serveur
+/**
+ * Envoi du nouveau candy créé au serveur.
  */
 void TcpClient::sendNewCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId) {
     QDataStream clientStream(socket);
