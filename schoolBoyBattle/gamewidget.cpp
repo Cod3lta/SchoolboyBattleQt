@@ -146,6 +146,11 @@ void GameWidget::timerDecreases() {
             timeLeft->setStyleSheet("background-color: #ae3838; color: #d8d9e6; font-size: 40px");
     }
 
+    if(min == 0 && sec == 30)
+        timeLeft->setStyleSheet("background-color: #ae3838; color: #d8d9e6; font-size: 40px");
+    if(min == 0 && sec == 29)
+        timeLeft->setStyleSheet("background-color: #d8d9e6; color: #1b1c1e; font-size: 40px");
+
     timeLeft->setText(QString::number(min) + ":" + (sec >= 10 ? QString::number(sec) : "0" + QString::number(sec)));
 }
 
