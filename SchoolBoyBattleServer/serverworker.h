@@ -1,3 +1,12 @@
+/*
+ * Description : Cette classe représente chaque client connecté au serveur.
+ *               C’est ici que l’objet QTcpSocket se trouve et également ici
+ *               qu'on envoie les paquets au client qui lui sont assignés.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #ifndef SERVERWORKER_H
 #define SERVERWORKER_H
 

@@ -1,3 +1,13 @@
+/*
+ * Description : Cette classe s'occupe de créer le widget affichant l’écran
+ *               de préparation au mode de jeu multijoueur.
+ *               Ce widget sert à accueillir tous les joueurs souhaitant
+ *               jouer ensemble avant de lancer la partie.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "waitingroom.h"
 
 #include <QLabel>

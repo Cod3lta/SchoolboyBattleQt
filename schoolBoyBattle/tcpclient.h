@@ -1,3 +1,11 @@
+/*
+ * Description : Cette  classe s'occupe de la communication au serveur
+ *               lors du mode de jeu multijoueur.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #ifndef TCPCLIENT_H
 #define TCPCLIENT_H
 

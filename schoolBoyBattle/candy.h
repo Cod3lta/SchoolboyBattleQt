@@ -1,3 +1,14 @@
+/*
+ * Description : Cette classe s’occupe de de gérer les bonbons sur la partie.
+ *               Chaque bonbon est soit présent sur le jeu n’appartenant
+ *               à personne, soit dans la file derrière un joueur.
+ *               Dès qu’un bonbon atteint la base d’une des deux équipes,
+ *               il se fait valider puis supprimer de la scène.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #ifndef CANDY_H
 #define CANDY_H
 #include <QGraphicsObject>

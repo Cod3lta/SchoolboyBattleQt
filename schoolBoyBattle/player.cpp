@@ -1,3 +1,10 @@
+/*
+ * Description : Cette  classe s'occupe de gérer les joueurs présents dans la partie.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "player.h"
 #include <QGraphicsItem>
 #include <QGraphicsView>

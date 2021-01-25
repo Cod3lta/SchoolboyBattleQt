@@ -1,3 +1,13 @@
+/*
+ * Description : Cette classe permet de réunir au même endroit
+ *               toutes les ressources communes à plusieurs objets/classes.
+ *               Les données qui diffèrent sont directement dans les classes de ces objets.
+ *               Un seul objet DataLoader est créé dans le programme.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "dataloader.h"
 #include <QDebug>
 #include <QtXml>

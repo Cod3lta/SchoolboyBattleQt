@@ -1,3 +1,12 @@
+/*
+ * Description : Chaque objet de cette classe est un carreau sur le terrain de jeu.
+ *               Avec le support des couches de tiles, plusieurs tiles peuvent
+ *               se trouver au même endroit.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "dataloader.h"
 #include "tile.h"
 #include <QGraphicsItem>

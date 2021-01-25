@@ -1,3 +1,11 @@
+/*
+ * Description : Cette classe dérive de Tile et a pour but de faire
+ *               apparaître des bonbons à intervalles réguliers sur le terrain.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "dataloader.h"
 #include "tilecandyplacement.h"
 

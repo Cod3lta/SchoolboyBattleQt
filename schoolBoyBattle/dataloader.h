@@ -1,14 +1,12 @@
 /*
- * Classe qui ne sers qu'à contenir des données pour les différents objets
- * de la scène. Toutes les données pour chaque même objet qui sont partagées
- * sont dans cette classe, les données qui diffèrent sont directement dans les
- * classes de ces objets.
- * (tous les players partagent la même sheet d'animation -> la ressource image
- * se trouve ici / tous les joueurs n'affichent pas la même animation en même
- * temps --> la variable frameIndex se trouve dans la classe Player)
- *
- * Un seul objet DataLoader est créé dans le programme.
- */
+ * Description : Cette classe permet de réunir au même endroit
+ *               toutes les ressources communes à plusieurs objets/classes.
+ *               Les données qui diffèrent sont directement dans les classes de ces objets.
+ *               Un seul objet DataLoader est créé dans le programme.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
 
 #ifndef DATALOADER_H
 #define DATALOADER_H

@@ -1,3 +1,11 @@
+/*
+ * Description : Cette classe dérive de QGraphicsView et crée la ou les vues
+ *               qui permettront de visualiser la scène.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #ifndef VIEW_H
 #define VIEW_H
 

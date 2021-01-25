@@ -1,3 +1,12 @@
+/*
+ * Description : Ceci est le widget contenant les objets de la classe QGraphicsView
+ *               et de la classe QGraphicsScene. Ce widget est visible à l’écran
+ *               lorsque le jeu est lancé.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "gamewidget.h"
 #include "startmenu.h"
 
