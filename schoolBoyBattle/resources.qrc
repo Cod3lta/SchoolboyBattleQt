@@ -36,7 +36,6 @@
         <file>Resources/world/deco/dark-table.png</file>
         <file>Resources/world/deco/desk-student-north.png</file>
         <file>Resources/world/deco/desk-student-south.png</file>
-        <file>Resources/debugTerrain.tmx</file>
         <file>Resources/candy/idle/mandarin-small-idle.png</file>
         <file>Resources/candy/idle/peanut-small-idle.png</file>
         <file>Resources/candy/idle/mandarin-big-idle.png</file>
@@ -177,5 +176,7 @@
         <file>Resources/world/deco/board.png</file>
         <file>Resources/world/deco/door-horisontal-left.png</file>
         <file>Resources/world/deco/door-horisontal-right.png</file>
+        <file>Resources/bigTerrain.tmx</file>
+        <file>Resources/mediumTerrain.tmx</file>
     </qresource>
 </RCC>
