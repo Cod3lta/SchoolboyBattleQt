@@ -162,5 +162,20 @@
         <file>Resources/brand/black.png</file>
         <file>Resources/brand/red.png</file>
         <file>Resources/sounds/menuTitle.wav</file>
+        <file>Resources/world/deco/barrier-1.png</file>
+        <file>Resources/world/deco/barrier-2.png</file>
+        <file>Resources/world/deco/barrier-3.png</file>
+        <file>Resources/world/deco/barrier-4.png</file>
+        <file>Resources/world/deco/barrier-5.png</file>
+        <file>Resources/world/deco/barrier-6.png</file>
+        <file>Resources/world/deco/barrier-7.png</file>
+        <file>Resources/world/deco/barrier-8.png</file>
+        <file>Resources/world/deco/barrier-9.png</file>
+        <file>Resources/world/deco/barrier-10.png</file>
+        <file>Resources/world/deco/barrier-11.png</file>
+        <file>Resources/world/deco/barrier-12.png</file>
+        <file>Resources/world/deco/board.png</file>
+        <file>Resources/world/deco/door-horisontal-left.png</file>
+        <file>Resources/world/deco/door-horisontal-right.png</file>
     </qresource>
 </RCC>
