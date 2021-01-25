@@ -28,6 +28,7 @@ private:
     bool candySpawned;
     int respawnDelayMs;
     int id;
+    int min, max;
     static int candyId;
     QTimer *timer;
 

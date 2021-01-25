@@ -38,6 +38,7 @@ GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
     timeLeft = new QLabel("3:00", this);
     timeLeft->setAlignment(Qt::AlignmentFlag::AlignCenter);
     pointsRed->setAlignment(Qt::AlignmentFlag::AlignRight);
+    timeLeft->resize(150, timeLeft->size().height() + 20);
     gameTimer = new QTimer(this);
     gameTimer->setInterval(1000);
     gameTimer->stop();
@@ -68,7 +69,7 @@ void GameWidget::resizeEvent(QResizeEvent *event) {
     pointsBlack->resize(100, pointsBlack->size().height());
     pointsBlack->setAlignment(Qt::AlignCenter);
     pointsBlack->move(teamsPointsProgess->pos().x() + teamsPointsProgess->width() + 10, 35);
-    timeLeft->resize(150, timeLeft->size().height() + 20);
+    timeLeft->resize(150, timeLeft->size().height());
     timeLeft->move(width()/2 - timeLeft->width()/2, 75);
 }
 
