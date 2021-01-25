@@ -83,10 +83,17 @@ void GameWidget::startGame(int nbPlayers, int nbViews) {
         emit setVisibleWidget(3);
     });
 
+    QString terrainFileName = "";
+    if(nbPlayers >= 5) {
+        terrainFileName = ":/Resources/bigTerrain.tmx";
+    }else if(nbPlayers < 5) {
+        terrainFileName = ":/Resources/mediumTerrain.tmx";
+    }
+
+
     if(nbViews == 0) nbViews = nbPlayers;
     // S'il y a autant de QGraphicsView que de joueurs -> splitscreen
     bool isMultiplayer = nbPlayers == nbViews ? false : true;
-    QString terrainFileName = ":/Resources/debugTerrain.tmx";
     game->startGame(terrainFileName, nbPlayers, isMultiplayer, tcpClient);
     viewsLayout = new QHBoxLayout(this);
 
