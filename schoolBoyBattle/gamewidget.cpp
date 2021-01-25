@@ -9,7 +9,6 @@
 
 #include "gamewidget.h"
 #include "startmenu.h"
-
 #include <QLabel>
 #include <QKeyEvent>
 #include <QDebug>
@@ -28,20 +27,20 @@ GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
     teamsPointsProgess->setValue(50);
     teamsPointsProgess->setTextVisible(false);
     teamsPointsProgess->setStyleSheet(""
-    "QProgressBar {"
-        "background-color: #1b1c1e;"
-        "border: 1px solid black;"
-        "text-align: top;"
-        "padding: 1px;"
-        "border-radius: 7px;"
-        "width: 15px;"
-    "}"
-    "QProgressBar::chunk {"
-        "background-color: #ae3838;"
-        "border: 1px solid black;"
-        "border-bottom-left-radius: 7px;"
-        "border-top-left-radius: 7px;"
-        "}");
+                                      "QProgressBar {"
+                                      "background-color: #1b1c1e;"
+                                      "border: 1px solid black;"
+                                      "text-align: top;"
+                                      "padding: 1px;"
+                                      "border-radius: 7px;"
+                                      "width: 15px;"
+                                      "}"
+                                      "QProgressBar::chunk {"
+                                      "background-color: #ae3838;"
+                                      "border: 1px solid black;"
+                                      "border-bottom-left-radius: 7px;"
+                                      "border-top-left-radius: 7px;"
+                                      "}");
     pointsRed = new QLabel("0", this);
     pointsBlack = new QLabel("0", this);
     timeLeft = new QLabel("3:00", this);
@@ -53,15 +52,15 @@ GameWidget::GameWidget(TcpClient *tcpClient, QWidget *parent) :
     gameTimer->stop();
 
     setStyleSheet(""
-        "QLabel {"
-            "font-family: Helvetica;"
-            "color: #d8d9e6;"
-            "font-weight: bold;"
-            "font-size: 35px;"
-            "background-color: #1b1c1e;"
-            "border: 3px solid black;"
-            "border-radius: 7px;"
-        "}");
+                  "QLabel {"
+                  "font-family: Helvetica;"
+                  "color: #d8d9e6;"
+                  "font-weight: bold;"
+                  "font-size: 35px;"
+                  "background-color: #1b1c1e;"
+                  "border: 3px solid black;"
+                  "border-radius: 7px;"
+                  "}");
     pointsRed->setStyleSheet("background-color: #ae3838; color: black");
     timeLeft->setStyleSheet("background-color: #d8d9e6; color: #1b1c1e; font-size: 40px");
 }

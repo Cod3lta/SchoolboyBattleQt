@@ -6,7 +6,6 @@
 */
 
 #include "mainwidget.h"
-
 #include <QApplication>
 #include <QMainWindow>
 
@@ -21,8 +20,6 @@ int main(int argc, char *argv[])
     w.setWindowIcon(QIcon(":/Resources/brand/schoolboybattle-icon.ico"));
     w.setCentralWidget(new MainWidget);
 
-
-    //w.showFullScreen();
     w.show();
     return a.exec();
 }

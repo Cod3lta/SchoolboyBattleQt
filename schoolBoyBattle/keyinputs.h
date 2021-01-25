@@ -19,7 +19,6 @@ class KeyInputs : public QGraphicsObject
 
 public:
     KeyInputs(int focusedPlayerId = 0, QGraphicsObject *parent = nullptr);
-    ~KeyInputs();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

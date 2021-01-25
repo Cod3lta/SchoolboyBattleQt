@@ -20,6 +20,7 @@
 class Player : public QGraphicsObject
 {
     Q_OBJECT
+
 public:
     Player(int team, DataLoader *dataLoader);
     Player(
@@ -29,7 +30,6 @@ public:
             QString username,
             DataLoader *dataLoader,
             QGraphicsObject *parent = nullptr);
-    ~Player();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

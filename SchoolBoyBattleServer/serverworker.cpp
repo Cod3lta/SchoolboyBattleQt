@@ -8,7 +8,6 @@
 */
 
 #include "serverworker.h"
-
 #include <QDataStream>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -46,6 +45,7 @@ void ServerWorker::receiveJson() {
     QDataStream socketStream(socket);
 
     socketStream.setVersion(QDataStream::Qt_5_9);
+
     while(true) {
         socketStream.startTransaction();
         socketStream >> jsonData;
@@ -58,17 +58,16 @@ void ServerWorker::receiveJson() {
                     emit jsonRecieved(jsonDoc.object());
                 else
                     emit logMessage("Message invalide : " + QString::fromUtf8(jsonData));
-            }else{
+            } else {
                 emit logMessage("Message invalide : " + QString::fromUtf8(jsonData));
             }
-        }else{
+        } else {
             break;
         }
     }
 }
 
 // SETTERS / GETTERS --------------------------------
-
 
 bool ServerWorker::setSocketDescriptor(qintptr socketDescriptor) {
     // Retourne un bool pou

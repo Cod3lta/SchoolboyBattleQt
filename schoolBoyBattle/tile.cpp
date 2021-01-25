@@ -38,18 +38,12 @@ Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources,
         setZValue(layerRessources->zIndex.toInt());
     else
         setZValue(y + tileSize);
-
 }
-
 
 // OVERRIDE REQUIRED
 
 // Paints contents of item in local coordinates
 void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-
-
-    //painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
-
     if(!(layer == "1-spawns" || layer == "4-collision" || layer == "5-config")) {
         QRectF sourceRect(0, 0, image->width(), image->height());
         painter->drawPixmap(boundingRect(), *image, sourceRect);
@@ -76,9 +70,4 @@ QPainterPath Tile::shape() const {
     QPainterPath path;
     path.addRect(QRect(0, 0, dataLoader->getTileSize(), dataLoader->getTileSize()));
     return path;
-}
-
-
-Tile::~Tile() {
-
 }

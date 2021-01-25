@@ -26,7 +26,6 @@ public:
             int tileType,                   // numéro qu'il y a dans le .tmx
             DataLoader *dataLoader,
             QGraphicsItem* parent = nullptr);
-    ~Tile();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

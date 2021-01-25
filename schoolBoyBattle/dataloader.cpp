@@ -17,7 +17,7 @@
 #include <QVector2D>
 
 #define PLAYER_IN_LAYER 3       // Définit que les joueurs se trouvent entre
-                                // les layers x et x+1
+// les layers x et x+1
 
 DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
     multiplayer(isMultiplayer)
@@ -64,7 +64,6 @@ int DataLoader::getPlayerIndexInMulti() {
 
 // PLAYER SPAWNPOINTS -----------------------------------------------------------------------
 
-
 void DataLoader::setPlayersSpawnpoint() {
     for(int y = 0; y < tileLayers["5-config"]->tiles.size(); y++) {
         for(int x = 0; x < tileLayers["5-config"]->tiles.at(y).size(); x++) {
@@ -75,13 +74,13 @@ void DataLoader::setPlayersSpawnpoint() {
                 teamsSpawnpoints.insert(0,
                                         QPoint(
                                             getTileSize() * (x + tileLayers["5-config"]->topLeftX),
-                                            getTileSize() * (y + tileLayers["5-config"]->topLeftY)
+                                        getTileSize() * (y + tileLayers["5-config"]->topLeftY)
                         ));
             if(getTileRessource(tileType)->name == "world/config/spawn-player-black.png")
                 teamsSpawnpoints.insert(1,
                                         QPoint(
                                             getTileSize() * (x + tileLayers["5-config"]->topLeftX),
-                                            getTileSize() * (y + tileLayers["5-config"]->topLeftY)
+                                        getTileSize() * (y + tileLayers["5-config"]->topLeftY)
                         ));
         }
     }
@@ -166,6 +165,7 @@ void DataLoader::loadCandyAnimations() {
     candyAnimations.insert(2, setupCandyAnimation(12, 100, "peanut-big-idle"));
     candyAnimations.insert(3, setupCandyAnimation(10, 100, "mandarin-big-idle"));
 }
+
 DataLoader::CandyAnimationsStruct *DataLoader::setupCandyAnimation(int nbFrame, int framerate, QString fileName) {
     CandyAnimationsStruct* aStruct = new CandyAnimationsStruct;
     aStruct->nbFrame = nbFrame;
@@ -188,9 +188,9 @@ int DataLoader::getCandyAnimationId(int type, int size) {
 
 // https://lucidar.me/fr/dev-c-cpp/reading-xml-files-with-qt/
 void DataLoader::loadTileLayers() {
-
     // Lire le fichier XML et créer les ressources nécessaires
     QDomNodeList layers = terrainXMLDoc.elementsByTagName("layer");
+
     for(int i = 0; i < layers.count(); i++) {
         QDomElement layer = layers.at(i).toElement();
         // Chaque layer
@@ -214,7 +214,6 @@ void DataLoader::loadTileLayers() {
 }
 
 QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX, int *topLeftY) {
-
     QList<QList<int>> dimLevel;
 
     int chunkSize = chunks.at(0).toElement().attribute("width").toInt(); // 16
@@ -256,7 +255,7 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX,
 }
 
 /*
- * Mets dans les variables layerWidth et layerHeight la taille de la layer
+ * Mettre dans les variables layerWidth et layerHeight la taille de la layer
  * (nombre de tiles en x et nombre de tiles en y)
  */
 void DataLoader::getLayerPlacement(int *layerWidth, int *layerHeight, int *chunkMinX, int *chunkMinY, int chunkSize, QDomNodeList chunks) {
@@ -270,6 +269,7 @@ void DataLoader::getLayerPlacement(int *layerWidth, int *layerHeight, int *chunk
     int maxX = minX;
     int minY = chunks.at(0).toElement().attribute("y").toInt();
     int maxY = minY;
+
     for(int i = 0; i < chunks.size(); i++) {
         int newX = chunks.at(i).toElement().attribute("x").toInt();
         int newY = chunks.at(i).toElement().attribute("y").toInt();
@@ -278,6 +278,7 @@ void DataLoader::getLayerPlacement(int *layerWidth, int *layerHeight, int *chunk
         minY = minY < newY ? minY : newY;
         maxY = maxY > newY ? maxY : newY;
     }
+
     *chunkMinX = minX;
     *chunkMinY = minY;
     *layerWidth = maxX - minX + chunkSize;
@@ -289,6 +290,7 @@ QHash<QString, int> DataLoader::highestLowestPointsOfMap() {
     QHash<QString, int> returnValue;
     returnValue["highest"] = tileLayers.first()->topLeftY;
     returnValue["lowest"] = tileLayers.first()->tiles.length() + tileLayers.first()->topLeftY;
+
     while(i.hasNext()) {
         i.next();
         if(i.value()->topLeftY < returnValue["highest"])
@@ -296,6 +298,7 @@ QHash<QString, int> DataLoader::highestLowestPointsOfMap() {
         if(i.value()->tiles.length() + i.value()->topLeftY > returnValue["lowest"])
             returnValue["lowest"] = i.value()->tiles.length() + i.value()->topLeftY;
     }
+
     returnValue["highest"] *= 130;
     returnValue["lowest"] *= 130;
     return returnValue;
@@ -305,6 +308,7 @@ void DataLoader::updateTileLayersZIndex() {
     QMapIterator<QString, TileLayerStruct*> i(tileLayers);
     QHash<QString, int> HLPoints = highestLowestPointsOfMap();
     int j = 0;
+
     while(i.hasNext()) {
         i.next();
         if(j < PLAYER_IN_LAYER)
@@ -315,14 +319,15 @@ void DataLoader::updateTileLayersZIndex() {
             i.value()->zIndex.setValue(nullptr);
         j++;
     }
-}
 
+}
 
 // TILE RESSOURCES --------------------------------------------------------------------------
 
 void DataLoader::loadTilesRessources() {
     QHash<int, QString> tilesIds = loadTilesIds();
     QHashIterator<int, QString> tilesIdsIterator(tilesIds);
+
     while (tilesIdsIterator.hasNext()) {
         tilesIdsIterator.next();
         TileRessourcesStruct *tileRessource = new TileRessourcesStruct();
@@ -335,12 +340,15 @@ void DataLoader::loadTilesRessources() {
 QHash<int, QString> DataLoader::loadTilesIds() {
     QHash<int, QString> tilesIds;
     QDomNodeList tilesets = terrainXMLDoc.elementsByTagName("tileset");
+
     for(int i = 0; i < tilesets.count(); i++) {
         QDomElement tileset = tilesets.at(i).toElement();
         int tilesetId = tileset.attribute("firstgid").toInt();
         QDomNodeList tiles = tileset.childNodes();
+
         for(int j = 0; j < tiles.size(); j++) {
             QDomElement tile = tiles.at(j).toElement();
+
             if(tile.tagName() == "tile") {
                 int tileId = tile.attribute("id").toInt();
                 QString tileFile = tile.firstChild().toElement().attribute("source");
@@ -362,6 +370,7 @@ int DataLoader::getTileType(QString name) {
     QHashIterator<int, TileRessourcesStruct*> tileRessoucesIterator(tileRessources);
     while(tileRessoucesIterator.hasNext()) {
         tileRessoucesIterator.next();
+
         if(tileRessoucesIterator.value()->name == name) {
             return tileRessoucesIterator.key();
         }

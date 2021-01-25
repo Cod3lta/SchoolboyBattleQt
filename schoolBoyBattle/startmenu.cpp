@@ -8,7 +8,6 @@
 */
 
 #include "startmenu.h"
-
 #include <QApplication>
 #include <QBoxLayout>
 #include <QLineEdit>

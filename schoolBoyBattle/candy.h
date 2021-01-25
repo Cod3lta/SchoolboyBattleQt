@@ -30,7 +30,6 @@ public:
             TileCandyPlacement *tilePlacement,
             int id,
             QGraphicsObject *parent = nullptr);
-    ~Candy();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

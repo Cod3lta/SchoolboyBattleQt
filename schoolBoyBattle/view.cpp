@@ -18,8 +18,8 @@ View::View(int id, QGraphicsView *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFocusPolicy(Qt::NoFocus);    // Nécessaire pour ne pas pouvoir scroller
-                                    // la scène avec la souris / les touches
-                                    // flechées
+    // la scène avec la souris / les touches
+    // flechées
 }
 
 void View::moveView(Player *player, int playerWidth, int playerHeight, double deltaMs) {

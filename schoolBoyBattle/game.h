@@ -64,7 +64,6 @@ private:
 
     void setCustomSceneRect();
     void placeTiles();
-    void reset();
     void refreshEntities();
     void placeTilesCandyPlacement();
     void setupMultiplayerGame();

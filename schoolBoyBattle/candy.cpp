@@ -21,7 +21,6 @@
 #define LERP_AMOUNT 1e7
 #define LERP_ACCELERATION 20
 
-
 Candy::Candy(
         int candyType,
         int candySize,
@@ -162,7 +161,7 @@ void Candy::capture(double deltaMs) {
     setY(y() + (objective.y() - y()) / 20 * deltaMs);
     // Si le candy est suffisamment proche du point de spawn
     if(x() - 50 < objective.x() && x() + 50 > objective.x() &&
-       y() - 50 < objective.y() && y() + 50 > objective.y()) {
+            y() - 50 < objective.y() && y() + 50 > objective.y()) {
         emit validated(id, currentPlayerId);
     }
 
@@ -186,9 +185,9 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     QPixmap *imageToDraw = candyToDraw->sharedDatas->image;
     QPixmap *imageHover = candyToDraw->sharedDatas->image;
     if(idTeam == 0)
-         imageHover = candyToDraw->sharedDatas->imageRed;
+        imageHover = candyToDraw->sharedDatas->imageRed;
     else if(idTeam == 1)
-         imageHover = candyToDraw->sharedDatas->imageBlack;
+        imageHover = candyToDraw->sharedDatas->imageBlack;
 
     QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->sharedDatas->nbFrame * candyToDraw->frameIndex, 0,
                                imageToDraw->width() / candyToDraw->sharedDatas->nbFrame, imageToDraw->height());
@@ -218,9 +217,4 @@ QPainterPath Candy::shape() const {
                      boundingRect().width()/2,
                      boundingRect().height()/2));
     return path;
-}
-
-
-Candy::~Candy() {
-
 }

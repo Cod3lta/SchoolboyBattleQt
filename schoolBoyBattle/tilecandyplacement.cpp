@@ -8,7 +8,6 @@
 
 #include "dataloader.h"
 #include "tilecandyplacement.h"
-
 #include <QPainter>
 #include <QDebug>
 

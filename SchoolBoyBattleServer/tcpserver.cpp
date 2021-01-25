@@ -12,7 +12,6 @@
 */
 
 #include "tcpserver.h"
-
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -35,25 +34,25 @@ TcpServer::~TcpServer() {
     }
 }
 
-
-
-
 void TcpServer::incomingConnection(qintptr socketDescriptor) {
     ServerWorker *worker = new ServerWorker;
     if(!worker->setSocketDescriptor(socketDescriptor)) {
         worker->deleteLater();
         return;
     }
+
     int threadIdx = availableThreads.size();
+
     if(threadIdx < idealThreadCount) {
         availableThreads.append(new QThread);
         threadsLoaded.append(1);
         availableThreads.last()->start();
-    }else{
+    } else {
         // Trouver le thread avec le moins de clients et l'utiliser
         threadIdx = std::distance(threadsLoaded.cbegin(), std::min_element(threadsLoaded.cbegin(), threadsLoaded.cend()));
         threadsLoaded[threadIdx]++;
     }
+
     worker->moveToThread(availableThreads.at(threadIdx));
 
     // Si la partie a déjà commencé
@@ -192,7 +191,6 @@ void TcpServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docOb
     sendEveryone(userListMessage);
 }
 
-
 QJsonObject TcpServer::generateUserList() {
     QJsonObject clientsHash;
     for(int i = 0; i < clients.length(); i++) {
@@ -243,7 +241,6 @@ void TcpServer::startGame() {
     gameStarted = true;
 }
 
-
 /*
  * Si le message qu'on reçoit vient d'un utilisateur connecté (on traite le  message)
  */
@@ -253,14 +250,14 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
     if (typeVal.isNull() || !typeVal.isString()) {
         return;
-    }else if(typeVal.toString().compare(QLatin1String("toggleReady"), Qt::CaseInsensitive) == 0) {  // Toggle ready
+    } else if(typeVal.toString().compare(QLatin1String("toggleReady"), Qt::CaseInsensitive) == 0) {  // Toggle ready
         sender->setReady(!sender->getReady());
         QJsonObject userListMessage;
         userListMessage.insert("type", QJsonValue("updateUsersList"));
         userListMessage.insert("users", QJsonValue(generateUserList()));
         sendEveryone(userListMessage);
         checkEveryoneReady();
-    }else if(typeVal.toString().compare(QLatin1String("playerMove"), Qt::CaseInsensitive) == 0) {   // Déplacement d'un joueur
+    } else if(typeVal.toString().compare(QLatin1String("playerMove"), Qt::CaseInsensitive) == 0) {   // Déplacement d'un joueur
         // On le bradcast à tous les autres
         QJsonObject userListMessage;
         userListMessage.insert("type", QJsonValue("playerMove"));
@@ -268,7 +265,7 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         userListMessage.insert("playerDescriptor", QJsonValue(docObj.value(QLatin1String("playerDescriptor"))));
         userListMessage.insert("value", QJsonValue(docObj.value(QLatin1String("value"))));
         broadcast(userListMessage, sender);
-    }else if(typeVal.toString().compare(QLatin1String("playerRollback"), Qt::CaseInsensitive) == 0) {   // Rollback d'un joueur
+    } else if(typeVal.toString().compare(QLatin1String("playerRollback"), Qt::CaseInsensitive) == 0) {   // Rollback d'un joueur
         // On le bradcast à tous les autres
         QJsonObject userRollback;
         userRollback.insert("type", QJsonValue("playerRollback"));
@@ -277,7 +274,7 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         userRollback.insert("candies", QJsonValue(docObj.value(QLatin1String("candies"))));
         userRollback.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
         broadcast(userRollback, sender);
-    }else if(typeVal.toString().compare(QLatin1String("newCandy"), Qt::CaseInsensitive) == 0) {   // Spawn d'un candy
+    } else if(typeVal.toString().compare(QLatin1String("newCandy"), Qt::CaseInsensitive) == 0) {   // Spawn d'un candy
         // On le sauvegarde sur le serveur
         freeCandies.append(docObj.value(QLatin1String("candyId")).toInt());
         // On le bradcast à tous les autres
@@ -289,7 +286,7 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         newCandy.insert("tilePlacementId", QJsonValue(docObj.value(QLatin1String("tilePlacementId"))));
         newCandy.insert("candyId", QJsonValue(docObj.value(QLatin1String("candyId"))));
         broadcast(newCandy, sender);
-    }else if(typeVal.toString().compare(QLatin1String("isCandyFree"), Qt::CaseInsensitive) == 0) {   // Est-ce q'un candy est libre
+    } else if(typeVal.toString().compare(QLatin1String("isCandyFree"), Qt::CaseInsensitive) == 0) {   // Est-ce q'un candy est libre
         // Si l'id du candy qu'un joueur veut récupérer est présent dans la liste des candy libres
         if(freeCandies.contains(docObj.value(QLatin1String("candyId")).toInt())) {
             // On le supprimme de la liste
@@ -301,14 +298,14 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
             candyTaken.insert("candyId", QJsonValue(docObj.value(QLatin1String("candyId"))));
             sendEveryone(candyTaken);
         }
-    }else if(typeVal.toString().compare(QLatin1String("stealCandies"), Qt::CaseInsensitive) == 0) {   // Vol d'un candy
+    } else if(typeVal.toString().compare(QLatin1String("stealCandies"), Qt::CaseInsensitive) == 0) {   // Vol d'un candy
         // On envoie à tout le monde que tel joueur a volé tel candy
         QJsonObject candyTaken;
         candyTaken.insert("type", QJsonValue("stealCandies"));
         candyTaken.insert("socketDescriptor", QJsonValue(sender->getSocketDescriptor()));
         candyTaken.insert("candyIdStartingFrom", QJsonValue(docObj.value(QLatin1String("candyIdStartingFrom"))));
         broadcast(candyTaken, sender);
-    }else if(typeVal.toString().compare(QLatin1String("validateCandies"), Qt::CaseInsensitive) == 0) {   // validation de candies
+    } else if(typeVal.toString().compare(QLatin1String("validateCandies"), Qt::CaseInsensitive) == 0) {   // validation de candies
         // On envoie à tout le monde que tel joueur a validé tels candies
         QJsonObject candyTaken;
         candyTaken.insert("type", QJsonValue("validateCandies"));
@@ -316,4 +313,3 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         broadcast(candyTaken, sender);
     }
 }
-

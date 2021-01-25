@@ -8,7 +8,6 @@
 */
 
 #include "mainwindow.h"
-
 #include <QBoxLayout>
 #include <QPlainTextEdit>
 #include <QMessageBox>
@@ -46,10 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
     logMessage("---------------------\nSchoolBoyBattleServer\n---------------------");
 }
 
-MainWindow::~MainWindow()
-{
-}
-
 void MainWindow::logMessage(const QString &msg)
 {
     editText->appendPlainText(msg);
@@ -61,7 +56,7 @@ void MainWindow::toggleServer()
         server->stopServer();
         btnToggleServer->setText("Démarrer");
         logMessage("Server stoppé\n---------------------");
-    }else {
+    } else {
         if(!server->listen(QHostAddress::Any, 1962)) {
             QMessageBox::critical(this, "Erreur", "Impossible de démarrer le serveur");
             return;
@@ -72,4 +67,3 @@ void MainWindow::toggleServer()
         btnToggleServer->setText("Arrêter");
     }
 }
-

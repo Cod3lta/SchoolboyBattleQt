@@ -15,7 +15,6 @@
 #include "mainwidget.h"
 #include "startmenu.h"
 #include "finishmenu.h"
-
 #include <QMediaPlaylist>
 #include <QMessageBox>
 
@@ -34,28 +33,28 @@ MainWidget::MainWidget() :
     waitingRoom = new WaitingRoom(tcpClient, this);
 
     QString stylesheet = ""
-        "QPushButton {"
-            "background-color: #1b1c1e;"
-            "color: lightgray;"
-            "font-family: Helvetica;"
-            "font-weight: bold;"
-            "font-size: 12pt;"
-            "padding: 7px;"
-            "border-radius: 5px"
-        "}"
-        "QPushButton:disabled {"
-            "background-color:#686d78;"
-        "}"
-        "QLabel {"
-            "font-family: Helvetica;"
-            "color: #26292d;"
-            "font-size: 12pt;"
-        "}"
-        "QLineEdit {"
-            "padding: 7px;"
-            "border: none;"
-            "border-radius: 5px"
-        "}";
+                         "QPushButton {"
+                         "background-color: #1b1c1e;"
+                         "color: lightgray;"
+                         "font-family: Helvetica;"
+                         "font-weight: bold;"
+                         "font-size: 12pt;"
+                         "padding: 7px;"
+                         "border-radius: 5px"
+                         "}"
+                         "QPushButton:disabled {"
+                         "background-color:#686d78;"
+                         "}"
+                         "QLabel {"
+                         "font-family: Helvetica;"
+                         "color: #26292d;"
+                         "font-size: 12pt;"
+                         "}"
+                         "QLineEdit {"
+                         "padding: 7px;"
+                         "border: none;"
+                         "border-radius: 5px"
+                         "}";
 
     startMenu->setStyleSheet(stylesheet);
     finishMenu->setStyleSheet(stylesheet);
