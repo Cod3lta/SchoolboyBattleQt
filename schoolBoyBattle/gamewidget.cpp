@@ -121,6 +121,8 @@ void GameWidget::startGame(int nbPlayers, int nbViews) {
     teamsPointsProgess->raise();
     pointsRed->raise();
     pointsBlack->raise();
+    pointsRed->setText("0");
+    pointsBlack->setText("0");
     timeLeft->raise();
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
@@ -142,6 +144,7 @@ void GameWidget::resetGame() {
     delete viewsLayout;
     ambientMusicPlayer->stop();
     gameRunning = false;
+    gameTimer->stop();
 }
 
 /**

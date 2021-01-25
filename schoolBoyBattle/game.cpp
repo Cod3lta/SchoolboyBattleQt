@@ -70,7 +70,7 @@ void Game::startGame(QString terrainFileName, int nbPlayers, bool isMultiplayer,
     playerRefresh->start();
     playerRefreshDelta->start();
     gameTimer = new QTimer(this);
-    gameTimer->singleShot(3 * 60 * 1000, this, &Game::gameEnd);
+    gameTimer->singleShot(3 * 1000, this, &Game::gameEnd);
 }
 
 /**
@@ -211,7 +211,8 @@ void Game::sendRollback() {
  * déplaçant les items là où ils sont indiqués dans le message.
  */
 void Game::receiveRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor) {
-    players.value(playerDescriptor)->setPos(playerX, playerY);
+    if(players[playerDescriptor] != nullptr)
+        players.value(playerDescriptor)->setPos(playerX, playerY);
     QHashIterator<int, QPointF> i(candies);
     while(i.hasNext()) {
         i.next();
@@ -432,6 +433,7 @@ void Game::refreshEntities() {
 }
 
 void Game::spawnCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId) {
+    if(tileCandyPlacements.length() < tilePlacementId) return;
     TileCandyPlacement* tileCandyPlacementToSpawn = tileCandyPlacements.at(tilePlacementId);
     Candy *candy = new Candy(candyType, candySize, nbPoints, dataLoader, tileCandyPlacementToSpawn, candyId);
     connect(candy, &Candy::validated, this, &Game::deleteCandy);
@@ -443,6 +445,7 @@ void Game::spawnCandy(int candyType, int candySize, int nbPoints, int tilePlacem
  * Le joueur vole des Candy à un adversaire.
  */
 void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
+    if(players[playerWinningId] == nullptr || candies[candyIdStartingFrom] == nullptr) return;
     // Si le candy n'existe plus, on annule
     if(!candies.contains(candyIdStartingFrom)) return;
     Player *victim = players[candies[candyIdStartingFrom]->getCurrentPlayerId()];
@@ -479,6 +482,7 @@ void Game::playerStealsCandies(int candyIdStartingFrom, int playerWinningId) {
  * Le joueur valide ses bonbons.
  */
 void Game::playerValidateCandies(int playerId) {
+    if(players[playerId] == nullptr) return;
     QList<int> candiesToValidate = players[playerId]->getCandiesTaken();
 
     // Valider chacun des candies de ce player
@@ -496,7 +500,7 @@ void Game::playerValidateCandies(int playerId) {
  * un candy qui n'appartenait à personne.
  */
 void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
-    if(candies[candyId] != nullptr) {
+    if(candies[candyId] != nullptr && players[descriptor] != nullptr) {
         // Dire au candy qu'il a été ramassés par un joueur
         candies[candyId]->pickUp(descriptor, players[descriptor]->getTeam());
         // Ajouter le candy à la liste des candies du joueur
@@ -506,7 +510,8 @@ void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
 
 void Game::deleteCandy(int id, int playerId) {
     players[playerId]->deleteCandy(id);
-    candies[id]->deleteLater();
+    if(candies[id] != nullptr)
+        candies[id]->deleteLater();
     candies.remove(id);
 }
 
@@ -530,7 +535,8 @@ void Game::gameEnd() {
 
     while(j.hasNext()) {
         j.next();
-        delete candies[j.key()];
+        if(candies[j.key()] != nullptr)
+            delete candies[j.key()];
     }
     candies.clear();
     for(int k = 0; k < tileCandyPlacements.length(); k++) {
