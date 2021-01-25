@@ -246,33 +246,32 @@ int Player::getTextXToCenter(QGraphicsTextItem *text) {
 void Player::collideWithCandy() {
     QList<QGraphicsItem*> itemsColliding = collidingItems();
     QList<Candy *> candiesNearby = static_cast<Game*>(scene())->candiesNearby(x(), y());
-    if(candiesNearby.length() > 0) {
-        for(int i = 0; i < itemsColliding.size(); i++) {
-            QGraphicsItem *collidingItem = itemsColliding.at(i);
 
-            for(int j = 0; j < candiesNearby.size(); j++) {
-                Candy *candyNearby = candiesNearby.at(j);
-                if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
-                    if (IdsCandiesTaken.length() >= CANDY_MAX)
-                        return;
-                    // si le candy qu'on touche est pris (pas par nous)
-                    if(candyNearby->isTaken()) {
-                        if(candyNearby->getCurrentPlayerId() != this->id) {
-                            // Voler le candy
-                            emit stealCandies(candyNearby->getId(), this->id);
-                        }
+    // Si il n'y a aucun candy à côté ou qu'on a déjà ramassé le nb max de candies, on ne fait rien
+    if(candiesNearby.length() == 0 || IdsCandiesTaken.length() >= CANDY_MAX) return;
+
+    for(int i = 0; i < itemsColliding.size(); i++) {
+        QGraphicsItem *collidingItem = itemsColliding.at(i);
+
+        for(int j = 0; j < candiesNearby.size(); j++) {
+            Candy *candyNearby = candiesNearby.at(j);
+            if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
+                // si le candy qu'on touche est pris (pas par nous)
+                if(candyNearby->isTaken()) {
+                    if(candyNearby->getCurrentPlayerId() == this->id) continue;
+                    // Voler le candy
+                    emit stealCandies(candyNearby->getId(), this->id);
+                }else{
+                    // Ramasser le candy
+                    if(dataLoader->isMultiplayer()) {
+                        // Demander au serveur si on peut prendre le candy
+                        emit isCandyFree(candyNearby->getId());
                     }else{
-                            // Ramasser le candy
-                            if(dataLoader->isMultiplayer()) {
-                                // Demander au serveur si on peut prendre le candy
-                                emit isCandyFree(candyNearby->getId());
-                            }else{
-                                // appeler une fonction publique de Candy au lieu d'un signal car utiliser
-                                // les signaux / slots demanderait de connecter au préalable tous les joueurs à
-                                // tous les candy
-                                candyNearby->pickUp(id, team);
-                                IdsCandiesTaken.prepend(candyNearby->getId());
-                            }
+                        // appeler une fonction publique de Candy au lieu d'un signal car utiliser
+                        // les signaux / slots demanderait de connecter au préalable tous les joueurs à
+                        // tous les candy
+                        candyNearby->pickUp(id, team);
+                        IdsCandiesTaken.prepend(candyNearby->getId());
                     }
                 }
             }

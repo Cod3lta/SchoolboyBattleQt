@@ -99,7 +99,7 @@ public slots:
 
 signals:
     void isCandyFree(int candyId);
-    QList<int> stealCandies(int candyIdStartingFrom, int playerWinningId);
+    void stealCandies(int candyIdStartingFrom, int playerWinningId);
     void validateCandies(int id);
     bool arePlayerTakenCandiesValidated(int id);
 };

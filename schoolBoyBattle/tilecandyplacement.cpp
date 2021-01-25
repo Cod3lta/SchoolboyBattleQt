@@ -5,7 +5,7 @@
 #include <QDebug>
 
 #define TILE_SIZE 130
-#define HITBOX_DEBUG false
+#define HITBOX_DEBUG true
 
 int TileCandyPlacement::candyId = 0;
 

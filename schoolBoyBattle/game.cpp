@@ -187,7 +187,7 @@ void Game::receiveRollback(double playerX, double playerY, QHash<int, QPointF> c
     QHashIterator<int, QPointF> i(candies);
     while(i.hasNext()) {
         i.next();
-        if(candies.contains(i.key()))
+        if(candies.contains(i.key()) && this->candies[i.key()] != nullptr)
             this->candies[i.key()]->setPos(i.value());
     }
 }
@@ -315,6 +315,7 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
         // Sélectionner les candy à proximité du point (x,y)
         int tileSize = dataLoader->getTileSize();
         if(
+                candy != nullptr &&
                 candy->x() > x - 2 * tileSize &&
                 candy->x() < x + 2 * tileSize &&
                 candy->y() > y - 2 * tileSize &&
@@ -438,15 +439,17 @@ void Game::playerValidateCandies(int playerId) {
  * un candy qui n'appartenait à personne jusque là
  */
 void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
-    // Dire au candy qu'il a été ramassés par un joueur
-    candies[candyId]->pickUp(descriptor, players[descriptor]->getTeam());
-    // Ajouter le candy à la liste des candies du joueur
-    players[descriptor]->pickupCandyMulti(candyId);
+    if(candies[candyId] != nullptr) {
+        // Dire au candy qu'il a été ramassés par un joueur
+        candies[candyId]->pickUp(descriptor, players[descriptor]->getTeam());
+        // Ajouter le candy à la liste des candies du joueur
+        players[descriptor]->pickupCandyMulti(candyId);
+    }
 }
 
 void Game::deleteCandy(int id, int playerId) {
     players[playerId]->deleteCandy(id);
-    delete candies[id];
+    candies[id]->deleteLater();
     candies.remove(id);
 }
 
