@@ -17,13 +17,11 @@ private:
     GameWidget *gameWidget;
     WaitingRoom *waitingRoom;
     TcpClient *tcpClient;
+    QMediaPlayer *menuMusicPlayer;
 
 private slots:
-
-public slots:
-//    void startLocal(int nbPlayers);
-//    void startServer();
-//    void startClient();
+    void stopMenuMusic();
+    void startMenuMusic();
 
 };
 

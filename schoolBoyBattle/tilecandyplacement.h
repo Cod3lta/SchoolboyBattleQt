@@ -20,7 +20,6 @@ public:
             int tileType,
             DataLoader *dataLoader,
             QGraphicsItem* parent = nullptr);
-    ~TileCandyPlacement();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -29,6 +28,7 @@ private:
     bool candySpawned;
     int respawnDelayMs;
     int id;
+    int min, max;
     static int candyId;
     QTimer *timer;
 
@@ -37,7 +37,7 @@ public slots:
     void candyPickedUp();
 
 signals:
-    void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
+    void spawnCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId);
 
 };
 

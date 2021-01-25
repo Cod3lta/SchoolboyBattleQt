@@ -13,6 +13,21 @@ Boss::Boss(int team, int x, int y, DataLoader *dataLoader) :
     setZIndex(BOSS_HEIGHT);
 }
 
+void Boss::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    AnimationsLocalStruct *animToDraw = animationsLocal.value(idle);
+    QPixmap *imageToDraw = animToDraw->sharedDatas->image;
+
+    QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->sharedDatas->nbFrame * animToDraw->frameIndex, 0,
+                               imageToDraw->width() / animToDraw->sharedDatas->nbFrame, imageToDraw->height());
+    QRectF targetRect = QRectF(boundingRect());
+    painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
+
+    // Lignes pour le compilateur
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+}
+
+
 QRectF Boss::boundingRect() const {
     return QRectF(0, 0, BOSS_WIDTH, BOSS_HEIGHT);
 }

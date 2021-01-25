@@ -17,6 +17,7 @@
 #include <QTimer>
 #include <QPixmap>
 #include <QDomDocument>
+#include <QVariant>
 
 class DataLoader
 {
@@ -32,10 +33,10 @@ public:
 private:
     int const tileSize = 130, playerHeight = 150, playerWidth = tileSize, playerSpeed = 8;
     QDomDocument terrainXMLDoc;
-    QDomDocument getFileContent(QString fileName);
     bool multiplayer;
     int playerIndexInMulti;         // position du joueur actuel dans la liste "players" si
                                     // on est en multijoueur
+    QDomDocument getFileContent(QString fileName);
 
     // PLAYER SPAWNPOINTS ----------------------------------------------------------------
 
@@ -105,7 +106,7 @@ public:
         int height;
         int topLeftX;
         int topLeftY;
-        int zIndex;
+        QVariant zIndex;
     } TileLayerStruct;
     // doit être dans une qmap car plus tard dans le game.cpp, on prendra chaque layer
     // dans l'ordre pour y construire les tiles (c'est pour ça que les layers sont
@@ -126,6 +127,7 @@ public:
         QPixmap *image;
         QString name;   // corresponds au chemin d'accès du fichier depuis :/Resources
     } TileRessourcesStruct;
+
     // le int est le tileType (ce qu'il y a dans le .tmx)
     QHash<int, TileRessourcesStruct*> tileRessources;
     TileRessourcesStruct* getTileRessource(int tileType);

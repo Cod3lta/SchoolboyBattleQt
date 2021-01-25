@@ -12,6 +12,7 @@ public:
     Candy(
             int candyType,
             int candySize,
+            int nbPoints,
             DataLoader *dataLoader,
             TileCandyPlacement *tilePlacement,
             int id,
@@ -25,6 +26,7 @@ public:
     void capture(double deltaMs);
     bool isTaken();
     int getId();
+    int getNbPoints();
     int getCurrentPlayerId();
     void setCurrentPlayerId(int playerId);
     void setTeamId(int idTeam);
@@ -46,19 +48,19 @@ private:
 
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     int id;
+    int nbPoints;
     int idTeam;
     Type candyType;
     Size candySize;
+    Animations animation;
     DataLoader *dataLoader;
     TileCandyPlacement* tilePlacement;
     int currentPlayerId;
     bool taken;
     bool valid;
 
-
     void loadAnimations();
     Candy::AnimationsLocalStruct *setupCandyAnimationData(DataLoader::CandyAnimationsStruct *sharedDatas);
-    Animations animation;
     void setType(Type t);
     void animationNextFrame();
     void setAnimation(Animations a);

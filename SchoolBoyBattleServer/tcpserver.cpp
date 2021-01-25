@@ -7,6 +7,7 @@
 
 TcpServer::TcpServer(QObject *parent) :
     QTcpServer(parent),
+    gameStarted(false),
     idealThreadCount(qMax(QThread::idealThreadCount(), 1)),
     nbUsersConnected(0)
 {
@@ -21,8 +22,11 @@ TcpServer::~TcpServer() {
     }
 }
 
+
+
+
 void TcpServer::incomingConnection(qintptr socketDescriptor) {
-    ServerWorker *worker = new ServerWorker(this);
+    ServerWorker *worker = new ServerWorker;
     if(!worker->setSocketDescriptor(socketDescriptor)) {
         worker->deleteLater();
         return;
@@ -38,6 +42,18 @@ void TcpServer::incomingConnection(qintptr socketDescriptor) {
         threadsLoaded[threadIdx]++;
     }
     worker->moveToThread(availableThreads.at(threadIdx));
+
+    // Si la partie a déjà commencé
+    if (gameStarted) {
+        QJsonObject message;
+        message[QStringLiteral("type")] = QStringLiteral("login");
+        message[QStringLiteral("success")] = false;
+        message[QStringLiteral("reason")] = QStringLiteral("gameAlreadyStarted");
+        sendJson(worker, message);
+        worker->deleteLater();
+        return;
+    }
+
     connect(availableThreads.at(threadIdx), &QThread::finished, worker, &QObject::deleteLater);
     connect(worker, &ServerWorker::disconnectedFromClient, this, std::bind(&TcpServer::userDisconnected, this, worker, threadIdx));
     connect(worker, &ServerWorker::error, this, std::bind(&TcpServer::userError, this, worker));
@@ -88,6 +104,11 @@ void TcpServer::jsonReceived(ServerWorker *sender, const QJsonObject &doc)
 void TcpServer::userDisconnected(ServerWorker *sender, int threadIdx) {
     threadsLoaded[threadIdx]--;
     clients.removeAll(sender);
+    if(clients.length() == 0) {
+        gameStarted = false;
+        logMessage("Tous les clients sont déconnectés ! Une nouvelle partie peut démarrer...");
+    }
+
     const QString userName = sender->getUsername();
     if (!userName.isEmpty()) {
         QJsonObject userListMessage;
@@ -205,6 +226,8 @@ void TcpServer::startGame() {
     startGameMessage.insert("type", QJsonValue("startGame"));
     startGameMessage.insert("nbUsers", QJsonValue(clients.length()));
     sendEveryone(startGameMessage);
+
+    gameStarted = true;
 }
 
 
@@ -215,20 +238,8 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
 {
     Q_ASSERT(sender);
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
-    if (typeVal.isNull() || !typeVal.isString())
+    if (typeVal.isNull() || !typeVal.isString()) {
         return;
-    if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { // Message
-        const QJsonValue textVal = docObj.value(QLatin1String("text"));
-        if (textVal.isNull() || !textVal.isString())
-            return;
-        const QString text = textVal.toString().trimmed();
-        if (text.isEmpty())
-            return;
-        QJsonObject message;
-        message[QStringLiteral("type")] = QStringLiteral("message");
-        message[QStringLiteral("text")] = text;
-        message[QStringLiteral("sender")] = sender->getUsername();
-        broadcast(message, sender);
     }else if(typeVal.toString().compare(QLatin1String("toggleReady"), Qt::CaseInsensitive) == 0) {  // Toggle ready
         sender->setReady(!sender->getReady());
         QJsonObject userListMessage;
@@ -261,6 +272,7 @@ void TcpServer::jsonFromLoggedIn(ServerWorker *sender, const QJsonObject &docObj
         newCandy.insert("type", QJsonValue("newCandy"));
         newCandy.insert("candyType", QJsonValue(docObj.value(QLatin1String("candyType"))));
         newCandy.insert("candySize", QJsonValue(docObj.value(QLatin1String("candySize"))));
+        newCandy.insert("nbPoints", QJsonValue(docObj.value(QLatin1String("nbPoints"))));
         newCandy.insert("tilePlacementId", QJsonValue(docObj.value(QLatin1String("tilePlacementId"))));
         newCandy.insert("candyId", QJsonValue(docObj.value(QLatin1String("candyId"))));
         broadcast(newCandy, sender);

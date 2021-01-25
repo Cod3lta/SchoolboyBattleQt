@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QSet>
+#include <QMessageBox>
+#include <QSound>
 
 #include "candy.h"
 #include "player.h"
@@ -18,24 +20,25 @@
 #include "boss.h"
 
 #define SERVER_ROLLBACK_DELAY 1000
-#define REFRESH_DELAY 1/60*1000
+#define REFRESH_DELAY 1/60*1000                 // Pour avoir un taux de refresh atteignant 60 images / secondes
 
-Game::Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient, QGraphicsScene *parent)
-    : QGraphicsScene(parent),
-      tcpClient(tcpClient),
-      isMultiplayer(isMultiplayer)
-{
+Game::Game(QGraphicsScene *parent)
+    : QGraphicsScene(parent)
+{}
 
+void Game::startGame(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient) {
+
+    this->tcpClient = tcpClient;
     // Chargement des données
     dataLoader = new DataLoader(terrainFileName, isMultiplayer);
     //QHashIterator<QString, QString>
     keyboardInputs = new KeyInputs(tcpClient->getSocketDescriptor());
     addItem(keyboardInputs);
 
-    startGame(nbPlayers);
-}
+    // Préparer le tableau des scores
+    scores.insert(0, 0);
+    scores.insert(1, 0);
 
-void Game::startGame(int nbPlayers) {
     placeTiles();
     setCustomSceneRect();
     placeTilesCandyPlacement();
@@ -54,16 +57,20 @@ void Game::startGame(int nbPlayers) {
     connect(playerRefresh, &QTimer::timeout, this, &Game::refreshEntities);
     playerRefresh->start();
     playerRefreshDelta->start();
+    gameTimer = new QTimer(this);
+    gameTimer->singleShot(3 * 60 * 1000, this, &Game::gameEnd);
 }
 
 void Game::setupLocalGame(int nbPlayers) {
     // Connecter les signaux des placements de candy à la fonction qui les créé
-    for(int i = 0; i < tileCandyPlacements.length(); i++)
-        connect(tileCandyPlacements.at(i), &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+    for(int j = 0; j < tileCandyPlacements.length(); j++) {
+        TileCandyPlacement *candyToConnect = tileCandyPlacements.at(j);
+        connect(candyToConnect, &TileCandyPlacement::spawnCandy, this, &Game::spawnCandy);
+    }
 
     // Créer chaque joueur
     for(int i = 0; i < nbPlayers; i++) {
-        players.insert(i, new Player(i, i%2, rand()%2, dataLoader, &tiles["4-collision"]));
+        players.insert(i, new Player(i, i%2, rand()%2, "", dataLoader));
         addItem(players.value(i));
     }
 
@@ -104,16 +111,13 @@ void Game::setupMultiplayerGame() {
     while(i.hasNext()) {
         i.next();
         QHash<QString, QString> clientProps = i.value();
-        players.insert(i.key(), new Player(
-                           i.key(),
-                           clientProps["team"].toInt(),
-                           clientProps["gender"].toInt(),
-                           dataLoader,
-                           &tiles["4-collision"]));
+        if(i.key() == socketDescriptor)
+            dataLoader->setPlayerIndexInMulti(i.key());
+        players.insert(i.key(), new Player(i.key(), clientProps["team"].toInt(), clientProps["gender"].toInt(), clientProps["username"], dataLoader));
         addItem(players.value(i.key()));
         // Si le descriptor de l'objet qu'on a ajouté est le même que le nôtre
         if(i.key() == socketDescriptor) {
-            dataLoader->setPlayerIndexInMulti(i.key());
+            players[i.key()]->setMainPlayerInMulti();
             // On connecte la sortie du clavier à ce joueur
             connect(keyboardInputs, &KeyInputs::playerKeyToggle, players.value(i.key()), &Player::keyMove);
             // On connecte la détection des candy au serveur (demander au serveur si un candy est libre)
@@ -124,13 +128,14 @@ void Game::setupMultiplayerGame() {
             connect(this, &Game::playerStealCandies, tcpClient, &TcpClient::playerStealsCandies);
             // Voler le candy pour cette instance
             connect(players.value(i.key()), &Player::stealCandies, this, &Game::playerStealsCandies);
-            // Pour qu'un player puisse demander si tous ses candies sont déjà validés
-            connect(players.value(i.key()), &Player::arePlayerTakenCandiesValidated, this, &Game::arePlayerTakenCandiesValidated);
+//             Pour qu'un player puisse demander si tous ses candies sont déjà validés
+//            connect(players.value(i.key()), &Player::arePlayerTakenCandiesValidated, this, &Game::arePlayerTakenCandiesValidated);
             // Envoyer l'info au serveur que ce joueur a validé ses candies
             connect(players.value(i.key()), &Player::validateCandies, tcpClient, &TcpClient::playerValidateCandies);
             // Signal qui est émit quand ce joueur valide ses candies
             connect(players.value(i.key()), &Player::validateCandies, this, &Game::playerValidateCandies);
         }
+
         count++;
     }
     // Signal / slot du keyboard au serveur
@@ -182,7 +187,7 @@ void Game::receiveRollback(double playerX, double playerY, QHash<int, QPointF> c
     QHashIterator<int, QPointF> i(candies);
     while(i.hasNext()) {
         i.next();
-        if(candies.contains(i.key()))
+        if(candies.contains(i.key()) && this->candies[i.key()] != nullptr)
             this->candies[i.key()]->setPos(i.value());
     }
 }
@@ -290,6 +295,7 @@ QList<Tile*> Game::tilesNearby(QString layer, int x, int y) {
         // Sélectionner les tiles à proximité du point (x,y)
         int tileSize = dataLoader->getTileSize();
         if(
+                //QSize tileSize = dataLoader->getTileRessource(tiles[layer].at(i)->getTileType())->image->size();
                 tile->x() > x - 2 * tileSize &&
                 tile->x() < x + 2 * tileSize &&
                 tile->y() > y - 2 * tileSize &&
@@ -309,6 +315,7 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
         // Sélectionner les candy à proximité du point (x,y)
         int tileSize = dataLoader->getTileSize();
         if(
+                candy != nullptr &&
                 candy->x() > x - 2 * tileSize &&
                 candy->x() < x + 2 * tileSize &&
                 candy->y() > y - 2 * tileSize &&
@@ -321,7 +328,6 @@ QList<Candy*> Game::candiesNearby(int x, int y) {
 }
 
 void Game::refreshEntities() {
-    qDebug() << "Nombre d'items : " << items().count();
     if(views().length() == 0) return;
     int delta = playerRefreshDelta->nsecsElapsed();
     double deltaMs = delta/10e6;
@@ -376,9 +382,9 @@ void Game::refreshEntities() {
                     deltaMs);
 }
 
-void Game::spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
+void Game::spawnCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId) {
     TileCandyPlacement* tileCandyPlacementToSpawn = tileCandyPlacements.at(tilePlacementId);
-    Candy *candy = new Candy(candyType, candySize, dataLoader, tileCandyPlacementToSpawn, candyId);
+    Candy *candy = new Candy(candyType, candySize, nbPoints, dataLoader, tileCandyPlacementToSpawn, candyId);
     connect(candy, &Candy::validated, this, &Game::deleteCandy);
     addItem(candy);
     candies.insert(candyId, candy);
@@ -420,8 +426,11 @@ void Game::playerValidateCandies(int playerId) {
     QList<int> candiesToValidate = players[playerId]->getCandiesTaken();
     // Valider chacun des candies de ce player
     for(int i = 0; i < candiesToValidate.length(); i++) {
-        if(!candies[candiesToValidate.at(i)]->isValidated())
+        if(!candies[candiesToValidate.at(i)]->isValidated()) {
             candies[candiesToValidate.at(i)]->validate();
+            scores[players[playerId]->getTeam()] += candies[candiesToValidate.at(i)]->getNbPoints();
+            emit teamsPointsChanged(scores[0], scores[1]);
+        }
     }
 }
 
@@ -430,25 +439,58 @@ void Game::playerValidateCandies(int playerId) {
  * un candy qui n'appartenait à personne jusque là
  */
 void Game::playerPickedUpCandyMulti(int descriptor, int candyId) {
-    // Dire au candy qu'il a été ramassés par un joueur
-    candies[candyId]->pickUp(descriptor, players[descriptor]->getTeam());
-    // Ajouter le candy à la liste des candies du joueur
-    players[descriptor]->pickupCandyMulti(candyId);
+    if(candies[candyId] != nullptr) {
+        // Dire au candy qu'il a été ramassés par un joueur
+        candies[candyId]->pickUp(descriptor, players[descriptor]->getTeam());
+        // Ajouter le candy à la liste des candies du joueur
+        players[descriptor]->pickupCandyMulti(candyId);
+    }
 }
 
 void Game::deleteCandy(int id, int playerId) {
     players[playerId]->deleteCandy(id);
+    candies[id]->deleteLater();
     candies.remove(id);
-
 }
 
-bool Game::arePlayerTakenCandiesValidated(int playerId) {
+void Game::gameEnd() {
+    delete playerRefresh;
+    delete playerRefreshDelta;
+    if(dataLoader->isMultiplayer()) delete serverRollback;
+    delete gameTimer;
+    QHashIterator<int, Player*> i(players);
+    while(i.hasNext()) {
+        i.next();
+        delete players[i.key()];
+    }
+    players.clear();
+    QHashIterator<int, Candy*> j(candies);
+    while(j.hasNext()) {
+        j.next();
+        delete candies[j.key()];
+    }
+    candies.clear();
+    for(int k = 0; k < tileCandyPlacements.length(); k++) {
+        delete tileCandyPlacements.at(k);
+    }
+    tileCandyPlacements.clear();
+    delete keyboardInputs;
+    delete dataLoader;
+    int teamWinner = -1;
+    if(scores[0] > scores[1])
+        teamWinner = 0;
+    if(scores[0] < scores[1])
+        teamWinner = 1;
+    emit showEndScreen(teamWinner);
+}
+
+bool Game::hasPlayerAnyCandyValid(int playerId) {
     QList<int> playerCandies = players[playerId]->getCandiesTaken();
     for(int i = 0; i < playerCandies.length(); i++)
-        // Si au moins un candy n'est pas validé, on retourne false
-        if(!candies[playerCandies.at(i)]->isValidated())
-            return false;
-    return true;
+        // Si au moins un candy est validé, on retourne true
+        if(candies[playerCandies.at(i)]->isValidated())
+            return true;
+    return false;
 }
 
 void Game::reset() {
@@ -457,4 +499,8 @@ void Game::reset() {
 
 QList<TileCandyPlacement *> Game::getTileCandyPlacementList() {
     return tileCandyPlacements;
+}
+
+Game::~Game() {
+    delete playerRefreshDelta;
 }

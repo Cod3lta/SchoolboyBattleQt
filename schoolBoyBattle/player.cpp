@@ -7,9 +7,11 @@
 #include <QRectF>
 #include <QDebug>
 #include <QVector2D>
+#include <QFont>
 #include "game.h"
 
 #define HITBOX_DEBUG false
+#define CANDY_MAX 50
 #define QUEUE_PROTECTED_TIME_MS 750
 
 // Constructeur utilisé pour créer les boss
@@ -22,15 +24,15 @@ Player::Player(
         int id,
         int team,
         int gender,
+        QString username,
         DataLoader *dataLoader,
-        QList<Tile*> *collisionTiles,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       team(static_cast<Team>(team)),
       dataLoader(dataLoader),
       gender(static_cast<Gender>(gender)),
       id(id),
-      collisionTiles(collisionTiles)
+      isMainPlayerMulti(false)
 {
     setPos(
         dataLoader->getTeamSpawnpoint(team).x(),
@@ -43,6 +45,20 @@ Player::Player(
     queueProtected->setSingleShot(true);
     queueProtected->setInterval(QUEUE_PROTECTED_TIME_MS);
     queueProtected->stop();
+
+    // Noms d'utilisateurs sur les autres joueurs
+    this->username = new QGraphicsTextItem(this);
+    if(dataLoader->isMultiplayer() && dataLoader->getPlayerIndexInMulti() != id)
+        setUsername(username);
+}
+
+void Player::setUsername(QString username) {
+    this->username->setHtml("<div style='background-color:#65ffffff;'>&nbsp;" + username + "&nbsp;</div>");
+    this->username->setFlag(GraphicsItemFlag::ItemIgnoresTransformations);
+    QFont font("Helvetica", 17);
+    this->username->setFont(font);
+    int centerTextX = (this->username->boundingRect().width() - boundingRect().width()) / 2;
+    this->username->setPos(-centerTextX, -40);
 }
 
 void Player::loadAnimations() {
@@ -159,15 +175,15 @@ void Player::collideWithSpawn() {
     if(IdsCandiesTaken.length() == 0) return;
 
     // Si tous les bonbons du joueur sont déjà validés, on ne fait rien
-    if(emit arePlayerTakenCandiesValidated(id)) return;
+    if(static_cast<Game*>(scene())->hasPlayerAnyCandyValid(id)) return;
 
     // Les items en contacte avec le joueur
     QList<QGraphicsItem*> itemsColliding = collidingItems();
 
-    // Les tiles sur la couche collision autour du joueur
+    // Les tiles sur la couche de spawn autour du joueur
     QList<Tile*> spawnTilesNearby = static_cast<Game*>(scene())->tilesNearby("1-spawns", x(), y());
 
-    // S'il y a une tile collision près du joueur
+    // S'il y a une tile de spawn près du joueur
     if(spawnTilesNearby.size() > 0) {
         for(int i = 0; i < itemsColliding.size(); i++) {
             QGraphicsItem *collidingItem = itemsColliding.at(i);
@@ -182,42 +198,80 @@ void Player::collideWithSpawn() {
                 // Si un des items avec lesquels on collide se trouve dans la liste des tiles
                 // de collisions qui se trouvent à proximité
                 if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
-                    emit validateCandies(this->id);
-                    break;
+                    if(!atSpawn) {
+                        atSpawn = true;
+                        emit validateCandies(this->id);
+                        break;
+                    }
                 }
             }
         }
     }
+    atSpawn = false;
+}
+
+void Player::showTextCandiesUpdated(int nbUpdated) {
+    if(dataLoader->isMultiplayer() && !this->isMainPlayerMulti) return;
+    QGraphicsTextItem *text = new QGraphicsTextItem(this);
+    text->setFlag(GraphicsItemFlag::ItemIgnoresTransformations);
+    if(!textsItems.empty()) {
+        for(int i = 0; i < textsItems.length(); i++) {
+            nbUpdated += textsItems.at(i)->toPlainText().toInt();
+            QGraphicsTextItem *textToDelete = textsItems.at(i);
+            textsItems.removeAt(i);
+            delete textToDelete;
+        }
+    }
+    text->setHtml("<div style='background-color:#65ffffff;'>&nbsp;" + QString::number(nbUpdated) + "&nbsp;</div>");
+    text->setPos(0, -70);
+    textsItems.append(text);
+    QFont font("Helvetica", 25);
+    text->setFont(font);
+    QTimer::singleShot(1000, this, [=] () {
+        if(textsItems.removeAll(text) > 0)
+            delete text;
+    });
+}
+
+int Player::getTextXToCenter(QGraphicsTextItem *text) {
+    int centerTextX = 0;
+    if(facing == facingLeft) {
+        centerTextX = (text->boundingRect().width() - boundingRect().width()) / 2 + boundingRect().width();
+    }else if(this->facing == facingRight) {
+        centerTextX = -(text->boundingRect().width() - boundingRect().width()) / 2;
+    }
+    return centerTextX;
 }
 
 void Player::collideWithCandy() {
     QList<QGraphicsItem*> itemsColliding = collidingItems();
     QList<Candy *> candiesNearby = static_cast<Game*>(scene())->candiesNearby(x(), y());
-    if(candiesNearby.length() > 0) {
-        for(int i = 0; i < itemsColliding.size(); i++) {
-            QGraphicsItem *collidingItem = itemsColliding.at(i);
 
-            for(int j = 0; j < candiesNearby.size(); j++) {
-                Candy *candyNearby = candiesNearby.at(j);
-                if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
-                    // si le candy qu'on touche est pris (pas par nous)
-                    if(candyNearby->isTaken()) {
-                        if(candyNearby->getCurrentPlayerId() != this->id) {
-                            // Voler le candy
-                            emit stealCandies(candyNearby->getId(), this->id);
-                        }
+    // Si il n'y a aucun candy à côté ou qu'on a déjà ramassé le nb max de candies, on ne fait rien
+    if(candiesNearby.length() == 0 || IdsCandiesTaken.length() >= CANDY_MAX) return;
+
+    for(int i = 0; i < itemsColliding.size(); i++) {
+        QGraphicsItem *collidingItem = itemsColliding.at(i);
+
+        for(int j = 0; j < candiesNearby.size(); j++) {
+            Candy *candyNearby = candiesNearby.at(j);
+            if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
+                // si le candy qu'on touche est pris (pas par nous)
+                if(candyNearby->isTaken()) {
+                    if(candyNearby->getCurrentPlayerId() == this->id) continue;
+                    // Voler le candy
+                    emit stealCandies(candyNearby->getId(), this->id);
+                }else{
+                    // Ramasser le candy
+                    if(dataLoader->isMultiplayer()) {
+                        // Demander au serveur si on peut prendre le candy
+                        emit isCandyFree(candyNearby->getId());
                     }else{
-                        // Ramasser le candy
-                        if(dataLoader->isMultiplayer()) {
-                            // Demander au serveur si on peut prendre le candy
-                            emit isCandyFree(candyNearby->getId());
-                        }else{
-                            // appeler une fonction publique de Candy au lieu d'un signal car utiliser
-                            // les signaux / slots demanderait de connecter au préalable tous les joueurs à
-                            // tous les candy
-                            candyNearby->pickUp(id, team);
-                            IdsCandiesTaken.prepend(candyNearby->getId());
-                        }
+                        // appeler une fonction publique de Candy au lieu d'un signal car utiliser
+                        // les signaux / slots demanderait de connecter au préalable tous les joueurs à
+                        // tous les candy
+                        candyNearby->pickUp(id, team);
+                        IdsCandiesTaken.prepend(candyNearby->getId());
                     }
                 }
             }
@@ -227,6 +281,7 @@ void Player::collideWithCandy() {
 
 void Player::prependCandiesTaken(QList<int> candiesGained) {
     IdsCandiesTaken = candiesGained + IdsCandiesTaken;
+    showTextCandiesUpdated(candiesGained.length());
 }
 
 QList<int> Player::looseCandies(int candyStolenId) {
@@ -239,9 +294,10 @@ QList<int> Player::looseCandies(int candyStolenId) {
         return candiesStolen;
     for(int i = 0; i < IdsCandiesTaken.length(); i++) {
         if(IdsCandiesTaken.at(i) == candyStolenId) {
-            candiesStolen = IdsCandiesTaken.mid(i);
-            IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
-            return candiesStolen;
+           candiesStolen = IdsCandiesTaken.mid(i);
+           IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
+           showTextCandiesUpdated(-candiesStolen.length());
+           return candiesStolen;
         }
     }
     return candiesStolen;
@@ -294,6 +350,10 @@ void Player::setAnimation(Animations a) {
     animationsLocal.value(a)->timer->start();
 }
 
+void Player::setMainPlayerInMulti() {
+    isMainPlayerMulti = true;
+}
+
 void Player::animationNextFrame() {
     AnimationsLocalStruct *a = animationsLocal.value(currentAnimation);
     a->frameIndex++;
@@ -344,25 +404,30 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         painter->setPen(QPen(Qt::red));
         painter->drawPath(shape());
     }
-    
+
     AnimationsLocalStruct *animToDraw = animationsLocal.value(currentAnimation);
     QPixmap *imageToDraw = animToDraw->sharedDatas->image;
+    QTransform trans;
+
     if(facing == facingLeft) {
-        QTransform trans;
         trans.translate(boundingRect().width(), 0).scale(-1, 1);
         setTransform(trans);
-
     }else if (facing == facingRight) {
         setTransform(QTransform(1, 0, 0, 1, 1, 1));
     }else{
         resetTransform();
     }
 
-
+    // Dessiner le joueur
     QRectF sourceRect = QRectF(imageToDraw->width() / animToDraw->sharedDatas->nbFrame * animToDraw->frameIndex, 0,
                                imageToDraw->width() / animToDraw->sharedDatas->nbFrame, imageToDraw->height());
-    QRectF targetRect = boundingRect();
+    QRectF targetRect = QRectF(0, 0, dataLoader->getPlayerSize().x(), dataLoader->getPlayerSize().y());
     painter->drawPixmap(targetRect, *imageToDraw, sourceRect);
+
+    // Redéfinir les positions des texts
+    this->username->setPos(getTextXToCenter(this->username), -40);
+    for(int i = 0; i < textsItems.length(); i++)
+        textsItems.at(i)->setPos(getTextXToCenter(this->username), textsItems.at(i)->pos().y() - 0.1);
 
     // Lignes pour le compilateur
     Q_UNUSED(option)
@@ -402,7 +467,8 @@ QList<int> Player::getCandiesTaken() {
 }
 
 void Player::pickupCandyMulti(int candyId) {
-    IdsCandiesTaken.prepend(candyId);
+    if(IdsCandiesTaken.length() <= CANDY_MAX)
+        IdsCandiesTaken.prepend(candyId);
 }
 
 Player::~Player() {

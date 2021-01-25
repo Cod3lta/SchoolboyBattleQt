@@ -23,8 +23,8 @@ public:
             int id,
             int team,
             int gender,
+            QString username,
             DataLoader *dataLoader,
-            QList<Tile*> *collisionTiles,
             QGraphicsObject *parent = nullptr);
     ~Player();
     QRectF boundingRect() const override;
@@ -39,6 +39,7 @@ public:
     int getTeam();
     void protectQueue();
     void deleteCandy(int candyId);
+    void setMainPlayerInMulti();
 
     // En protected se trouve les variables et
     // fonctions nécessaires pour la classe Boss
@@ -55,10 +56,11 @@ protected:
     } AnimationsLocalStruct;
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     DataLoader *dataLoader;
+    QTimer *queueProtected;
+
     void setZIndex(int yToAdd);
     void animationNextFrame();
     void setAnimation(Animations a);
-    QTimer *queueProtected;
 
 private:
     enum Gender : int {girl = 0, boy = 1};
@@ -67,17 +69,21 @@ private:
     Gender gender;
     Animations currentAnimation;
     QList<int> IdsCandiesTaken;
+    QList<QGraphicsTextItem *> textsItems;
+    QGraphicsTextItem *username;
     int id;                 // En solo : int incrémentatif
                             // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
-
-    QList<Tile*> *collisionTiles;
+    bool atSpawn;
+    bool isMainPlayerMulti;
 
     //void refreshTakenCandies();
     void move(QVector2D vector, bool inverted = false);
     bool collideWithWalls(QVector2D movingVector);
     void collideWithCandy();
     void collideWithSpawn();
+    void showTextCandiesUpdated(int nbUpdated);
+    int getTextXToCenter(QGraphicsTextItem *text);
 
     QVector2D calculateMovingVector(double delta);
     QVector2D calculateAnswerVector(QVector2D movingVector);
@@ -86,13 +92,14 @@ private:
     Player::Facing getFacing();
     void loadAnimations();
     Player::AnimationsLocalStruct *setupAnimation(DataLoader::PlayerAnimationsStruct* sharedDatas);
+    void setUsername(QString username);
 
 public slots:
     void keyMove(int playerId, int direction, bool value);
 
 signals:
     void isCandyFree(int candyId);
-    QList<int> stealCandies(int candyIdStartingFrom, int playerWinningId);
+    void stealCandies(int candyIdStartingFrom, int playerWinningId);
     void validateCandies(int id);
     bool arePlayerTakenCandiesValidated(int id);
 };

@@ -21,12 +21,13 @@ TileCandyPlacement::TileCandyPlacement(
         QGraphicsItem* parent) :
     Tile(indexX, indexY, layerRessources, layer, tileType, dataLoader, parent),
     respawnDelayMs(respawnDelayMs),
-    id(id)
+    id(id),
+    min(0),
+    max(10 * 1000)
 {
-    int min = 0, max = 2000;
     int randomDelayFirstSpawnMs = min + (rand() % static_cast<int>(max - min + 1));
     timer = new QTimer();
-    timer->setInterval(respawnDelayMs + randomDelayFirstSpawnMs);
+    timer->setInterval(randomDelayFirstSpawnMs);
     timer->start();
     connect(timer, &QTimer::timeout, this, &TileCandyPlacement::spawnCandyTimer);
 }
@@ -37,6 +38,7 @@ void TileCandyPlacement::spawnCandyTimer() {
     emit spawnCandy(
                 dataLoader->getCandyRessources(tileType)->candyType,
                 dataLoader->getCandyRessources(tileType)->candySize,
+                dataLoader->getCandyRessources(tileType)->nbPoints,
                 this->id,
                 candyId);
     candyId++;
@@ -46,7 +48,8 @@ void TileCandyPlacement::spawnCandyTimer() {
 
 void TileCandyPlacement::candyPickedUp() {
     candySpawned = false;
-    timer->setInterval(respawnDelayMs);
+    int randomDelay = min + (rand() % static_cast<int>(max - min + 1));
+    timer->setInterval(respawnDelayMs + randomDelay);
     timer->start();
 }
 
@@ -80,9 +83,4 @@ QPainterPath TileCandyPlacement::shape() const {
     QPainterPath path;
     path.addRect(boundingRect());
     return path;
-}
-
-
-TileCandyPlacement::~TileCandyPlacement() {
-
 }

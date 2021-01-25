@@ -12,7 +12,7 @@ class TcpClient : public QObject
     Q_DISABLE_COPY(TcpClient)
 
 public:
-    explicit TcpClient(QObject *parent = nullptr);
+    TcpClient(QObject *parent = nullptr);
     int getSocketDescriptor();
     bool isCandyMaster();
     QHash<int, QHash<QString, QString>> getUsersList();
@@ -33,7 +33,7 @@ public slots:
     // Signaux du jeu
     void keyMove(int playerId, int direction, bool value);
     void rollback(QPointF playerPos, QHash<int, QPointF> candiesTaken);
-    void sendNewCandy(int candyType, int candySize, int tilePlacementId, int candyId);
+    void sendNewCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId);
     void isCandyFree(int candyId);
     void playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
     void playerValidateCandies(int playerId);
@@ -51,13 +51,11 @@ signals:
     void userLeft();
     void messageReceived(const QString &sender, const QString &text);
     void connectionError();
-    //void userListRefresh(QList<QVariant>);
     void userListRefresh(QHash<int, QHash<QString, QString>>);
-    //void userJoined(const QString &username);
     void userLeft(const QString &username);
     void userMove(int direction, int playerDescriptor, bool value);
     void userRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor);
-    void spawnNewCandy(int candyType, int candySize, int tilePlacementId, int candyId);
+    void spawnNewCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId);
     void playerPickUpCandy(int descriptor, int candyId);
     void playerStealCandy(int candyIdStartingFrom, int winnerDescriptor);
     void playerValidateCandy(int descriptor);

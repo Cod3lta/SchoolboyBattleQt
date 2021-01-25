@@ -6,7 +6,7 @@
 #include <QDomDocument>
 #include <QVector2D>
 
-#define PLAYER_AFTER_LAYER 2    // Définit que les joueurs se trouvent entre
+#define PLAYER_IN_LAYER 3       // Définit que les joueurs se trouvent entre
                                 // les layers x et x+1
 
 DataLoader::DataLoader(QString terrainFileName, bool isMultiplayer) :
@@ -30,10 +30,6 @@ QDomDocument DataLoader::getFileContent(QString fileName) {
     xmlBOM.setContent(&file);
     file.close();
     return xmlBOM;
-}
-
-int DataLoader::getTileSize() {
-    return tileSize;
 }
 
 int DataLoader::getPlayerSpeed() {
@@ -110,7 +106,6 @@ DataLoader::PlayerAnimationsStruct* DataLoader::setupPlayerAnimation(int nbFrame
 }
 
 int DataLoader::getPlayerAnimationId(int gender, int team, int animation) {
-    // TODO : Améliorer ce code un peu moche
     if(gender == 0 && team == 0 && animation == 0) return 3;
     if(gender == 1 && team == 0 && animation == 0) return 2;
     if(gender == 0 && team == 1 && animation == 0) return 1;
@@ -131,10 +126,10 @@ int DataLoader::getBossAnimationId(int team) {
 // CANDY RESSOURCES -------------------------------------------------------------------------
 
 void DataLoader::loadCandyRessources() {
-    candiesRessources.insert(getTileType("candy/peanut-small.png"), setupCandyRessources(1, 0, 0, 7000));
-    candiesRessources.insert(getTileType("candy/mandarin-small.png"), setupCandyRessources(3, 1, 0, 10000));
-    candiesRessources.insert(getTileType("candy/peanut-big.png"), setupCandyRessources(5, 0, 1, 20000));
-    candiesRessources.insert(getTileType("candy/mandarin-big.png"), setupCandyRessources(10, 1, 1, 30000));
+    candiesRessources.insert(getTileType("candy/peanut-small.png"), setupCandyRessources(1, 0, 0, 25 * 1000));
+    candiesRessources.insert(getTileType("candy/mandarin-small.png"), setupCandyRessources(3, 1, 0, 30 * 1000));
+    candiesRessources.insert(getTileType("candy/peanut-big.png"), setupCandyRessources(5, 0, 1, 20 * 1000));
+    candiesRessources.insert(getTileType("candy/mandarin-big.png"), setupCandyRessources(10, 1, 1, 30 * 1000));
 }
 
 DataLoader::CandyRessourcesStruct* DataLoader::setupCandyRessources(int nbPoints, int candyType, int candySize, int delayRespawnMs) {
@@ -201,7 +196,7 @@ void DataLoader::loadTileLayers() {
         if(tileLayer->height != 0)
             tileLayer->width = tileLayer->tiles.at(0).size();
         QDomElement firstChunk = layers.at(i).firstChild().firstChild().toElement();
-        tileLayer->zIndex = i;
+        tileLayer->zIndex = QVariant(i);
         tileLayer->topLeftX = topLeftX;
         tileLayer->topLeftY = topLeftY;
         tileLayers.insert(layer.attribute("name"), tileLayer);
@@ -213,7 +208,7 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX,
     QList<QList<int>> dimLevel;
 
     int chunkSize = chunks.at(0).toElement().attribute("width").toInt(); // 16
-    int chunkMinX = 0, chunkMinY = 0, layerWidth = 0, layerHeight = 0;
+    int layerWidth = 0, layerHeight = 0;
 
     // Déterminer la taille de la layer
     getLayerPlacement(&layerWidth, &layerHeight, topLeftX, topLeftY, chunkSize, chunks);
@@ -239,8 +234,8 @@ QList<QList<int>> DataLoader::setupTileLayer(QDomNodeList chunks, int *topLeftX,
         }
         for(int y = 0; y < chunkSize; y++) {
             for(int x = 0; x < chunkSize; x++) {
-                int insertYList = chunk.attribute("y").toInt() + y - *topLeftX;
-                int insertXList = chunk.attribute("x").toInt() + x - *topLeftY;
+                int insertYList = chunk.attribute("y").toInt() + y - *topLeftY;
+                int insertXList = chunk.attribute("x").toInt() + x - *topLeftX;
                 QList<int> subList = dimLevel.value(insertYList);
                 subList.replace(insertXList, intList.at(y*chunkSize + x));
                 dimLevel.replace(insertYList, subList);
@@ -302,10 +297,12 @@ void DataLoader::updateTileLayersZIndex() {
     int j = 0;
     while(i.hasNext()) {
         i.next();
-        if(j <= PLAYER_AFTER_LAYER)
-            i.value()->zIndex += HLPoints["highest"];
-        if(j > PLAYER_AFTER_LAYER)
-            i.value()->zIndex += HLPoints["lowest"];
+        if(j < PLAYER_IN_LAYER)
+            i.value()->zIndex.setValue(i.value()->zIndex.toInt() + HLPoints["highest"]);
+        if(j > PLAYER_IN_LAYER)
+            i.value()->zIndex.setValue(i.value()->zIndex.toInt() + HLPoints["lowest"]);
+        if(j == PLAYER_IN_LAYER)
+            i.value()->zIndex.setValue(nullptr);
         j++;
     }
 }
@@ -360,4 +357,8 @@ int DataLoader::getTileType(QString name) {
         }
     }
     return -1;
+}
+
+int DataLoader::getTileSize() {
+    return tileSize;
 }

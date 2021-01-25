@@ -22,20 +22,23 @@ class Game : public QGraphicsScene
     Q_OBJECT
 
 public:
-    Game(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient = nullptr, QGraphicsScene *parent = nullptr);
-    bool start();
-    void exit();
+    Game(QGraphicsScene *parent = nullptr);
+    ~Game();
     void keyPress(QKeyEvent *event);
     void keyRelease(QKeyEvent *event);
     QList<Tile*> tilesNearby(QString layer, int x, int y);
     QList<Candy *> candiesNearby(int x, int y);
     QList<TileCandyPlacement *> getTileCandyPlacementList();
+    bool hasPlayerAnyCandyValid(int playerId);
+
+    enum PlayerMovesEnum : int {up = 0, right = 1, down = 2, left = 3};
 
 private:
     TcpClient *tcpClient;
     QTimer *playerRefresh;
     QElapsedTimer *playerRefreshDelta;
     QTimer *serverRollback;
+    QTimer *gameTimer;
     QHash<int, Player*> players;
     QHash<int, Candy*> candies;
     QList<TileCandyPlacement*> tileCandyPlacements;
@@ -44,11 +47,8 @@ private:
     KeyInputs *keyboardInputs;
     DataLoader *dataLoader;
 
-    bool isMultiplayer;
     bool startBool;
-    int playerIndexInMulti;         // position du joueur actuel dans la liste "players" si
-                                    // on est en multijoueur
-    int tabScore[];
+    QHash<int, int> scores;
 
     void setCustomSceneRect();
     void placeTiles();
@@ -62,19 +62,21 @@ private:
 private slots:
     void sendRollback();
     void receiveRollback(double playerX, double playerY, QHash<int, QPointF> candies, int playerDescriptor);
-    void spawnCandy(int candyType, int candySize, int tilePlacementId, int candyId);
+    void spawnCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId);
     void playerStealsCandies(int candyIdStartingFrom, int playerWinningId);
     void playerValidateCandies(int playerId);
     void playerPickedUpCandyMulti(int descriptor, int candyId);
     void deleteCandy(int id, int playerId);
-    bool arePlayerTakenCandiesValidated(int playerId);
+    void gameEnd();
 
 public slots:
-    void startGame(int nbPlayers);
+    void startGame(QString terrainFileName, int nbPlayers, bool isMultiplayer, TcpClient *tcpClient);
 
 signals:
     void rollbackToServer(QPointF playerPos, QHash<int, QPointF> candiesTaken);
     void playerStealCandies(int candyIdStartingFrom, int playerWinningId);
+    void teamsPointsChanged(int nbPointsRed, int nbPointsBlack);
+    void showEndScreen(int teamWinner);
 
 };
 #endif // MAINWINDOW_H

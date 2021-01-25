@@ -6,7 +6,8 @@
 
 ServerWorker::ServerWorker(QObject *parent) :
     QObject(parent),
-    socket(new QTcpSocket(this))
+    socket(new QTcpSocket(this)),
+    ready(false)
 {
     connect(socket, &QTcpSocket::readyRead, this, &ServerWorker::receiveJson);
     connect(socket, &QTcpSocket::disconnected, this, &ServerWorker::disconnectedFromClient);

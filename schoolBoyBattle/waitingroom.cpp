@@ -93,20 +93,6 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
     connect(tcpClient, &TcpClient::startGame, this, [=] () {
         emit setVisibleWidget(0);
     });
-
-
-    connect(tcpClient, &TcpClient::connectionError, this, [=] () {
-        emit setVisibleWidget(1);
-    });
-
-    connect(tcpClient, &TcpClient::UserLoggedIn, this, [=] () {
-        //label->setText()
-    });
-
-    connect(tcpClient, &TcpClient::disconnected, this, [=] () {
-        //QMessageBox::critical(this, "Erreur", "Déconnecté du serveur");
-        emit setVisibleWidget(1);
-    });
 }
 
 void WaitingRoom::userListRefresh(QHash<int, QHash<QString, QString>> users) {

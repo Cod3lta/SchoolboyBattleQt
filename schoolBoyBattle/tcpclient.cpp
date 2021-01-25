@@ -111,13 +111,14 @@ void TcpClient::rollback(QPointF playerPos, QHash<int, QPointF> candiesTaken) {
 /*
  * Envoi du nouveau candy créé au serveur
  */
-void TcpClient::sendNewCandy(int candyType, int candySize, int tilePlacementId, int candyId) {
+void TcpClient::sendNewCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId) {
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_9);
     QJsonObject message;
     message[QStringLiteral("type")] = QStringLiteral("newCandy");
     message[QStringLiteral("candyType")] = candyType;
     message[QStringLiteral("candySize")] = candySize;
+    message[QStringLiteral("nbPoints")] = nbPoints;
     message[QStringLiteral("tilePlacementId")] = tilePlacementId;
     message[QStringLiteral("candyId")] = candyId;
     clientStream << QJsonDocument(message).toJson();
@@ -164,6 +165,10 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         const QJsonValue resultVal = docObj.value(QLatin1String("success"));
         if (resultVal.isNull() || !resultVal.isBool())
             return; // le message n'a pas de champ de succès, donc on ignore
+        if(docObj.value("reason") == "gameAlreadyStarted") {
+            QMessageBox::critical(nullptr, "Erreur", "La partie a déjà commencé");
+            return;
+        }
         if(docObj.value("reason") == "duplicateUsername") {
             QMessageBox::critical(nullptr, "Erreur", "Ce nom d'utilisateur est déjà pris");
             askUsername();
@@ -181,17 +186,6 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         // et le notifier avec le signal loginError
         const QJsonValue reasonVal = docObj.value(QLatin1String("reason"));
         emit loginError(reasonVal.toString());
-    } else if (typeVal.toString().compare(QLatin1String("message"), Qt::CaseInsensitive) == 0) { // Message de chat
-        // on récupère le champ de texte contenant le texte du chat
-        const QJsonValue textVal = docObj.value(QLatin1String("text"));
-        // on récupère le champ contenant le nom d'utilisateur de l'expéditeur
-        const QJsonValue senderVal = docObj.value(QLatin1String("sender"));
-        if (textVal.isNull() || !textVal.isString())
-            return; // le champ de texte n'était pas valide donc on ignore
-        if (senderVal.isNull() || !senderVal.isString())
-            return; // le champ de l'expéditeur n'était pas valide donc on ignore
-        // un nouveau message a été reçu via le messageReceived
-        emit messageReceived(senderVal.toString(), textVal.toString());
     } else if (typeVal.toString().compare(QLatin1String("updateUsersList"), Qt::CaseInsensitive) == 0) { // Refresh la liste des joueurs
         // Transformer les données json en QHash<int, QHash<QString, QString>>
         QHash<int, QHash<QString, QString>> usersList;
@@ -252,6 +246,7 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         emit spawnNewCandy(
                 docObj["candyType"].toInt(),
                 docObj["candySize"].toInt(),
+                docObj["nbPoints"].toInt(),
                 docObj["tilePlacementId"].toInt(),
                 docObj["candyId"].toInt());
     } else if(typeVal.toString().compare(QLatin1String("candyTaken"), Qt::CaseInsensitive) == 0) {  // Un joueur a pris un candy
@@ -290,7 +285,7 @@ void TcpClient::onReadyRead() {
                 if (jsonDoc.isObject()) // et c'est un JSON object
                     jsonReceived(jsonDoc.object()); // parser le JSON
             }
-        } else {
+        }else {
             break;
         }
     }
@@ -305,7 +300,7 @@ void TcpClient::error(QAbstractSocket::SocketError error) {
     case QAbstractSocket::ProxyConnectionClosedError:
         return; // gérer par disconnectedFromServer
     case QAbstractSocket::ConnectionRefusedError:
-        QMessageBox::critical(nullptr, tr("Error"), tr("The host refused the connection"));
+        //QMessageBox::critical(nullptr, tr("Error"), tr("The host refused the connection"));
         break;
     case QAbstractSocket::ProxyConnectionRefusedError:
         QMessageBox::critical(nullptr, tr("Error"), tr("The proxy refused the connection"));

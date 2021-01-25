@@ -11,7 +11,7 @@ class ServerWorker : public QObject
     Q_DISABLE_COPY(ServerWorker)
 
 public:
-    explicit ServerWorker(QObject *parent = nullptr);
+    ServerWorker(QObject *parent = nullptr);
     void sendJson(const QJsonObject &jsonData);
 
     // Getters / setters
@@ -40,11 +40,6 @@ private:
     mutable QReadWriteLock genderLock;
     mutable QReadWriteLock teamLock;
 
-signals:
-    void jsonRecieved(const QJsonObject &jsonDoc);
-    void disconnectedFromClient();
-    void error();
-    void logMessage(const QString &msg);
 
 public slots:
     void disconnectFromClient();
@@ -52,6 +47,11 @@ public slots:
 private slots:
     void receiveJson();
 
+signals:
+    void jsonRecieved(const QJsonObject &jsonDoc);
+    void disconnectedFromClient();
+    void error();
+    void logMessage(const QString &msg);
 };
 
 #endif // SERVERWORKER_H

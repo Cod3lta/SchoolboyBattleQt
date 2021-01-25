@@ -14,12 +14,14 @@
 Candy::Candy(
         int candyType,
         int candySize,
+        int nbPoints,
         DataLoader *dataLoader,
         TileCandyPlacement *tilePlacement,
         int id,
         QGraphicsObject *parent)
     : QGraphicsObject(parent),
       id(id),
+      nbPoints(nbPoints),
       idTeam(-1),
       candyType(static_cast<Type>(candyType)),
       candySize(static_cast<Size>(candySize)),
@@ -108,6 +110,10 @@ int Candy::getId() {
     return id;
 }
 
+int Candy::getNbPoints(){
+    return nbPoints;
+}
+
 void Candy::setCurrentPlayerId(int playerId) {
     currentPlayerId = playerId;
 }
@@ -147,7 +153,6 @@ void Candy::capture(double deltaMs) {
     if(x() - 50 < objective.x() && x() + 50 > objective.x() &&
        y() - 50 < objective.y() && y() + 50 > objective.y()) {
         emit validated(id, currentPlayerId);
-        deleteLater();
     }
 
 }

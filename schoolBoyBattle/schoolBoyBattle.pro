@@ -1,10 +1,10 @@
-QT       += core gui network xml
+QT       += core gui network xml multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++11 resources_big
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -14,7 +14,6 @@ SOURCES += \
     boss.cpp \
     candy.cpp \
     dataloader.cpp \
-    display.cpp \
     finishmenu.cpp \
     game.cpp \
     gamewidget.cpp \
@@ -33,7 +32,6 @@ HEADERS += \
     boss.h \
     candy.h \
     dataloader.h \
-    display.h \
     finishmenu.h \
     game.h \
     gamewidget.h \
