@@ -1,5 +1,13 @@
-#include "serverworker.h"
+/*
+ * Description : Cette classe représente chaque client connecté au serveur.
+ *               C’est ici que l’objet QTcpSocket se trouve et également ici
+ *               qu'on envoie les paquets au client qui lui sont assignés.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
 
+#include "serverworker.h"
 #include <QDataStream>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -37,6 +45,7 @@ void ServerWorker::receiveJson() {
     QDataStream socketStream(socket);
 
     socketStream.setVersion(QDataStream::Qt_5_9);
+
     while(true) {
         socketStream.startTransaction();
         socketStream >> jsonData;
@@ -49,17 +58,16 @@ void ServerWorker::receiveJson() {
                     emit jsonRecieved(jsonDoc.object());
                 else
                     emit logMessage("Message invalide : " + QString::fromUtf8(jsonData));
-            }else{
+            } else {
                 emit logMessage("Message invalide : " + QString::fromUtf8(jsonData));
             }
-        }else{
+        } else {
             break;
         }
     }
 }
 
 // SETTERS / GETTERS --------------------------------
-
 
 bool ServerWorker::setSocketDescriptor(qintptr socketDescriptor) {
     // Retourne un bool pou

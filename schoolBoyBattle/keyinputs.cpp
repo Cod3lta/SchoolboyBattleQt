@@ -1,3 +1,12 @@
+/*
+ * Description : Cette  classe ne crée qu’un seul objet.
+ *               Son utilité est de pouvoir capturer les événements du clavier
+ *               au même endroit avant de les envoyer aux objets Player correspondants.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "keyinputs.h"
 #include <QGraphicsItem>
 #include <QGraphicsView>
@@ -16,6 +25,7 @@ KeyInputs::KeyInputs(int focusedPlayerId, QGraphicsObject *parent)
 
 void KeyInputs::keyPress(QKeyEvent * event) {
     int key = event->key();
+
     if(playersKeys.contains(key)) {
         int playerId = playersKeys.value(key).at(0);
         int playerMove = playersKeys.value(key).at(1);
@@ -29,6 +39,7 @@ void KeyInputs::keyPress(QKeyEvent * event) {
 
 void KeyInputs::keyRelease(QKeyEvent *event) {
     int key = event->key();
+
     if(playersKeys.contains(key)) {
         int playerId = playersKeys.value(key).at(0);
         int playerMove = playersKeys.value(key).at(1);
@@ -40,14 +51,19 @@ void KeyInputs::keyRelease(QKeyEvent *event) {
     }
 }
 
+/**
+ * Déplacements joueurs.
+ */
 void KeyInputs::setPlayerKeys(int focusedPlayerId) {
     if(focusedPlayerId == -1)
         focusedPlayerId = 0;
+
     // La clé à presser, {l'id du joueur, la direction}
     playersKeys.insert(Qt::Key_W,       {focusedPlayerId, up});
     playersKeys.insert(Qt::Key_A,       {focusedPlayerId, left});
     playersKeys.insert(Qt::Key_S,       {focusedPlayerId, down});
     playersKeys.insert(Qt::Key_D,       {focusedPlayerId, right});
+
     if(focusedPlayerId == 0) {
         // Si l'id du 1er joueur n'est pas un socketDescriptor
         playersKeys.insert(Qt::Key_Up,      {1, up});
@@ -59,27 +75,28 @@ void KeyInputs::setPlayerKeys(int focusedPlayerId) {
 
 // OVERRIDE REQUIRED
 
-// Paints contents of item in local coordinates
+/**
+ * Dessine le contenu de l'article en coordonnées locales.
+ */
 void KeyInputs::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     Q_UNUSED(painter)
     Q_UNUSED(option)
     Q_UNUSED(widget)
 }
 
-// Returns outer bounds of item as a rectangle
-// Called by QGraphicsView to determine what regions need to be redrawn
+/**
+ * Retourne les limites extérieures de l'élément sous forme de rectangle.
+ * Appelé par QGraphicsView pour déterminer quelles régions doivent être redessinées.
+ */
 QRectF KeyInputs::boundingRect() const {
     return QRectF(0, 0, 0, 0);
 }
 
-// collisions detection
+/**
+ * Détection de collisions.
+ */
 QPainterPath KeyInputs::shape() const {
     QPainterPath path;
     path.addEllipse(boundingRect());
     return path;
-}
-
-
-KeyInputs::~KeyInputs() {
-
 }

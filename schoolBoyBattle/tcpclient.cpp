@@ -1,5 +1,12 @@
-#include "tcpclient.h"
+/*
+ * Description : Cette  classe s'occupe de la communication au serveur
+ *               lors du mode de jeu multijoueur.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
 
+#include "tcpclient.h"
 #include <QDataStream>
 #include <QJsonParseError>
 #include <QTcpSocket>
@@ -55,8 +62,8 @@ void TcpClient::sendMessage(const QString &text)
     clientStream << QJsonDocument(message).toJson();
 }
 
-/*
- * Quand le joueur clique sur "prêt" dans la salle d'attente
+/**
+ * Quand le joueur clique sur "prêt" dans la salle d'attente.
  */
 void TcpClient::toggleReady() {
     QDataStream clientStream(socket);
@@ -66,7 +73,7 @@ void TcpClient::toggleReady() {
     clientStream << QJsonDocument(message).toJson();
 }
 
-/*
+/**
  * Quand le joueur appuie ou relache une touche de déplacement
  * du clavier
  */
@@ -81,7 +88,7 @@ void TcpClient::keyMove(int playerDescriptor, int direction, bool value) {
     clientStream << QJsonDocument(message).toJson();
 }
 
-/*
+/**
  * Envoi du rollback au serveur
  * Infos à envoyer : la position du joueur et de ses candies
  */
@@ -91,6 +98,7 @@ void TcpClient::rollback(QPointF playerPos, QHash<int, QPointF> candiesTaken) {
 
     QJsonObject candies;
     QHashIterator<int, QPointF> i(candiesTaken);
+
     while(i.hasNext()) {
         i.next();
         QJsonObject candyCoordinates;
@@ -108,8 +116,8 @@ void TcpClient::rollback(QPointF playerPos, QHash<int, QPointF> candiesTaken) {
     clientStream << QJsonDocument(rollback).toJson();
 }
 
-/*
- * Envoi du nouveau candy créé au serveur
+/**
+ * Envoi du nouveau candy créé au serveur.
  */
 void TcpClient::sendNewCandy(int candyType, int candySize, int nbPoints, int tilePlacementId, int candyId) {
     QDataStream clientStream(socket);
@@ -150,7 +158,6 @@ void TcpClient::playerValidateCandies(int playerId) {
     QJsonObject message;
     message[QStringLiteral("type")] = QStringLiteral("validateCandies");
     clientStream << QJsonDocument(message).toJson();
-
 }
 
 void TcpClient::jsonReceived(const QJsonObject &docObj) {
@@ -158,6 +165,7 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
     if (typeVal.isNull() || !typeVal.isString())
         return; // le message sans type sera reçu mais on va l'ignorer
+
     if (typeVal.toString().compare(QLatin1String("login"), Qt::CaseInsensitive) == 0) { // Message de login
         if (loggedIn)
             return; // si on est déjà logué, on ignore
@@ -206,10 +214,10 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
                 candyMaster = true;
         }
         this->usersList = usersList;        // On sauvegarde la liste des infos de chaque utilisateur dans l'objet pour
-                                            // reprendre les infos au démarrage du jeu
+        // reprendre les infos au démarrage du jeu
         emit userListRefresh(usersList);
     } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // Un utilisateur a quitté
-         // on extrait le nom d'utilisateur du nouvel utilisateur
+        // on extrait le nom d'utilisateur du nouvel utilisateur
         const QJsonValue usernameVal = docObj.value(QLatin1String("username"));
         if (usernameVal.isNull() || !usernameVal.isString())
             return; // le nom d'utilisateur était invalide donc on ignore
@@ -222,7 +230,7 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
         emit startGame(docObj.value("nbUsers").toInt(), 1);
     } else if(typeVal.toString().compare(QLatin1String("playerMove"), Qt::CaseInsensitive) == 0) {  // Déplacement d'un joueur
         emit userMove(
-                docObj["playerDescriptor"].toInt(),
+                    docObj["playerDescriptor"].toInt(),
                 docObj["direction"].toInt(),
                 docObj["value"].toBool());
     } else if(typeVal.toString().compare(QLatin1String("playerRollback"), Qt::CaseInsensitive) == 0) {  // Rollback d'un joueur
@@ -238,28 +246,28 @@ void TcpClient::jsonReceived(const QJsonObject &docObj) {
                                     test.value("y").toDouble()));
         }
         emit userRollback(
-                docObj["playerX"].toDouble(),
+                    docObj["playerX"].toDouble(),
                 docObj["playerY"].toDouble(),
                 candiesTaken,
                 docObj["socketDescriptor"].toInt());
     } else if(typeVal.toString().compare(QLatin1String("newCandy"), Qt::CaseInsensitive) == 0) {  // Nouveau candy a spawné
         emit spawnNewCandy(
-                docObj["candyType"].toInt(),
+                    docObj["candyType"].toInt(),
                 docObj["candySize"].toInt(),
                 docObj["nbPoints"].toInt(),
                 docObj["tilePlacementId"].toInt(),
                 docObj["candyId"].toInt());
     } else if(typeVal.toString().compare(QLatin1String("candyTaken"), Qt::CaseInsensitive) == 0) {  // Un joueur a pris un candy
         emit playerPickUpCandy(
-                docObj["socketDescriptor"].toInt(),
+                    docObj["socketDescriptor"].toInt(),
                 docObj["candyId"].toInt());
     } else if(typeVal.toString().compare(QLatin1String("stealCandies"), Qt::CaseInsensitive) == 0) {  // Un joueur a volé un candy
         emit playerStealCandy(
-                docObj["candyIdStartingFrom"].toInt(),
+                    docObj["candyIdStartingFrom"].toInt(),
                 docObj["socketDescriptor"].toInt());
     } else if(typeVal.toString().compare(QLatin1String("validateCandies"), Qt::CaseInsensitive) == 0) {  // Un joueur a volé un candy
         emit playerValidateCandy(
-                docObj["socketDescriptor"].toInt());
+                    docObj["socketDescriptor"].toInt());
     }
 }
 
@@ -285,13 +293,11 @@ void TcpClient::onReadyRead() {
                 if (jsonDoc.isObject()) // et c'est un JSON object
                     jsonReceived(jsonDoc.object()); // parser le JSON
             }
-        }else {
+        } else {
             break;
         }
     }
 }
-
-
 
 void TcpClient::error(QAbstractSocket::SocketError error) {
     // afficher un message à l'utilisateur qui informe du type d'erreur survenu

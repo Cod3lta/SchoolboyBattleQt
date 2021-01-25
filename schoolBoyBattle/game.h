@@ -1,5 +1,14 @@
-#ifndef GAME_H
-#define GAME_H
+/*
+ * Description : Cette classe hérite de QGraphicsScene et s’occupe de la création,
+ *               du déroulement et de la suppression de chaque partie.
+ *               Elle crée tous les QGraphicsItem nécessaires, les ajoute à la scène
+ *               et les connecte entre eux pour leur fonctionnement.
+ *               Cette classe s’occupe également d’envoyer et recevoir des signaux
+ *               à la classe TcpClient lorsqu’il faut communiquer avec le serveur.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
 
 #include <QMainWindow>
 #include <QGraphicsItem>
@@ -16,6 +25,9 @@
 #include "tilecandyplacement.h"
 #include "tcpclient.h"
 #include <QElapsedTimer>
+
+#ifndef GAME_H
+#define GAME_H
 
 class Game : public QGraphicsScene
 {
@@ -52,7 +64,6 @@ private:
 
     void setCustomSceneRect();
     void placeTiles();
-    void reset();
     void refreshEntities();
     void placeTilesCandyPlacement();
     void setupMultiplayerGame();

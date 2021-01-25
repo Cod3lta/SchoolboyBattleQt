@@ -1,3 +1,10 @@
+/*
+ * Description : Cette  classe s'occupe de gérer les joueurs présents dans la partie.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "player.h"
 #include <QGraphicsItem>
 #include <QGraphicsView>
@@ -35,8 +42,8 @@ Player::Player(
       isMainPlayerMulti(false)
 {
     setPos(
-        dataLoader->getTeamSpawnpoint(team).x(),
-        dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
+                dataLoader->getTeamSpawnpoint(team).x(),
+                dataLoader->getTeamSpawnpoint(team).y() - dataLoader->getTileSize()/2 - (dataLoader->getPlayerSize().y() - dataLoader->getTileSize()));
 
     loadAnimations();
     setAnimation(idle);
@@ -52,6 +59,9 @@ Player::Player(
         setUsername(username);
 }
 
+/**
+ * Afficher le pseudo des joueurs.
+ */
 void Player::setUsername(QString username) {
     this->username->setHtml("<div style='background-color:#65ffffff;'>&nbsp;" + username + "&nbsp;</div>");
     this->username->setFlag(GraphicsItemFlag::ItemIgnoresTransformations);
@@ -61,6 +71,9 @@ void Player::setUsername(QString username) {
     this->username->setPos(-centerTextX, -40);
 }
 
+/**
+ * Charger les animations.
+ */
 void Player::loadAnimations() {
     animationsLocal.insert(idle, setupAnimation(dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, idle))));
     animationsLocal.insert(run, setupAnimation(dataLoader->playerAnimations.value(dataLoader->getPlayerAnimationId(gender, team, run))));
@@ -77,6 +90,9 @@ Player::AnimationsLocalStruct* Player::setupAnimation(DataLoader::PlayerAnimatio
     return aStruct;
 }
 
+/**
+ * Changement de direction et d'animation selon les touches appuyés au clavier.
+ */
 void Player::keyMove(int playerId, int direction, bool value) {
     if(playerId == id) {
         moves[direction] = value;
@@ -101,13 +117,11 @@ void Player::refresh(double delta, int socketDescriptor) {
      *      vecteur de mouvement = déterminer le vecteur de réponse
      * déplacer le joueur en fonction du vecteur de mouvement
      */
-
     QVector2D movingVector = calculateMovingVector(delta);
 
     // On ne calcule la collision avec les candy et les murs que dans 2 conditions
     // - Si on est en local
     // - Si on est en multi et ce joueur est celui qui est joué
-
     if(collideWithWalls(movingVector))
         movingVector = calculateAnswerVector(movingVector);
 
@@ -117,23 +131,20 @@ void Player::refresh(double delta, int socketDescriptor) {
         setZIndex(dataLoader->getPlayerSize().y());
     }
 
-
     if((dataLoader->isMultiplayer() && id == socketDescriptor) || !dataLoader->isMultiplayer()) {
         // Detecter si le joueur touche un candy
         collideWithCandy();
         // Detecter si le joueur touche sa base
         collideWithSpawn();
     }
-
-
 }
 
 // COLLISIONS ET DEPLACEMENTS ----------------------------------------------------------
 
-/*
- * déplacer le joueur dans la direction du vecteur mouvement
- * tester s'il y a une collision
- * remettre le joueur dans sa position initiale
+/**
+ * Déplacer le joueur dans la direction du vecteur mouvement.
+ * Tester s'il y a une collision.
+ * Remettre le joueur dans sa position initiale.
  */
 bool Player::collideWithWalls(QVector2D movingVector) {
 
@@ -166,18 +177,16 @@ bool Player::collideWithWalls(QVector2D movingVector) {
     // On remet le joueur à sa position normale
     move(3*movingVector, true);
     return returnValue;
-
 }
 
 void Player::collideWithSpawn() {
-
     // Si le joueur n'a pas de candy, on passe
     if(IdsCandiesTaken.length() == 0) return;
 
     // Si tous les bonbons du joueur sont déjà validés, on ne fait rien
     if(static_cast<Game*>(scene())->hasPlayerAnyCandyValid(id)) return;
 
-    // Les items en contacte avec le joueur
+    // Les items en contact avec le joueur
     QList<QGraphicsItem*> itemsColliding = collidingItems();
 
     // Les tiles sur la couche de spawn autour du joueur
@@ -192,9 +201,9 @@ void Player::collideWithSpawn() {
                 Tile *tileNearby = spawnTilesNearby.at(j);
                 // Si la tile n'est pas celle de notre équipe, on ne fait rien
                 if(team == black && dataLoader->getTileType("world/config/spawn-red.png") == tileNearby->getTileType())
-                        return;
+                    return;
                 if(team == red && dataLoader->getTileType("world/config/spawn-black.png") == tileNearby->getTileType())
-                        return;
+                    return;
                 // Si un des items avec lesquels on collide se trouve dans la liste des tiles
                 // de collisions qui se trouvent à proximité
                 if(collidingItem->x() == tileNearby->x() && collidingItem->y() == tileNearby->y()) {
@@ -243,6 +252,9 @@ int Player::getTextXToCenter(QGraphicsTextItem *text) {
     return centerTextX;
 }
 
+/**
+ * Collisions avec un Candy.
+ */
 void Player::collideWithCandy() {
     QList<QGraphicsItem*> itemsColliding = collidingItems();
     QList<Candy *> candiesNearby = static_cast<Game*>(scene())->candiesNearby(x(), y());
@@ -255,18 +267,20 @@ void Player::collideWithCandy() {
 
         for(int j = 0; j < candiesNearby.size(); j++) {
             Candy *candyNearby = candiesNearby.at(j);
+
             if(collidingItem->x() == candyNearby->x() && collidingItem->y() == candyNearby->y()) {
+
                 // si le candy qu'on touche est pris (pas par nous)
                 if(candyNearby->isTaken()) {
                     if(candyNearby->getCurrentPlayerId() == this->id) continue;
                     // Voler le candy
                     emit stealCandies(candyNearby->getId(), this->id);
-                }else{
+                } else {
                     // Ramasser le candy
                     if(dataLoader->isMultiplayer()) {
                         // Demander au serveur si on peut prendre le candy
                         emit isCandyFree(candyNearby->getId());
-                    }else{
+                    } else {
                         // appeler une fonction publique de Candy au lieu d'un signal car utiliser
                         // les signaux / slots demanderait de connecter au préalable tous les joueurs à
                         // tous les candy
@@ -279,25 +293,34 @@ void Player::collideWithCandy() {
     }
 }
 
+/**
+ * Ajouté le candy à la file.
+ */
 void Player::prependCandiesTaken(QList<int> candiesGained) {
     IdsCandiesTaken = candiesGained + IdsCandiesTaken;
     showTextCandiesUpdated(candiesGained.length());
 }
 
+/**
+ * Se faire voler un candy et le perdre.
+ */
 QList<int> Player::looseCandies(int candyStolenId) {
     QList<int> candiesStolen;
+
     // Si le joueur ne contient pas ce candy, on retourne rien
     if(!IdsCandiesTaken.contains(candyStolenId))
         return candiesStolen;
+
     // Si la queue du joueur est encore protégée
     if(queueProtected->isActive())
         return candiesStolen;
+
     for(int i = 0; i < IdsCandiesTaken.length(); i++) {
         if(IdsCandiesTaken.at(i) == candyStolenId) {
-           candiesStolen = IdsCandiesTaken.mid(i);
-           IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
-           showTextCandiesUpdated(-candiesStolen.length());
-           return candiesStolen;
+            candiesStolen = IdsCandiesTaken.mid(i);
+            IdsCandiesTaken = IdsCandiesTaken.mid(0, i);
+            showTextCandiesUpdated(-candiesStolen.length());
+            return candiesStolen;
         }
     }
     return candiesStolen;
@@ -321,7 +344,6 @@ QVector2D Player::calculateAnswerVector(QVector2D movingVector) {
                 movingVector.y() * collideY * -1);
 
     QVector2D answerVector = movingVector + normalVector;
-    //QVector2D answerVector(0, 0);
 
     return answerVector;
 }
@@ -344,8 +366,10 @@ void Player::setAnimation(Animations a) {
     if(animationsLocal.contains(currentAnimation)) {
         animationsLocal.value(currentAnimation)->timer->stop();
     }
+
     // Changer l'animation
     currentAnimation = a;
+
     // Démarer le timer de la nouvelle animation
     animationsLocal.value(a)->timer->start();
 }
@@ -363,6 +387,9 @@ void Player::animationNextFrame() {
     update();
 }
 
+/**
+ * Retourner le type d'animation. (idle ou run)
+ */
 Player::Animations Player::getAnimationType() {
     if((!moves[moveUp] && !moves[moveRight] && !moves[moveDown] && !moves[moveLeft]) ||
             (moves[moveUp] && moves[moveDown] && !moves[moveLeft] && !moves[moveRight]) ||
@@ -373,10 +400,13 @@ Player::Animations Player::getAnimationType() {
     return run;
 }
 
+/**
+ * Retourner la direction pour savoir si le personnage à la tête à gauche ou à droite.
+ */
 Player::Facing Player::getFacing() {
     if(moves[moveLeft] && !moves[moveRight]) {
         return facingLeft;
-    }else if(!moves[moveLeft] && moves[moveRight]) {
+    } else if(!moves[moveLeft] && moves[moveRight]) {
         return facingRight;
     }
     return facing;
@@ -392,10 +422,10 @@ void Player::deleteCandy(int candyId) {
 
 // OVERRIDE REQUIRED
 
-// Paints contents of item in local coordinates
+/**
+ * Dessine le contenu de l'item en coordonnées locales.
+ */
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-
-
     if(HITBOX_DEBUG) {
         // Debug rect
         painter->setPen(QPen(Qt::black));
@@ -412,9 +442,9 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     if(facing == facingLeft) {
         trans.translate(boundingRect().width(), 0).scale(-1, 1);
         setTransform(trans);
-    }else if (facing == facingRight) {
+    } else if (facing == facingRight) {
         setTransform(QTransform(1, 0, 0, 1, 1, 1));
-    }else{
+    } else {
         resetTransform();
     }
 
@@ -434,14 +464,18 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     Q_UNUSED(widget)
 }
 
-// Returns outer bounds of item as a rectangle
-// Called by QGraphicsView to determine what regions need to be redrawn
-// the rect stay at 0:0 !!
+
+/**
+ * Renvoie les limites extérieures de l'élément sous forme de rectangle.
+ * Appelé par QGraphicsView pour déterminer quelles régions doivent être redessinées
+ */
 QRectF Player::boundingRect() const {
     return QRectF(0, 0, dataLoader->getPlayerSize().x(), dataLoader->getPlayerSize().y());
 }
 
-// collisions detection
+/**
+ * Détection de collisions.
+ */
 QPainterPath Player::shape() const {
     double widthRatio = 0.6;
     double shapeHeight = 130;
@@ -454,14 +488,23 @@ QPainterPath Player::shape() const {
     return path;
 }
 
+/**
+ * Retourne l'id du joueur.
+ */
 int Player::getId() {
     return this->id;
 }
 
+/**
+ * Retourne l'équipe du joueur.
+ */
 int Player::getTeam() {
     return this->team;
 }
 
+/**
+ * Retourne la liste des bonbons du joueur.
+ */
 QList<int> Player::getCandiesTaken() {
     return IdsCandiesTaken;
 }
@@ -469,8 +512,4 @@ QList<int> Player::getCandiesTaken() {
 void Player::pickupCandyMulti(int candyId) {
     if(IdsCandiesTaken.length() <= CANDY_MAX)
         IdsCandiesTaken.prepend(candyId);
-}
-
-Player::~Player() {
-
 }

@@ -1,13 +1,26 @@
-#ifndef CANDY_H
-#define CANDY_H
+/*
+ * Description : Cette classe s’occupe de de gérer les bonbons sur la partie.
+ *               Chaque bonbon est soit présent sur le jeu n’appartenant
+ *               à personne, soit dans la file derrière un joueur.
+ *               Dès qu’un bonbon atteint la base d’une des deux équipes,
+ *               il se fait valider puis supprimer de la scène.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include <QGraphicsObject>
 #include <QPixmap>
 #include "dataloader.h"
 #include "tilecandyplacement.h"
 
+#ifndef CANDY_H
+#define CANDY_H
+
 class Candy : public QGraphicsObject
 {
     Q_OBJECT
+
 public:
     Candy(
             int candyType,
@@ -17,7 +30,6 @@ public:
             TileCandyPlacement *tilePlacement,
             int id,
             QGraphicsObject *parent = nullptr);
-    ~Candy();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -33,7 +45,6 @@ public:
     void validate();
     bool isValidated();
 
-
     enum Type : int {peanut = 0, mandarin = 1};
     enum Size : int {small = 0, big = 1};
     enum Animations {idle = 0};
@@ -44,7 +55,6 @@ private:
         int frameIndex;
         DataLoader::CandyAnimationsStruct *sharedDatas;
     } AnimationsLocalStruct;
-
 
     QHash<Animations, AnimationsLocalStruct*> animationsLocal;
     int id;
@@ -70,6 +80,5 @@ signals:
     void pickedUp();
     void validated(int id, int playerId);
 };
-
 
 #endif // CANDY_H

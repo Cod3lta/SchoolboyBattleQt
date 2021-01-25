@@ -1,3 +1,12 @@
+/*
+ * Description : Cette classe s'occupe de créer l’interface du serveur.
+ *               Elle possède un objet QPlainTextEdit qui montre les arrivées
+ *               et envois de tous les messages que le serveur traite.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -14,7 +23,6 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
 
 private:
     QPlainTextEdit *editText;

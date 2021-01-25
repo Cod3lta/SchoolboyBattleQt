@@ -1,5 +1,14 @@
-#include "waitingroom.h"
+/*
+ * Description : Cette classe s'occupe de créer le widget affichant l’écran
+ *               de préparation au mode de jeu multijoueur.
+ *               Ce widget sert à accueillir tous les joueurs souhaitant
+ *               jouer ensemble avant de lancer la partie.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
 
+#include "waitingroom.h"
 #include <QLabel>
 #include <QMessageBox>
 #include <QSoundEffect>
@@ -43,16 +52,6 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
 
     labelInfos->setStyleSheet("");
 
-   /* QMediaPlaylist *playlist = new QMediaPlaylist();
-       playlist->addMedia(QUrl("qrc:/Resources/music/music.wav"));
-       playlist->setPlaybackMode(QMediaPlaylist::Loop);
-       QMediaPlayer *music = new QMediaPlayer();
-       music->setPlaylist(playlist);
-       music->play();
-
-*/
-
-
     for(int i = 0; i < MAX_USERS; i++) {
         usersLayout.append(new QHBoxLayout);
         usersName.append(new QLabel);
@@ -61,6 +60,7 @@ WaitingRoom::WaitingRoom(TcpClient *tcpClient, QWidget *parent) :
         usersLayout[i]->addStretch(1);
         usersLayout[i]->addWidget(usersReady[i]);
     }
+
     users->addLayout(usersLayout.at(0), 0, 0);
     users->addLayout(usersLayout.at(1), 1, 0);
     users->addLayout(usersLayout.at(2), 2, 0);
@@ -100,10 +100,11 @@ void WaitingRoom::userListRefresh(QHash<int, QHash<QString, QString>> users) {
     if(users.size() >= MIN_USERS) {
         btnReady->setEnabled(true);
         btnReady->setText("Prêt");
-    }else{
+    } else {
         btnReady->setEnabled(false);
         btnReady->setText("Encore " + QString::number(MIN_USERS - users.size()) + " joueur nécessaire");
     }
+
     // Mettre à jour les labels des utilisateurs
     QHashIterator<int, QHash<QString, QString>> i(users);
     int count = 0;
@@ -118,6 +119,7 @@ void WaitingRoom::userListRefresh(QHash<int, QHash<QString, QString>> users) {
         }
         count++;
     }
+
     for(int i = users.size(); i < MAX_USERS; i++) {
         usersName[count]->setText("...");
         usersReady[count]->setText("...");
@@ -140,4 +142,3 @@ void WaitingRoom::startWaitingRoom(QHostAddress address, qint16 port) {
         usersReady[i]->setText("...");
     }
 }
-

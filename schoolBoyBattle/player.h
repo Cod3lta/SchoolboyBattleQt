@@ -1,22 +1,26 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+/*
+ * Description : Cette  classe s'occupe de gérer les joueurs présents dans la partie.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
 
 #include "dataloader.h"
 #include "tile.h"
 #include "candy.h"
-
 #include <QMainWindow>
 #include <QGraphicsItem>
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QVector2D>
 
-
-
+#ifndef PLAYER_H
+#define PLAYER_H
 
 class Player : public QGraphicsObject
 {
     Q_OBJECT
+
 public:
     Player(int team, DataLoader *dataLoader);
     Player(
@@ -26,7 +30,6 @@ public:
             QString username,
             DataLoader *dataLoader,
             QGraphicsObject *parent = nullptr);
-    ~Player();
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -72,7 +75,7 @@ private:
     QList<QGraphicsTextItem *> textsItems;
     QGraphicsTextItem *username;
     int id;                 // En solo : int incrémentatif
-                            // En multi : le SocketDescriptor
+    // En multi : le SocketDescriptor
     bool moves[4] = {false, false, false, false};
     bool atSpawn;
     bool isMainPlayerMulti;

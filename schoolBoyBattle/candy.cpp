@@ -1,3 +1,14 @@
+/*
+ * Description : Cette classe s’occupe de de gérer les bonbons sur la partie.
+ *               Chaque bonbon est soit présent sur le jeu n’appartenant
+ *               à personne, soit dans la file derrière un joueur.
+ *               Dès qu’un bonbon atteint la base d’une des deux équipes,
+ *               il se fait valider puis supprimer de la scène.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "candy.h"
 #include <QBrush>
 #include <QPen>
@@ -10,7 +21,9 @@
 #define LERP_AMOUNT 1e7
 #define LERP_ACCELERATION 20
 
-
+/**
+ * Constructeur des Candy afin de les initialiser.
+ */
 Candy::Candy(
         int candyType,
         int candySize,
@@ -41,7 +54,9 @@ Candy::Candy(
 }
 
 // Setup des animations des candies ---------------------------------------------------------
-
+/**
+ * Chargement des animations
+ */
 void Candy::loadAnimations() {
     animationsLocal.insert(
                 idle,
@@ -50,6 +65,9 @@ void Candy::loadAnimations() {
                         dataLoader->getCandyAnimationId(candyType, candySize))));
 }
 
+/**
+ * Chargement des animations avec DataLoader.
+ */
 Candy::AnimationsLocalStruct* Candy::setupCandyAnimationData(DataLoader::CandyAnimationsStruct* sharedDatas) {
     AnimationsLocalStruct *c = new AnimationsLocalStruct();
     c->frameIndex = 0;
@@ -78,21 +96,32 @@ void Candy::animationNextFrame() {
     update();
 }
 
+/**
+ * Lancer l'animation en gérant le timer.
+ */
 void Candy::setAnimation(Animations a) {
     // Arrêter le timer de l'animation qui se termine
     if(animationsLocal.contains(animation)) {
         animationsLocal.value(animation)->timer->stop();
     }
+
     // Changer l'animation
     animation = a;
-    // Démarer le timer de la nouvelle animation
+
+    // Démmarer le timer de la nouvelle animation
     animationsLocal.value(a)->timer->start();
 }
 
+/**
+ * Définition du Z Index
+ */
 void Candy::setZIndex() {
     setZValue(y() + CANDY_HEIGHT * 0.8);
 }
 
+/**
+ * Le candy a été ramassé.
+ */
 void Candy::pickUp(int playerId, int idTeam) {
     taken = true;
     // Envoyer un msg au slot du TileCandyPlacement qu'il
@@ -102,38 +131,65 @@ void Candy::pickUp(int playerId, int idTeam) {
     this->idTeam = idTeam;
 }
 
+/**
+ * Retourne si le Candy est pris par un joueur ou non.
+ */
 bool Candy::isTaken() {
     return taken;
 }
 
+/**
+ * Retourne l'identifiant du Candy.
+ */
 int Candy::getId() {
     return id;
 }
 
+/**
+ * Retourne le nombre de point du bonbon.
+ */
 int Candy::getNbPoints(){
     return nbPoints;
 }
 
+/**
+ * Définir à quel joueur appartient ce Candy.
+ */
 void Candy::setCurrentPlayerId(int playerId) {
     currentPlayerId = playerId;
 }
 
+/**
+ * Définir l'id de l'équipe que a le bonbon.
+ */
 void Candy::setTeamId(int idTeam) {
     this->idTeam = idTeam;
 }
 
+/**
+ * Candy validé dans une équipe.
+ */
 void Candy::validate() {
     valid = true;
 }
 
+/**
+ * Retourne si le Candy est validé ou non.
+ */
 bool Candy::isValidated() {
     return valid;
 }
 
+/**
+ * Retourn l'id du joueur qui est en possession du bonbon.
+ */
 int Candy::getCurrentPlayerId() {
     return currentPlayerId;
 }
 
+/**
+ * Mise à jour des candy.
+ */
 void Candy::refresh(QPointF pos, int posInQueue, double delta) {
     if(!taken || valid) return;
     int yOffset = 0;
@@ -145,21 +201,26 @@ void Candy::refresh(QPointF pos, int posInQueue, double delta) {
     setZIndex();
 }
 
+/**
+ * Prise du bonbon selon delta en millisecondes.
+ */
 void Candy::capture(double deltaMs) {
     QPoint objective = dataLoader->getTeamSpawnpoint(idTeam);
     setX(x() + (objective.x() - x()) / 20 * deltaMs);
     setY(y() + (objective.y() - y()) / 20 * deltaMs);
+
     // Si le candy est suffisamment proche du point de spawn
     if(x() - 50 < objective.x() && x() + 50 > objective.x() &&
-       y() - 50 < objective.y() && y() + 50 > objective.y()) {
+            y() - 50 < objective.y() && y() + 50 > objective.y()) {
         emit validated(id, currentPlayerId);
     }
-
 }
 
 // OVERRIDE REQUIRED ------------------------------------------------------------------------
 
-// Paints contents of item in local coordinates
+/**
+ * Dessine le contenu du candy en coordonnées locales.
+ */
 void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if(HITBOX_DEBUG) {
         // Debug rect
@@ -175,9 +236,9 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     QPixmap *imageToDraw = candyToDraw->sharedDatas->image;
     QPixmap *imageHover = candyToDraw->sharedDatas->image;
     if(idTeam == 0)
-         imageHover = candyToDraw->sharedDatas->imageRed;
+        imageHover = candyToDraw->sharedDatas->imageRed;
     else if(idTeam == 1)
-         imageHover = candyToDraw->sharedDatas->imageBlack;
+        imageHover = candyToDraw->sharedDatas->imageBlack;
 
     QRectF sourceRect = QRectF(imageToDraw->width() / candyToDraw->sharedDatas->nbFrame * candyToDraw->frameIndex, 0,
                                imageToDraw->width() / candyToDraw->sharedDatas->nbFrame, imageToDraw->height());
@@ -191,14 +252,17 @@ void Candy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     Q_UNUSED(widget)
 }
 
-// Returns outer bounds of item as a rectangle
-// Called by QGraphicsView to determine what regions need to be redrawn
-// the rect stay at 0:0 !!
+
+/**
+ * Retourne les limites extérieures du candy sous forme de rectangle.
+ */
 QRectF Candy::boundingRect() const {
     return QRectF(0, 0, CANDY_WIDTH, CANDY_HEIGHT);
 }
 
-// collisions detection
+/**
+ * Détection de collisions.
+ */
 QPainterPath Candy::shape() const {
     QPainterPath path;
     path.addRect(QRectF(
@@ -207,9 +271,4 @@ QPainterPath Candy::shape() const {
                      boundingRect().width()/2,
                      boundingRect().height()/2));
     return path;
-}
-
-
-Candy::~Candy() {
-
 }

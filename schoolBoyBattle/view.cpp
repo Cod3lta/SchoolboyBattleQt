@@ -1,3 +1,11 @@
+/*
+ * Description : Cette classe dérive de QGraphicsView et crée la ou les vues
+ *               qui permettront de visualiser la scène.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "view.h"
 #include <QDebug>
 
@@ -10,8 +18,8 @@ View::View(int id, QGraphicsView *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFocusPolicy(Qt::NoFocus);    // Nécessaire pour ne pas pouvoir scroller
-                                    // la scène avec la souris / les touches
-                                    // flechées
+    // la scène avec la souris / les touches
+    // flechées
 }
 
 void View::moveView(Player *player, int playerWidth, int playerHeight, double deltaMs) {

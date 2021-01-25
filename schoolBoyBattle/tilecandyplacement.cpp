@@ -1,6 +1,13 @@
+/*
+ * Description : Cette classe dérive de Tile et a pour but de faire
+ *               apparaître des bonbons à intervalles réguliers sur le terrain.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "dataloader.h"
 #include "tilecandyplacement.h"
-
 #include <QPainter>
 #include <QDebug>
 
@@ -55,7 +62,9 @@ void TileCandyPlacement::candyPickedUp() {
 
 // OVERRIDE REQUIRED
 
-// Paints contents of item in local coordinates
+/**
+ * Dessine le contenu de l'item en coordonnées locales.
+ */
 void TileCandyPlacement::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if(HITBOX_DEBUG) {
         painter->setPen(QPen(Qt::blue));
@@ -71,14 +80,18 @@ void TileCandyPlacement::paint(QPainter *painter, const QStyleOptionGraphicsItem
     Q_UNUSED(widget)
 }
 
-// Returns outer bounds of item as a rectangle
-// Called by QGraphicsView to determine what regions need to be redrawn
-// the rect stay at 0:0 !!
+/**
+ * Renvoie les limites extérieures de l'élément sous forme de rectangle.
+ * Appelé par QGraphicsView pour déterminer quelles régions doivent être redessinées.
+ * Le rectangle reste à 0:0 !
+ */
 QRectF TileCandyPlacement::boundingRect() const {
     return QRectF(0, 0, TILE_SIZE, TILE_SIZE);
 }
 
-// collisions detection
+/**
+ * Détection de collisions.
+ */
 QPainterPath TileCandyPlacement::shape() const {
     QPainterPath path;
     path.addRect(boundingRect());

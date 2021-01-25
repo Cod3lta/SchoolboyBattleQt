@@ -1,5 +1,13 @@
-#include "startmenu.h"
+/*
+ * Description : Cette  classe crée le premier widget visible
+ *               au lancement du programme, composé d’une interface simple
+ *               pour choisir le mode de jeu.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
 
+#include "startmenu.h"
 #include <QApplication>
 #include <QBoxLayout>
 #include <QLineEdit>

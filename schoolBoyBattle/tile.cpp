@@ -1,3 +1,12 @@
+/*
+ * Description : Chaque objet de cette classe est un carreau sur le terrain de jeu.
+ *               Avec le support des couches de tiles, plusieurs tiles peuvent
+ *               se trouver au même endroit.
+ * Version     : 1.0.0
+ * Date        : 25.01.2021
+ * Auteurs     : Prétat Valentin, Badel Kevin et Margueron Yasmine
+*/
+
 #include "dataloader.h"
 #include "tile.h"
 #include <QGraphicsItem>
@@ -29,18 +38,14 @@ Tile::Tile(int indexX, int indexY, DataLoader::TileLayerStruct* layerRessources,
         setZValue(layerRessources->zIndex.toInt());
     else
         setZValue(y + tileSize);
-
 }
-
 
 // OVERRIDE REQUIRED
 
-// Paints contents of item in local coordinates
+/**
+ * Dessine le contenu de l'item en coordonnées locales.
+ */
 void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-
-
-    //painter->drawText(boundingRect().x()+10, boundingRect().y()+10, QString::number(type));
-
     if(!(layer == "1-spawns" || layer == "4-collision" || layer == "5-config")) {
         QRectF sourceRect(0, 0, image->width(), image->height());
         painter->drawPixmap(boundingRect(), *image, sourceRect);
@@ -55,21 +60,19 @@ int Tile::getTileType() {
     return tileType;
 }
 
-// Returns outer bounds of item as a rectangle
-// Called by QGraphicsView to determine what regions need to be redrawn
-// the rect stay at 0:0 !!
+/**
+ * Renvoie les limites extérieures de l'élément sous forme de rectangle.
+ * Appelé par QGraphicsView pour déterminer quelles régions doivent être redessinées
+ */
 QRectF Tile::boundingRect() const {
     return boundingRectangle;
 }
 
-// collisions detection
+/**
+ * Détection de collisions.
+ */
 QPainterPath Tile::shape() const {
     QPainterPath path;
     path.addRect(QRect(0, 0, dataLoader->getTileSize(), dataLoader->getTileSize()));
     return path;
-}
-
-
-Tile::~Tile() {
-
 }
