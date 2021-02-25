@@ -23,14 +23,15 @@ TcpClient::TcpClient(QObject *parent) :
     descriptor(-1)
 {
     connect(socket, &QTcpSocket::readyRead, this, &TcpClient::onReadyRead);         // Slot
-    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, &TcpClient::error); // Slot
+//    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, &TcpClient::error); // Slot
     connect(socket, &QTcpSocket::connected, this, &TcpClient::askUsername);           // Slot
     connect(socket, &QTcpSocket::connected, this, &TcpClient::connected);           // Signal
     connect(socket, &QTcpSocket::disconnected, this, &TcpClient::disconnected);     // Signal
-    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, [=] () {
-        // Retourner au menu principal
-        emit connectionError();
-    });
+    // Creates
+//    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred), this, [=] () {
+//        // Retourner au menu principal
+//        emit connectionError();
+//    });
     connect(socket, &QTcpSocket::disconnected, this, [=]() {loggedIn = false; });
 }
 
