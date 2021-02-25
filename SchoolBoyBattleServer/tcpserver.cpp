@@ -128,6 +128,7 @@ void TcpServer::userDisconnected(ServerWorker *sender, int threadIdx) {
         userListMessage.insert("users", QJsonValue(generateUserList()));
         sendEveryone(userListMessage);
 
+        nbUsersConnected--;
         emit logMessage(userName + QLatin1String(" disconnected"));
     }
     sender->deleteLater();
@@ -152,6 +153,8 @@ void TcpServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docOb
 {
     Q_ASSERT(sender);
     const QJsonValue typeVal = docObj.value(QLatin1String("type"));
+    if(nbUsersConnected >= 8)
+        return;
     if (typeVal.isNull() || !typeVal.isString())
         return;
     if (typeVal.toString().compare(QLatin1String("login"), Qt::CaseInsensitive) != 0)
@@ -189,6 +192,8 @@ void TcpServer::jsonFromLoggedOut(ServerWorker *sender, const QJsonObject &docOb
     userListMessage.insert("type", QJsonValue("updateUsersList"));
     userListMessage.insert("users", QJsonValue(generateUserList()));
     sendEveryone(userListMessage);
+
+    nbUsersConnected++;
 }
 
 QJsonObject TcpServer::generateUserList() {

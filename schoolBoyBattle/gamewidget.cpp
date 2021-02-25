@@ -95,11 +95,11 @@ void GameWidget::startGame(int nbPlayers, int nbViews) {
     });
 
     QString terrainFileName = "";
-    if(nbPlayers >= 5) {
-        terrainFileName = ":/Resources/bigTerrain.tmx";
-    }else if(nbPlayers < 5) {
-        terrainFileName = ":/Resources/mediumTerrain.tmx";
-    }
+    //if(nbPlayers >= 5) {
+        //terrainFileName = ":/Resources/bigTerrain.tmx";
+    //}else if(nbPlayers < 5) {
+    terrainFileName = ":/Resources/mediumTerrain.tmx";
+    //}
 
 
     if(nbViews == 0) nbViews = nbPlayers;
@@ -145,6 +145,7 @@ void GameWidget::resetGame() {
     ambientMusicPlayer->stop();
     gameRunning = false;
     gameTimer->stop();
+    disconnect(gameTimer, &QTimer::timeout, this, &GameWidget::timerDecreases);
 }
 
 /**
