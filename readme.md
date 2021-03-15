@@ -15,7 +15,8 @@ The game features original graphics and musics, a local coop game with 2 players
 
 If you are interested to see how to create a network app, take a look at this example I used to create this game: https://github.com/VSRonin/ChatExample
 
-- Currently, the multiplayer is badly implemented (every client is the "master" of the current player and it's candies) causing bugs and synchronisations problems. Don't copy what I did, instead create a server where everything in the game is synchronized, and the clients depends on this instance.
+- Currently, the multiplayer is badly implemented (every client is the "master" of the current player and its candies) causing bugs and synchronisations problems. Don't copy what I did, instead create a server with an instance where everything in the game is synchronized, and the clients depends on this instance.
+- Actually, when I think about it, the project is poorly done at some places... The development was a bit rushed as we had to finish it in under a month, but anyway I'm still proud of the result :)
 
 
 ## Simplified UML diagram
