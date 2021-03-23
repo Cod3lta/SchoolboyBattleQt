@@ -1,7 +1,7 @@
 # SchoolBoyBattle
 SchoolBoyBattle is a game made in Qt using the QGraphicsFramework. The goal of the game is to capture as much candy as possible in the school and in the yard and bring it back to St-Nicolas or Père Fouettard depending on the team you are in !
 
-![Imgur](https://i.imgur.com/mfz3cjA.png)
+![Imgur](https://imgur.com/Wdi0KtL.png)
 
 you can also steal other players' candy, and the bigger the candy, the more points it will earn when it is brought back to the team.
 
